@@ -1,0 +1,256 @@
+# Spatiotemporal Data
+
+## Background. 
+Industrialization and manufacturing growth in China has been accompanied by
+major growth in pollution. Key pollutants include fine particulate matter (PM2.5 and PM10),
+nitrogen dioxide (NO2), sulfur dioxide (SO2), surface ozone (O3), and carbon monoxide (CO).
+The US EPA's Air Quality Index (AQI) is one index of air quality based on these six pollutants. To
+attain a “good” AQI based on PM2.5, the 24-hour average has to be less than 12 ug/m3; a 24-hour
+average PM2.5-level of at least 55.5 ug/m3 is considered “unhealthy,” while levels above 250.5
+ug/m3 are considered "hazardous." The data here come from Beijing, notable for poor air quality.
+
+## Data
+The file beijing.csv contains 420,768 hourly measurements of PM2.5 and weather-related
+factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February
+28, 2017. These files have not been cleaned. The data are as follows, with all pollutants measured
+in micrograms per cubic meter (ug/m3).
+
+year: year of measurement
+month: month of measurement
+day: day of measurement
+hour: hour of measurement
+PM2.5: PM2.5 concentration
+PM10: PM10 concentration
+SO2: sulfur dioxide concentration
+NO2: nitrogen dioxide concentration
+O3: surface ozone concentration
+CO: carbon monoxide concentration
+TEMP: temperature in degrees Celsius
+PRES: barometric pressure in hectopascals
+RAIN: precipitation in millimeters
+wd: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)
+WSPM: wind speed in meters per second
+station: monitoring site (twelve unique sites spaced around the city)
+
+## Data Cleaning
+
+We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful.
+
+1. Add a column for "day of year" (for example, January 3rd is the third day of the year) using the `yday` function in the `lubridate` package.
+2. Add a column for "weekday" using your method of choice. Hint: `format( , "%A")` may be useful.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r date-cleaning}
+library(tidyverse)
+library(lubridate)
+
+beijing <- read.csv("beijing.csv")
+as_dates = as.Date(ISOdate(beijing$year, beijing$month, beijing$day))
+
+beijing$weekday <- format(as_dates, "%A")
+beijing$day_of_year <- yday(as_dates)
+```
+
+Each measurement is associated with a weather station. The location of each station in is `stations.csv`. Inner join the information from that file
+into our air quality data.
+
+```{r join-stations}
+stations <- read.csv("stations.csv")
+beijing <- inner_join(beijing, stations, by=c("station"))
+```
+
+This data is currently in a wide format with respect to the pollutants (one column for each pollutant), but we would like to compare trends across
+pollutants. Ideally we would have figures that summarizes ALL our data, while splitting up by pollutant. This calls for a long format.
+Use the `melt` function in the `reshape` package to make a new data frame with a row for each pollutant, and a column titled `pollutant`.
+Rename the resulting `value` column to 
+
+```{r melting}
+library(reshape)
+beijing_long <- melt(beijing, measure.vars=c("PM2.5", "PM10", "SO2", "NO2", "CO", "O3"), variable_name="pollutant")
+```
+
+## EDA Goals
+
+### Temporal patterns
+
+1a. Build a single figure that describes the distribution of the pollutants depending on the day of the week. To make your figure more informative,
+consider the order that the weekdays are displayed.
+
+```{r day-of-the-week}
+beijing_long$weekday <- factor(beijing_long$weekday, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+ggplot(beijing_long, aes(pollutant, value, fill=weekday)) +
+    geom_boxplot() +
+    ylab("Concentration")
+```
+
+1b. Wow that figure looks pretty rough since the pollutants concentrations vary not only across pollutants, but also within due to the huge amount of
+outliers! Make the same figure but use a log scale. What base of the logarithm should you use?
+
+```{r day-of-the-week-log}
+ggplot(beijing_long, aes(pollutant, value, fill=weekday)) +
+    geom_boxplot() +
+    scale_y_continuous(trans='log10') +
+    ylab("Concentration")
+```
+
+The distributions look much easier to visualize now while not comprimising the conclusions we can draw. Does the day of the week seem to make a 
+difference?
+
+2. Make a similar figure with a log scale, but showing the change in pollutants by month.
+
+```{r by-month-log}
+ggplot(beijing_long, aes(pollutant, value, fill=month)) +
+    geom_boxplot() +
+    scale_y_continuous(trans='log10') +
+    ylab("Concentration") +
+    scale_fill_discrete(labels=c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+```
+
+Describe some patterns you see in the data.
+
+### Wind Direction
+2. Beijing residents believe that the worst air quality occurs during easterly winds. Is there
+credence to this claim? Build a single figure using polar coordinates which describes the average 
+magnitude of for each pollutant when grouped by wind direction. Account for wind speed in some way in your figure.
+
+
+Hint: You may find the following code chunk helpful.
+
+```{r wind-direction-mapping, include=FALSE}
+# https://stackoverflow.com/questions/42597344/convert-from-compass-direcitions-to-degrees-r
+wind_direction_map <- setNames(
+    seq(0, 337.5 , by=22.5), 
+    c("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", 
+      "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW")
+)
+
+print(wind_direction_map["N"])
+```
+
+
+```{r wind-direction-vis}
+wind_direction_info <- beijing_long %>%
+    drop_na(wd, pollutant) %>%
+    group_by(wd, pollutant) %>%
+    summarise(
+        mean_speed = mean(WSPM),
+        mean_value = mean(na.omit(value)),
+        angle=wind_direction_map[first(wd)]
+        )
+
+max_mean_by_pollutant <- wind_direction_info %>%
+    group_by(pollutant) %>%
+    summarise(max_mean = max(mean_value))
+
+wind_direction_info <- inner_join(wind_direction_info, max_mean_by_pollutant, by=c("pollutant"))
+
+ggplot(wind_direction_info, aes(x=angle, y=mean_value/max_mean, fill=mean_speed)) +
+    geom_bar(width=22.5, stat="identity", color="white") +
+    scale_fill_gradient(low="blue", high="red") +
+    coord_polar(start = -pi/16) +
+    theme(
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        legend.position="bottom",
+        legend.key.width = unit(1.5, "cm")
+    ) +
+    geom_text(aes(angle, 1.1, label = wd), color="black", size=2) + 
+    ggtitle("Average of Pollutant vs. Direction") + 
+    guides(fill=guide_colorbar(title="Wind Speed (m/s)")) +
+    facet_wrap(~pollutant)
+```
+
+Does your visualization support the belief of Beijing residents?
+
+
+### Year-by-year pattern
+
+Beijing experienced one of the worst air quality crises in Chinese history in January 2013,
+with the entire city covered in a dense gray haze visible from space. This experience led the
+Chinese government to immediately draft an air pollution control plan that was implemented
+effective September 2013. Is there evidence that this plan was effective? Build a visualization
+similar to the one below:
+
+Because the data is so erratic, it helps to visualize the trends by using some type of rolling
+average. Use `rollmean`, `rollmax`, `rollmedian`, or `rollsum` from the `zoo` package to do some type
+of smoothing. Pick an appropriate smoothing window.
+
+Hint: Use the "day of year" column defined earlier.
+
+```{r year-by-year}
+library(zoo)
+ggplot(beijing_long, aes(x=day_of_year + hour/24, 
+                         y=rollmean(value, 240, na.pad=TRUE), 
+                         color=factor(year), 
+                         alpha=factor(year))) +
+    geom_line() +
+    facet_wrap(~pollutant) +
+    xlab("Day of Year") +
+    ylab("Log of <N-day/hour> rolling <window> for pollutant") +
+    scale_y_continuous(trans="log10") +
+    scale_alpha_manual(values=c(1, 0.005, 0.005, 0.005, 0.005))
+```
+
+What visual evidence (if any) is there that the plan in 2013 was effective? Justify your choice of smoothing function
+and window.
+
+
+
+## Animate + Map
+
+We will now animate the data while using `ggmap`. Pick a map from the `./maps` folder. You can see what a map looks like
+with code similar to the below chunk:
+
+```{r check-map}
+load(file = "./maps/hybrid.RData") # sets map variable
+ggmap(map)
+```
+
+Justify your map choice.
+
+```{r}
+single_measurement <- beijing_long %>%
+    filter(year==2015, month==3, day==2, hour==3, pollutant=="PM2.5")
+
+map_for_plotting <- ggmap(map, extent="device", legend="bottomright")
+map_for_plotting + geom_segment(
+    data=single_measurement, 
+    aes(x=long, y=lat, 
+        xend=long + cos(wind_direction_map[wd] * pi/180) * WSPM/100, 
+        yend=lat + sin(wind_direction_map[wd] * pi/180) * WSPM/100, color=value),
+    arrow=arrow(length=unit(0.1, "cm"))) + 
+    scale_color_continuous(low="blue", high="red")
+
+map_for_plotting + 
+    geom_segment(
+        data=single_measurement, 
+        aes(x=long, y=lat, 
+            xend=long + cos(wind_direction_map[wd] * pi/180) * WSPM/100, 
+            yend=lat + sin(wind_direction_map[wd] * pi/180) * WSPM/100, color=value),
+        arrow=arrow(length=unit(0.1, "cm"))) + 
+    scale_color_continuous(low="blue", high="red") + 
+    geom_voronoi(
+        data=single_measurement, 
+        aes(x=long, y=lat, fill=TEMP), 
+        alpha=0.1,
+        outline=data.frame(
+            x=c(115.9612, 115.9612, 116.8401, 116.8401, 115.9612),
+            y=c(39.7625, 40.43479, 40.43479, 39.7625, 39.7625),
+            group=c(1,1,1,1)
+        )) +   
+    stat_voronoi(
+        data=single_measurement, 
+        aes(x=long, y=lat), 
+        geom = "path",
+        outline=data.frame(
+            x=c(115.9612, 115.9612, 116.8401, 116.8401, 115.9612),
+            y=c(39.7625, 40.43479, 40.43479, 39.7625, 39.7625),
+            group=c(1,1,1,1)
+        )) + 
+    scale_fill_continuous(low="blue", high="red")
+```
