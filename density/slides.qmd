@@ -1,0 +1,150 @@
+---
+title: "Density Graphs"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(palmerpenguins)
+```
+
+## Motivating Example
+
+* Baseball! A Homerun in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nxuTG5SEHn8"></iframe>
+
+* Homeruns are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase homeruns to help the game be more entertaining.
+  * In short terms, **Homeruns = Money**.
+
+Some questions MLB may want to answer are:
+
+1. What years had the 
+
+* Our dataset comes from the R package "Lahman".
+
+```{r}
+library(Lahman)
+colnames(Batting)
+```
+
+Each row in the dataframe is the hitting stats of a player for a given year. We will mostly be using the `HR`, `RBI`, `SB`, and `yearID` columns:
+
+* `yearID`: The year for the statistics
+* `HR`: The number of homeruns a player hit in a given year
+* `RBI`: Runs batted in, the number of runs (or points) a player achieved in a given year
+* `SB`: Stolen bases; more stolen bases = faster player
+
+## Density Graph Examples
+
+```{r}
+ggplot(Batting, aes(HR)) +
+  geom_density()
+
+
+ggplot(Batting %>% filter(yearID >= 1900, G > 100), aes(x=factor(yearID), log10(HR))) +
++     geom_violin()
+
+```
+
+## Getting Fancy with it
+
+> Markup with summary statistics
+> Stacked plots
+
+## Bandwidth
+
+> Silverman's rule of thumb
+
+> Sheather-Jones should probably be the default
+
+
+
+## Kernel
+
+> Gaussian is typically robust
+> Kernel choice matters **a lot** less than bandwidth
+
+
+## Caveats
+
+> Density outside of data range
+> Powerlaw distributions
+> 
+
+
+## 2D Density
+
+```{r}
+ggplot(Batting %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
+  geom_density_2d_filled()
+
+ggplot(Batting %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
+  geom_hex(binwidth=c(2,2)) +
+  scale_fill_gradientn(colours=rainbow(5))
+
+ggplot(Batting %>% filter(G > 100), aes(yearID, HR)) +
+    geom_hex(binwidth=c(1,2)) +
+    scale_fill_gradientn(colours=rainbow(5))
+
+ggplot(Batting %>% filter(G > 100), aes(RBI, HR)) +
+  geom_density_2d_filled()
+```
+
+> Harder to visualize outliers
+> Good to visualize trends, but can be clouded by lack of extremes for both variables
+
+
+## Empirical CDF
+
+## Comparing distributions
+
+
+> Kolmogorov-Smirnov statistic
+> Eye-test
+> 
+
+## Summary
+
+Pros:
+
+> **Visualize entire distribution**
+  > Mean, median, variance, outliers, support, skewness, normality
+  > `plot(density(Batting$HR))` is usually the first thing I do when analyzing data
+
+Cons: 
+
+> Sensitive to bandwidth choices
+> Harder to communicate to non-statisticians
+> Difficult to build yourself (use libraries!)
+
+
+
+
+![](https://raw.githubusercontent.com/quarto-dev/quarto-web/main/docs/get-started/hello/rstudio/lter_penguins.png){style="float:right;" fig-alt="Illustration of three species of Palmer Archipelago penguins: Chinstrap, Gentoo, and Adelie. Artwork by @allison_horst." width="401"}
+
+The `penguins` data from the [**palmerpenguins**](https://allisonhorst.github.io/palmerpenguins "palmerpenguins R package") package contains size measurements for `r nrow(penguins)` penguins from three species observed on three islands in the Palmer Archipelago, Antarctica.
+
+The plot below shows the relationship between flipper and bill lengths of these penguins.
+
+```{r}
+#| label: plot-penguins
+#| warning: false
+#| echo: false
+
+ggplot(penguins, 
+       aes(x = flipper_length_mm, y = bill_length_mm)) +
+  geom_point(aes(color = species, shape = species)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4")) +
+  labs(
+    title = "Flipper and bill length",
+    subtitle = "Dimensions for penguins at Palmer Station LTER",
+    x = "Flipper length (mm)", y = "Bill length (mm)",
+    color = "Penguin species", shape = "Penguin species"
+  ) +
+  theme_minimal()
+```
