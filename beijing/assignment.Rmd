@@ -10,7 +10,7 @@ average PM2.5-level of at least 55.5 μg/m^3 is considered “unhealthy,” whil
 μg/m3 are considered "hazardous." The data here come from Beijing, notable for poor air quality.
 
 ## Data
-The file `beijing.csv` contains 420,768 hourly measurements of PM2.5 and weather-related
+The file `beijing.csv` contains 420,768 hourly measurements of six pollutants and weather-related
 factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February
 28, 2017. These files have not been cleaned. The data are as follows, with all pollutants measured
 in micrograms per cubic meter (μg/m^3).
@@ -39,19 +39,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 **a.** We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful:
+
 * Add a column for "day of year" (for example, January 3rd is the third day of the year) using the `yday` function in the `lubridate` package.
-* Add a column for "weekday" using your method of choice. Hint: `format( , "%A")` may be useful.
-* Use `as.Date(ISOdate())` to build a new column called `as_date`.
+* Add a column for "weekday" using your method of choice. **Hint:** `format( , "%A")` may be useful.
+* Use `(ISOdatetime())` to build a new column called `as_datetime`. Set the minute and hour to 0.
 
 ```{r date-cleaning}
 library(tidyverse)
 library(lubridate)
 
 beijing <- read.csv("beijing.csv")
-beijing$as_date = as.Date(ISOdate(beijing$year, beijing$month, beijing$day))
 
-beijing$weekday <- format(beijing$as_date, "%A")
-beijing$day_of_year <- yday(beijing$as_date)
+beijing$as_datetime = ISOdatetime(beijing$year, beijing$month, beijing$day, beijing$hour, 0, 0)
+beijing$weekday <- format(beijing$as_datetime, "%A")
+beijing$day_of_year <- yday(beijing$as_datetime)
 ```
 
 **b.** Each measurement is associated with a weather station. The location of each station in is `stations.csv`. Inner join the information from that file
@@ -69,7 +70,10 @@ the name of the pollutant and `concentration` for the concentration of it.
 
 
 ```{r pivoting}
-beijing_long <- pivot_longer(beijing, c("PM2.5", "PM10", "SO2", "NO2", "CO", "O3"), names_to="pollutant", values_to="concentration")
+beijing_long <- pivot_longer(beijing, 
+                             c("PM2.5", "PM10", "SO2", "NO2", "CO", "O3"), 
+                             names_to="pollutant", 
+                             values_to="concentration")
 ```
 
 
@@ -80,10 +84,12 @@ consider the order that the weekdays are displayed. For this first figure, do no
 to `pollutant`.
 
 ```{r day-of-the-week}
-beijing_long$weekday <- factor(beijing_long$weekday, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+beijing_long$weekday <- factor(beijing_long$weekday, 
+                               levels=c("Monday", "Tuesday", "Wednesday", 
+                                        "Thursday", "Friday", "Saturday", 
+                                        "Sunday"))
 ggplot(beijing_long, aes(pollutant, concentration, fill=weekday)) +
-    geom_boxplot() +
-    ylab("Concentration")
+    geom_boxplot()
 ```
 
 **b.** Wow that figure looks pretty rough since the pollutants concentrations vary not only across pollutants, but also within due to the huge amount of
@@ -92,8 +98,7 @@ outliers! Make the same figure but use a log scale. What base of the logarithm s
 ```{r day-of-the-week-log}
 ggplot(beijing_long, aes(pollutant, concentration, fill=weekday)) +
     geom_boxplot() +
-    scale_y_continuous(trans='log10') +
-    ylab("Concentration")
+    scale_y_continuous(trans='log10')
 ```
 
 **c.** Now make the same graph but use `facet_wrap` or `facet_grid`. Is this figure, or the one above more informative (your opinion)?
@@ -102,7 +107,6 @@ ggplot(beijing_long, aes(pollutant, concentration, fill=weekday)) +
 ggplot(beijing_long, aes(y = concentration, fill=weekday)) +
     geom_boxplot() +
     scale_y_continuous(trans='log10') +
-    ylab("Concentration") + 
     facet_wrap(~pollutant)
 ```
 
@@ -118,7 +122,6 @@ Describe some patterns you see in the data.
 ggplot(beijing_long, aes(pollutant, concentration, fill=factor(month))) +
     geom_boxplot() +
     scale_y_continuous(trans='log10') +
-    ylab("Concentration") +
     scale_fill_discrete(labels=month.abb)
 ```
 
@@ -134,17 +137,17 @@ ggplot(beijing_long, aes(pollutant, concentration, fill=factor(hour))) +
 ## 3. Wind Direction
 
 **a.** Beijing residents believe that the worst air quality occurs during easterly winds. Make a data frame 
-of summary statistics describing the *relative* magnitude of each pollutant by wind direction. 
+of summary statistics describing the *relative* magnitude of each pollutant by wind direction. If you encounter `NAs` you may ignore them.
 Your data frame should allow someone to quickly answer the following questions:
 
 * For a given pollutant and wind direction, what is the mean concentration?
-* For a given pollutant and wind direction, what is the ratio of mean concentration to the highest mean concentration for that pollutant?
+* For a given pollutant and wind direction, what is the ratio of mean concentration to the highest mean concentration for that pollutant? For example: if the mean pollutant concentration for CO in the east direction is 10, and the mean pollutant concentration for CO in the west is 100 and also the max, we would have 0.1 relative magnitude.
 * What is the average wind speed for a given wind direction?
 * What angle is a wind direction?
 
 **Hint**: You may find the following code chunk helpful.
 
-```{r wind-direction-mapping, include=FALSE}
+```{r wind-direction-mapping}
 # https://stackoverflow.com/questions/42597344/convert-from-compass-direcitions-to-degrees-r
 wind_direction_map <- setNames(
     seq(0, 337.5 , by=22.5), 
@@ -165,12 +168,16 @@ wind_direction_info <- beijing_long %>%
     angle = wind_direction_map[first(wd)]
   )
 
+head(wind_direction_info)
+
 max_mean_by_pollutant <- wind_direction_info %>%
   group_by(pollutant) %>%
   summarise(max_mean = max(mean_value))
 
 wind_direction_info <-
   inner_join(wind_direction_info, max_mean_by_pollutant, by = c("pollutant"))
+
+head(wind_direction_info)
 ```
 
 
@@ -211,7 +218,7 @@ ggplot(wind_direction_info,
 Beijing experienced one of the worst air quality crises in Chinese history in January 2013,
 with the entire city covered in a dense gray haze visible from space. This experience led the
 Chinese government to immediately draft an air pollution control plan that was implemented
-effective September 2013. We will build a visualization similar to the one below:
+effective September 2013. We will build a visualization similar to the one below, where the line graphs for each year are displayed on top of each other, but with the year 2013 highlighted:
 
 ![](example_plots/year-by-year.png)
 
@@ -232,7 +239,7 @@ beijing_by_day <- beijing_long %>%
 ```
 
 **b.** Because the data is so erratic, it helps to visualize the trends by using some type of rolling average. 
-Use `rollmean`, `rollmax`, `rollmedian`, or `rollsum` from the `zoo` package to do some type of smoothing and make a 
+Use `rollmean`, `rollmax`, `rollmedian`, **or** `rollsum` from the `zoo` package to do some type of smoothing and make a 
 new data frame with the smoothed data. Fill in the starter code below with your choice of rolling average and an 
 appropriate smoothing window.
 
@@ -280,62 +287,103 @@ ggplot(
 
 ## 5. Animate the Data
 
-**a.** We will now animate the data while using `ggmap` and `gganimate`. 
+**a.** We will now animate the data while using `ggmap` and `gganimate`.
 Pick a map from the `./maps` folder. Justify your map choice. You can see what a map looks like
 with code similar to the below chunk: 
 
 ```{r check-map}
 library(ggmap)
-load(file = "./maps/toner.RData") # sets map variable
+load(file = "./maps/terrain_lines_bw.RData") # sets map variable
 ggmap(map)
 ```
 
+**b.** For simplicity, choose a single pollutant you would like to visualize. Set the `single_frame` variable below to a filtered version of the `beijing` data frame with a fixed year, month, day, hour, and pollutant.
 
+```{r single-data}
+single_frame <- beijing_long %>%
+    filter(year==2015, month==7, day==2, hour==3, pollutant=="PM2.5")
+```
 
 # Less clutter bt roads and cell borders
 # Elaboration on cells, criticize use of cells
 
+**c.** Use `ggmap` to make a figure visualizing the pollutant and hour you chose at the stations. We will do this in steps:
+
+**i.** Use `geom_segment` to draw arrows at the locations of the given stations with the given starter code. For the `aes` of `geom_segment`:
+
+* Set the `xend` and `yend` aesthetics to reflect the angle of the wind direction, and the speed of the wind e.g. a fast wind to the North-East would point to the top-left and be a bit longer.
+* Set the `color` aesthetic to reflect concentration. Use an appropriate color scale.
+
+```{r}
+map_step_1 <- ggmap(map, extent="device", legend="bottomright") + 
+  geom_segment(
+    data=single_frame, 
+    aes(x=long, 
+        y=lat, 
+        xend=long + cos(wind_direction_map[wd] * pi/180) * WSPM/50, 
+        yend=lat + sin(wind_direction_map[wd] * pi/180) * WSPM/50,
+        color=concentration),
+    arrow=arrow(length=unit(0.2, "cm"))) +
+  scale_color_viridis_c()
+
+```
+
+**ii.** Use `geom_voronoi` and `stat_voronoi` to draw Voronoi cells on the map, where seed points are station locations. The cells do not need to cover the entire map.
+
 ```{r}
 library(ggvoronoi)
-single_measurement <- beijing_long %>%
-    filter(year==2015, month==3, day==2, hour==3, pollutant=="PM2.5")
 
-map_for_plotting <- ggmap(map, extent="device", legend="bottomright")
-map_for_plotting + geom_segment(
-    data=single_measurement, 
-    aes(x=long, y=lat, 
-        xend=long + cos(wind_direction_map[wd] * pi/180) * WSPM/100, 
-        yend=lat + sin(wind_direction_map[wd] * pi/180) * WSPM/100, color=concentration),
-    arrow=arrow(length=unit(0.1, "cm"))) + 
-    scale_color_continuous(low="blue", high="red")
-
-map_for_plotting + 
-    geom_segment(
-        data=single_measurement, 
-        aes(x=long, y=lat, 
-            xend=long + cos(wind_direction_map[wd] * pi/180) * WSPM/100, 
-            yend=lat + sin(wind_direction_map[wd] * pi/180) * WSPM/100, color=concentration),
-        arrow=arrow(length=unit(0.1, "cm"))) + 
-    scale_color_continuous(low="blue", high="red") + 
+map_step_2 <- map_step_1 +
     geom_voronoi(
-        data=single_measurement, 
+        data=single_frame, 
         aes(x=long, y=lat, fill=TEMP), 
         alpha=0.1) +
-        # outline=data.frame(
-        #     x=c(115.9612, 115.9612, 116.8401, 116.8401, 115.9612),
-        #     y=c(39.7625, 40.43479, 40.43479, 39.7625, 39.7625),
-        #     group=c(1,1,1,1,1)
-        # )
-            
-    # stat_voronoi(
-    #     data=single_measurement, 
-    #     aes(x=long, y=lat), 
-    #     geom = "path") + 
-        # outline=data.frame(
-        #     x=c(115.9612, 115.9612, 116.8401, 116.8401, 115.9612),
-        #     y=c(39.7625, 40.43479, 40.43479, 39.7625, 39.7625),
-        #     group=c(1,1,1,1,1)
-        # )
-        # ) + 
-    scale_fill_continuous(low="blue", high="red")
+    stat_voronoi(
+        data=single_frame,
+        aes(x=long, y=lat),
+        geom = "path") +
+  scale_fill_gradient(low="blue", high="red")
 ```
+
+**d.** Use `gganimate` to animate the data for a week. Reuse your code above for each frame. Make sure you set the title to reflect the current time being shown.
+
+```{r}
+library(gganimate)
+
+one_week <- beijing_long %>% 
+  filter(year == 2015, month == 5, day %in% 1:7, pollutant == "PM2.5")
+
+our_animation <- ggmap(map, extent="device", legend="bottomright") + 
+  geom_segment(
+    data=one_week, 
+    aes(x=long, 
+        y=lat, 
+        xend=long + cos(wind_direction_map[wd] * pi/180) * WSPM/50, 
+        yend=lat + sin(wind_direction_map[wd] * pi/180) * WSPM/50,
+        color=concentration),
+    arrow=arrow(length=unit(0.2, "cm"))) +
+    geom_voronoi(
+        data=single_frame, 
+        aes(x=long, y=lat, fill=TEMP), 
+        alpha=0.1) +
+    stat_voronoi(
+        data=single_frame,
+        aes(x=long, y=lat),
+        geom = "path") +
+  scale_fill_gradient(low="blue", high="red") + 
+  scale_color_viridis_c() +
+  transition_time(as_datetime) +
+  labs(x="Longitude", 
+       y="Latitude", 
+       title = "{frame_time}", 
+       fill="Temperature (C)", 
+       color="Concentration (μg/m^3)")
+```
+
+```{r}
+animate(our_animation, duration = 5, fps = 6, width = 1000, height = 1000, renderer = gifski_renderer())
+anim_save("output.gif")
+
+```
+
+**e.** Were the Voronoi cells helpful for this visualization? Why or why not?
