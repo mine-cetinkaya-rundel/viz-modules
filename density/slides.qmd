@@ -1,6 +1,6 @@
 ---
 title: "Density Graphs"
-format: html
+format: revealjs
 editor: visual
 ---
 
@@ -12,6 +12,7 @@ library(tidyverse)
 library(palmerpenguins)
 ```
 
+## Less, but some abbreviations, dataset descriptors
 ## Motivating Example
 
 * Baseball! A Homerun in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
@@ -47,7 +48,7 @@ ggplot(Batting, aes(HR)) +
 
 
 ggplot(Batting %>% filter(yearID >= 1900, G > 100), aes(x=factor(yearID), log10(HR))) +
-+     geom_violin()
+     geom_violin()
 
 ```
 
@@ -98,6 +99,7 @@ ggplot(Batting %>% filter(G > 100), aes(RBI, HR)) +
 > Harder to visualize outliers
 > Good to visualize trends, but can be clouded by lack of extremes for both variables
 
+# 3D ?
 
 ## Empirical CDF
 
