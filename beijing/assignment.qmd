@@ -3,39 +3,38 @@ title: "Spatiotemporal Data"
 format: html
 editor: visual
 ---
+
 # Spatiotemporal Data
 
-## Background. 
-Industrialization and manufacturing growth in China has been accompanied by
-major growth in pollution. Key pollutants include fine particulate matter (PM2.5 and PM10),
-nitrogen dioxide (NO2), sulfur dioxide (SO2), surface ozone (O3), and carbon monoxide (CO).
-The US EPA's Air Quality Index (AQI) is one index of air quality based on these six pollutants. To
-attain a “good” AQI based on PM2.5, the 24-hour average has to be less than 12 μg/m^3; a 24-hour
-average PM2.5-level of at least 55.5 μg/m^3 is considered “unhealthy,” while levels above 250.5
-μg/m3 are considered "hazardous." The data here come from Beijing, notable for poor air quality.
+## Background.
+
+Industrialization and manufacturing growth in China has been accompanied by major growth in pollution.
+Key pollutants include fine particulate matter (PM2.5 and PM10), nitrogen dioxide (NO2), sulfur dioxide (SO2), surface ozone (O3), and carbon monoxide (CO).
+The US EPA's Air Quality Index (AQI) is one index of air quality based on these six pollutants.
+To attain a "good" AQI based on PM2.5, the 24-hour average has to be less than 12 μg/m\^3; a 24-hour average PM2.5-level of at least 55.5 μg/m\^3 is considered "unhealthy," while levels above 250.5 μg/m3 are considered "hazardous." The data here come from Beijing, notable for poor air quality.
 
 ## Data
-The file `beijing.csv` contains 420,768 hourly measurements of six pollutants and weather-related
-factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February
-28, 2017. These files have not been cleaned. The data are as follows, with all pollutants measured
-in micrograms per cubic meter (μg/m^3).
 
-* year: year of measurement
-* month: month of measurement
-* day: day of measurement
-* hour: hour of measurement
-* PM2.5: PM2.5 concentration
-* PM10: PM10 concentration
-* SO2: sulfur dioxide concentration
-* NO2: nitrogen dioxide concentration
-* O3: surface ozone concentration
-* CO: carbon monoxide concentration
-* TEMP: temperature in degrees Celsius
-* PRES: barometric pressure in hectopascals
-* RAIN: precipitation in millimeters
-* wd: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)
-* WSPM: wind speed in meters per second
-* station: monitoring site (twelve unique sites spaced around the city)
+The file `beijing.csv` contains 420,768 hourly measurements of six pollutants and weather-related factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February 28, 2017.
+These files have not been cleaned.
+The data are as follows, with all pollutants measured in micrograms per cubic meter (μg/m\^3).
+
+-   year: year of measurement
+-   month: month of measurement
+-   day: day of measurement
+-   hour: hour of measurement
+-   PM2.5: PM2.5 concentration
+-   PM10: PM10 concentration
+-   SO2: sulfur dioxide concentration
+-   NO2: nitrogen dioxide concentration
+-   O3: surface ozone concentration
+-   CO: carbon monoxide concentration
+-   TEMP: temperature in degrees Celsius
+-   PRES: barometric pressure in hectopascals
+-   RAIN: precipitation in millimeters
+-   wd: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)
+-   WSPM: wind speed in meters per second
+-   station: monitoring site (twelve unique sites spaced around the city)
 
 ## 1. Data Cleaning
 
@@ -45,9 +44,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **a.** We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful:
 
-* Use `ISOdate()` to build a new column called `as_datetime`. Set the minute and hour to 0.
-* Add a column for "day of year" (for example, January 3rd is the third day of the year) using the `yday` function in the `lubridate` package.
-* Add a column for "weekday" using your method of choice. **Hint:** `format( , "%A")` may be useful.
+-   Use `ISOdate()` to build a new column called `as_datetime`. Set the minute and hour to 0.
+-   Add a column for "day of year" (for example, January 3rd is the third day of the year) using the `yday` function in the `lubridate` package.
+-   Add a column for "weekday" using your method of choice. **Hint:** `format( , "%A")` may be useful.
 
 ```{r date-cleaning}
 library(tidyverse)
@@ -60,19 +59,19 @@ beijing$weekday <- format(beijing$as_datetime, "%A")
 beijing$day_of_year <- yday(beijing$as_datetime)
 ```
 
-**b.** Each measurement is associated with a weather station. The location of each station in is `stations.csv`. Inner join the information from that file
-into our air quality data.
+**b.** Each measurement is associated with a weather station.
+The location of each station in is `stations.csv`.
+Inner join the information from that file into our air quality data.
 
 ```{r join-stations}
 stations <- read.csv("stations.csv")
 beijing <- inner_join(beijing, stations, by = c("station"))
 ```
 
-**c.** This data is currently in a wide format with respect to the pollutants (one column for each pollutant), but we would like to compare trends across
-pollutants. Ideally we would have figures that summarizes ALL our data, while splitting up by pollutant. This calls for a long format.
-Use the `pivot_longer` function from the `tidyverse` to make a new data frame with a row for each pollutant, and a column titled `pollutant` for
-the name of the pollutant and `concentration` for the concentration of it.
-
+**c.** This data is currently in a wide format with respect to the pollutants (one column for each pollutant), but we would like to compare trends across pollutants.
+Ideally we would have figures that summarizes ALL our data, while splitting up by pollutant.
+This calls for a long format.
+Use the `pivot_longer` function from the `tidyverse` to make a new data frame with a row for each pollutant, and a column titled `pollutant` for the name of the pollutant and `concentration` for the concentration of it.
 
 ```{r pivoting}
 beijing_long <- pivot_longer(beijing,
@@ -82,12 +81,11 @@ beijing_long <- pivot_longer(beijing,
 )
 ```
 
-
 ## 2. Temporal patterns
 
-**a.** Build a single figure that describes the distribution of the pollutants depending on the day of the week. To make your figure more informative,
-consider the order that the weekdays are displayed. For this first figure, do not use `facet_wrap` or `facet_grid` and instead set the `x` aesthetic
-to `pollutant`.
+**a.** Build a single figure that describes the distribution of the pollutants depending on the day of the week.
+To make your figure more informative, consider the order that the weekdays are displayed.
+For this first figure, do not use `facet_wrap` or `facet_grid` and instead set the `x` aesthetic to `pollutant`.
 
 ```{r day-of-the-week}
 beijing_long$weekday <- factor(beijing_long$weekday,
@@ -101,8 +99,9 @@ ggplot(beijing_long, aes(pollutant, concentration, fill = weekday)) +
   geom_boxplot()
 ```
 
-**b.** Wow that figure looks pretty rough since the pollutants concentrations vary not only across pollutants, but also within due to the huge amount of
-outliers! Make the same figure but use a log scale. What base of the logarithm should you use?
+**b.** Wow that figure looks pretty rough since the pollutants concentrations vary not only across pollutants, but also within due to the huge amount of outliers!
+Make the same figure but use a log scale.
+What base of the logarithm should you use?
 
 ```{r day-of-the-week-log}
 ggplot(beijing_long, aes(pollutant, concentration, fill = weekday)) +
@@ -110,7 +109,9 @@ ggplot(beijing_long, aes(pollutant, concentration, fill = weekday)) +
   scale_y_continuous(trans = "log10")
 ```
 
-**c.** Now make the same graph but use `facet_wrap` or `facet_grid`. Should you use `scales="free"`? Is this figure, or the one above more informative (your opinion)?
+**c.** Now make the same graph but use `facet_wrap` or `facet_grid`.
+Should you use `scales="free"`?
+Is this figure, or the one above more informative (your opinion)?
 
 ```{r day-of-the-week-log-facet}
 ggplot(beijing_long, aes(y = concentration, fill = weekday)) +
@@ -121,11 +122,11 @@ ggplot(beijing_long, aes(y = concentration, fill = weekday)) +
 # Remove ticks
 ```
 
+**d.** The distributions look much easier to visualize now while not compromising the conclusions we can draw.
+Does the day of the week seem to make a difference?
 
-**d.** The distributions look much easier to visualize now while not compromising the conclusions we can draw. Does the day of the week seem to make a difference?
-
-
-**e.** Make a similar figure with a log scale, but showing the change in pollutants by month. It is your choice if you would like to facet or not.
+**e.** Make a similar figure with a log scale, but showing the change in pollutants by month.
+It is your choice if you would like to facet or not.
 Describe some patterns you see in the data.
 
 ```{r by-month-log}
@@ -137,7 +138,8 @@ ggplot(beijing_long, aes(y = concentration, fill = factor(month))) +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 ```
 
-**f.** Finally make a similar figure, but on an hourly scale. How could this plot be improved?
+**f.** Finally make a similar figure, but on an hourly scale.
+How could this plot be improved?
 
 ```{r by-hour-log}
 ggplot(beijing_long, aes(y = concentration, fill = factor(hour))) +
@@ -147,7 +149,9 @@ ggplot(beijing_long, aes(y = concentration, fill = factor(hour))) +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 ```
 
-**g.** Use `ggridges` to make a faceted ridge plot. Replace the tick labels for hour with an appropriate time format. Use `stat_density_ridges` to add quantile lines to the plot.
+**g.** Use `ggridges` to make a faceted ridge plot.
+Replace the tick labels for hour with an appropriate time format.
+Use `stat_density_ridges` to add quantile lines to the plot.
 
 **Hint:** See https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
 
@@ -163,17 +167,17 @@ ggplot(beijing_long, aes(x=concentration, y=factor(hour))) +
 
 ```
 
-
 ## 3. Wind Direction
 
-**a.** Beijing residents believe that the worst air quality occurs during easterly winds. Make a data frame 
-of summary statistics describing the *relative* magnitude of each pollutant by wind direction. If you encounter `NAs` you may ignore them.
+**a.** Beijing residents believe that the worst air quality occurs during easterly winds.
+Make a data frame of summary statistics describing the *relative* magnitude of each pollutant by wind direction.
+If you encounter `NAs` you may ignore them.
 Your data frame should allow someone to quickly answer the following questions:
 
-* For a given pollutant and wind direction, what is the mean concentration?
-* For a given pollutant and wind direction, what is the ratio of mean concentration to the highest mean concentration for that pollutant? For example: if the mean pollutant concentration for CO in the east direction is 10, and the mean pollutant concentration for CO in the west is 100 and also the max, we would have 0.1 relative magnitude.
-* What is the average wind speed for a given wind direction?
-* What angle is a wind direction?
+-   For a given pollutant and wind direction, what is the mean concentration?
+-   For a given pollutant and wind direction, what is the ratio of mean concentration to the highest mean concentration for that pollutant? For example: if the mean pollutant concentration for CO in the east direction is 10, and the mean pollutant concentration for CO in the west is 100 and also the max, we would have 0.1 relative magnitude.
+-   What is the average wind speed for a given wind direction?
+-   What angle is a wind direction?
 
 **Hint**: You may find the following code chunk helpful.
 
@@ -212,9 +216,8 @@ wind_direction_info <-
 head(wind_direction_info)
 ```
 
-
-**b.** Build a single figure using polar coordinates which describes the average *relative* magnitude
-for each pollutant when grouped by wind direction. Account for wind speed in some way in your figure.
+**b.** Build a single figure using polar coordinates which describes the average *relative* magnitude for each pollutant when grouped by wind direction.
+Account for wind speed in some way in your figure.
 
 **Hint:** Your data frame from above may work best with the following columns: `wind_dir, pollutant, mean_speed, mean_concentration, angle, max_concentration_mean_for_direction`.
 
@@ -250,21 +253,20 @@ ggplot(
 
 **c.** Does your visualization support the belief of Beijing residents?
 
-
 ## 4. Effect of Government Plan
 
-Beijing experienced one of the worst air quality crises in Chinese history in January 2013,
-with the entire city covered in a dense gray haze visible from space. This experience led the
-Chinese government to immediately draft an air pollution control plan that was implemented
-effective September 2013. We will build a visualization similar to the one below, where the line graphs for each year are displayed on top of each other, but with the year 2013 highlighted:
+Beijing experienced one of the worst air quality crises in Chinese history in January 2013, with the entire city covered in a dense gray haze visible from space.
+This experience led the Chinese government to immediately draft an air pollution control plan that was implemented effective September 2013.
+We will build a visualization similar to the one below, where the line graphs for each year are displayed on top of each other, but with the year 2013 highlighted:
 
 ![](example_plots/year-by-year.png)
 
-**a.** To make our graph a little easier to build, let's aggregate our data by day. Make another data frame
-that summarizes each pollutant/day pair by the mean of each pollutant across all of Beijing. Include the day of year
-attribute from earlier in your summary dataframe. Name your dataframe `beijing_by_day`.
+**a.** To make our graph a little easier to build, let's aggregate our data by day.
+Make another data frame that summarizes each pollutant/day pair by the mean of each pollutant across all of Beijing.
+Include the day of year attribute from earlier in your summary dataframe.
+Name your dataframe `beijing_by_day`.
 
-**Hint:** Your new dataframe should have at least the following column names: 
+**Hint:** Your new dataframe should have at least the following column names:
 
 `"year", "month", "day", "pollutant", "average_concentration", "day_of_year"`
 
@@ -277,10 +279,9 @@ beijing_by_day <- beijing_long %>%
   )
 ```
 
-**b.** Because the data is so erratic, it helps to visualize the trends by using some type of rolling average. 
-Use `rollmean`, `rollmax`, `rollmedian`, **or** `rollsum` from the `zoo` package to do some type of smoothing and make a 
-new data frame with the smoothed data. Fill in the starter code below with your choice of rolling average and an 
-appropriate smoothing window.
+**b.** Because the data is so erratic, it helps to visualize the trends by using some type of rolling average.
+Use `rollmean`, `rollmax`, `rollmedian`, **or** `rollsum` from the `zoo` package to do some type of smoothing and make a new data frame with the smoothed data.
+Fill in the starter code below with your choice of rolling average and an appropriate smoothing window.
 
 ```{r smooth-data}
 library(zoo)
@@ -321,13 +322,15 @@ ggplot(
   scale_x_continuous(breaks = c(1, 91, 182, 274), labels = c("Jan", "Apr", "Jul", "Oct"))
 ```
 
-**d.** What visual evidence (if any) is there that the plan in 2013 was effective? Justify your choice of smoothing function and window.
-
-
+**d.** What visual evidence (if any) is there that the plan in 2013 was effective?
+Justify your choice of smoothing function and window.
 
 ## 5. Map Summary
 
-**a.** We will now visualize the difference among the stations in the data with `ggmap`. Pick a map from the `./maps` folder. Justify your map choice. You can see what a map looks like with code similar to the below chunk: 
+**a.** We will now visualize the difference among the stations in the data with `ggmap`.
+Pick a map from the `./maps` folder.
+Justify your map choice.
+You can see what a map looks like with code similar to the below chunk:
 
 ```{r check-map}
 library(ggmap)
@@ -335,7 +338,11 @@ load(file = "./maps/terrain_lines_bw.RData") # sets map variable
 ggmap(map)
 ```
 
-**b.** For simplicity, choose a single pollutant you would like to visualize. Build a data frame summarizing the average of that pollutants concentration for every station and wind direction for some time granularity i.e. every hour, day, week, or month, etc. Be sure to also calculate the average `TEMP`, `PRES`, `DEWP`, `RAIN` and `WSPM`. Make sure the `lat` and `long` values are included in your summary data frame. Filter your data frame to a reasonable time frame, e.g. if you are calculating by day, you may want to filter to a two-month period, if by month, maybe use all months.
+**b.** For simplicity, choose a single pollutant you would like to visualize.
+Build a data frame summarizing the average of that pollutants concentration for every station and wind direction for some time granularity i.e. every hour, day, week, or month, etc.
+Be sure to also calculate the average `TEMP`, `PRES`, `DEWP`, `RAIN` and `WSPM`.
+Make sure the `lat` and `long` values are included in your summary data frame.
+Filter your data frame to a reasonable time frame, e.g. if you are calculating by day, you may want to filter to a two-month period, if by month, maybe use all months.
 
 ```{r single-data}
 stations_for_pollutant <- beijing_long %>%
@@ -359,10 +366,11 @@ stations_for_pollutant <- beijing_long %>%
 
 ```
 
-**c.** Filter your data frame down to a single time granule e.g. if you are doing calculations by day, filter to a single day. Use `ggmap` to make a map with the following specifications:
+**c.** Filter your data frame down to a single time granule e.g. if you are doing calculations by day, filter to a single day.
+Use `ggmap` to make a map with the following specifications:
 
-* Use either `geom_segment` or `geom_path` to draw a small figure around the location of each station, where each point in the path or segment drawn corresponds to a wind direction, and the size of it is proportional to the mean concentration, or log of the mean concentration. Some starter code is below.
-* Pick one of `DEWP`, `RAIN`, `PRES`, `TEMP` to color the figure around each station.
+-   Use either `geom_segment` or `geom_path` to draw a small figure around the location of each station, where each point in the path or segment drawn corresponds to a wind direction, and the size of it is proportional to the mean concentration, or log of the mean concentration. Some starter code is below.
+-   Pick one of `DEWP`, `RAIN`, `PRES`, `TEMP` to color the figure around each station.
 
 ```{r}
 
@@ -401,11 +409,13 @@ ggmap(map, extent = "device", legend = "bottomright") +
   scale_color_viridis_c()
 ```
 
-**d.** Use `gganimate` to animate the data for your selected time period. Reuse your code above for each frame. Consider the following:
+**d.** Use `gganimate` to animate the data for your selected time period.
+Reuse your code above for each frame.
+Consider the following:
 
-* Use `shadow_wake` or `shadow_mark` to show some type of history of frames.
-* Make sure you set the title to reflect the current time being shown. 
-* Show an appropriate number of frames per second.
+-   Use `shadow_wake` or `shadow_mark` to show some type of history of frames.
+-   Make sure you set the title to reflect the current time being shown.
+-   Show an appropriate number of frames per second.
 
 ```{r}
 library(gganimate)
@@ -462,4 +472,5 @@ animate(our_animation, fps = 6, nframes = 100, width = 1000, height = 1000, rend
 anim_save("output.gif")
 ```
 
-**e.** Based on your animation, what features on the map seem to be correlated with pollutant concentration? Is it obvious if your choice of weather covariate is correlated with pollutant concentration?
+**e.** Based on your animation, what features on the map seem to be correlated with pollutant concentration?
+Is it obvious if your choice of weather covariate is correlated with pollutant concentration?
