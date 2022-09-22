@@ -38,6 +38,15 @@ The data are as follows, with all pollutants measured in micrograms per cubic me
 -   WSPM: wind speed in meters per second
 -   station: monitoring site (twelve unique sites spaced around the city)
 
+So let's load the data.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+
+beijing <- read_csv(here::here("beijing/data/beijing.csv"))
+```
+
 ## 1. Data Cleaning
 
 **a.** We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful:
@@ -47,11 +56,6 @@ The data are as follows, with all pollutants measured in micrograms per cubic me
 -   Add a column for "weekday" using your method of choice. **Hint:** `format( , "%A")` may be useful.
 
 ```{r date-cleaning}
-library(tidyverse)
-library(lubridate)
-
-beijing <- read.csv("beijing.csv")
-
 beijing$as_datetime <- ISOdate(beijing$year, beijing$month, beijing$day, beijing$hour, 0, 0)
 beijing$weekday <- format(beijing$as_datetime, "%A")
 beijing$day_of_year <- yday(beijing$as_datetime)
