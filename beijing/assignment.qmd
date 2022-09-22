@@ -19,9 +19,9 @@ The file `beijing.csv` contains 420,768 hourly measurements of six pollutants an
 These files have not been cleaned.
 The data are as follows, with all pollutants measured in micrograms per cubic meter (μg/m\^3).
 
--   year: year of measurement
--   month: month of measurement
--   day: day of measurement
+-   `year`: year of measurement
+-   `month`: month of measurement
+-   `day`: day of measurement
 -   hour: hour of measurement
 -   PM2.5: PM2.5 concentration
 -   PM10: PM10 concentration
