@@ -2,6 +2,8 @@
 title: "Spatiotemporal Data"
 format: html
 editor: visual
+execute:
+  echo: true
 ---
 
 # Spatiotemporal Data
@@ -37,10 +39,6 @@ The data are as follows, with all pollutants measured in micrograms per cubic me
 -   station: monitoring site (twelve unique sites spaced around the city)
 
 ## 1. Data Cleaning
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 **a.** We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful:
 
