@@ -15,6 +15,22 @@ Key pollutants include fine particulate matter (PM2.5 and PM10), nitrogen dioxid
 The US EPA's Air Quality Index (AQI) is one index of air quality based on these six pollutants.
 To attain a "good" AQI based on PM2.5, the 24-hour average has to be less than 12 μg/m\^3; a 24-hour average PM2.5-level of at least 55.5 μg/m\^3 is considered "unhealthy," while levels above 250.5 μg/m3 are considered "hazardous." The data here come from Beijing, notable for poor air quality.
 
+## Packages
+
+In this analysis we'll use the following packages:
+
+-   **tidyverse**: for data wrangling and visualization
+-   **lubridate**: for deadling with dates
+-   **ggridges**: for ridge plots
+
+```{r}
+#| label: load-pkgs
+
+library(tidyverse)
+library(lubridate)
+library(ggridges)
+```
+
 ## Data
 
 The file `beijing.csv` contains 420,768 hourly measurements of six pollutants and weather-related factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February 28, 2017.
@@ -41,8 +57,7 @@ The data are as follows, with all pollutants measured in micrograms per cubic me
 So let's load the data.
 
 ```{r}
-library(tidyverse)
-library(lubridate)
+#| label: load-data
 
 beijing <- read_csv(here::here("beijing/data/beijing.csv"))
 ```
@@ -55,18 +70,25 @@ beijing <- read_csv(here::here("beijing/data/beijing.csv"))
 -   Add a column for "day of year" (for example, January 3rd is the third day of the year) using the `yday` function in the `lubridate` package.
 -   Add a column for "weekday" using your method of choice. **Hint:** `format( , "%A")` may be useful.
 
-```{r date-cleaning}
-beijing$as_datetime <- ISOdate(beijing$year, beijing$month, beijing$day, beijing$hour, 0, 0)
-beijing$weekday <- format(beijing$as_datetime, "%A")
-beijing$day_of_year <- yday(beijing$as_datetime)
+```{r}
+#| label: date-cleaning
+
+beijing <- beijing |>
+  mutate(
+    as_datetime = ISOdate(year, month, day, hour, 0, 0),
+    weekday     = wday(as_datetime, label = TRUE, abbr = FALSE),
+    day_of_year = yday(as_datetime)
+  )
 ```
 
 **b.** Each measurement is associated with a weather station.
 The location of each station in is `stations.csv`.
-Inner join the information from that file into our air quality data.
+Inner join the information from that file into our air quality data, joining by the `station` column.
 
-```{r join-stations}
-stations <- read.csv("stations.csv")
+```{r}
+#| label: join-stations
+
+stations <- read_csv(here::here("beijing/data/stations.csv"))
 beijing <- inner_join(beijing, stations, by = c("station"))
 ```
 
@@ -75,12 +97,15 @@ Ideally we would have figures that summarizes ALL our data, while splitting up b
 This calls for a long format.
 Use the `pivot_longer` function from the `tidyverse` to make a new data frame with a row for each pollutant, and a column titled `pollutant` for the name of the pollutant and `concentration` for the concentration of it.
 
-```{r pivoting}
-beijing_long <- pivot_longer(beijing,
-  c("PM2.5", "PM10", "SO2", "NO2", "CO", "O3"),
-  names_to = "pollutant",
-  values_to = "concentration"
-)
+```{r}
+#| label: pivoting
+
+beijing_long <- beijing |>
+  pivot_longer(
+    cols = c("PM2.5", "PM10", "SO2", "NO2", "CO", "O3"),
+    names_to = "pollutant",
+    values_to = "concentration"
+  )
 ```
 
 ## 2. Temporal patterns
@@ -90,14 +115,18 @@ To make your figure more informative, consider the order that the weekdays are d
 For this first figure, do not use `facet_wrap` or `facet_grid` and instead set the `x` aesthetic to `pollutant`.
 
 ```{r day-of-the-week}
-beijing_long$weekday <- factor(beijing_long$weekday,
-  levels = c(
-    "Monday", "Tuesday", "Wednesday",
-    "Thursday", "Friday", "Saturday",
-    "Sunday"
+beijing_long <- beijing_long |>
+  mutate(
+    weekday = fct_relevel(
+      weekday,
+      "Monday", "Tuesday", "Wednesday",
+      "Thursday", "Friday", "Saturday",
+      "Sunday"
+    )
   )
-)
-ggplot(beijing_long, aes(pollutant, concentration, fill = weekday)) +
+
+ggplot(beijing_long, 
+       aes(x = pollutant, y = concentration, fill = weekday)) +
   geom_boxplot()
 ```
 
@@ -106,22 +135,23 @@ Make the same figure but use a log scale.
 What base of the logarithm should you use?
 
 ```{r day-of-the-week-log}
-ggplot(beijing_long, aes(pollutant, concentration, fill = weekday)) +
+ggplot(beijing_long, 
+       aes(x = pollutant, y = concentration, fill = weekday)) +
   geom_boxplot() +
   scale_y_continuous(trans = "log10")
 ```
 
 **c.** Now make the same graph but use `facet_wrap` or `facet_grid`.
-Should you use `scales="free"`?
+Should you use `scales = "free"`?
 Is this figure, or the one above more informative (your opinion)?
 
 ```{r day-of-the-week-log-facet}
-ggplot(beijing_long, aes(y = concentration, fill = weekday)) +
-  geom_boxplot() +
+ggplot(beijing_long, 
+       aes(x = weekday, y = concentration, fill = weekday)) +
+  geom_boxplot(show.legend = FALSE) +
   scale_y_continuous(trans = "log10") +
-  facet_wrap(~pollutant, scales="free") +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
-# Remove ticks
+  facet_wrap(~pollutant, scales = "free") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
 ```
 
 **d.** The distributions look much easier to visualize now while not compromising the conclusions we can draw.
@@ -132,16 +162,19 @@ It is your choice if you would like to facet or not.
 Describe some patterns you see in the data.
 
 ```{r by-month-log}
-ggplot(beijing_long, aes(y = concentration, fill = factor(month))) +
-  geom_boxplot() +
+beijing_long |>
+  mutate(month = factor(month)) |>
+  ggplot(aes(x = month, y = concentration, fill = month)) +
+  geom_boxplot(show.legend = FALSE) +
   scale_y_continuous(trans = "log10") +
-  scale_fill_discrete(labels = month.abb) +
   facet_wrap(~pollutant, scales="free") +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+  scale_x_discrete(labels = month.abb, guide = guide_axis(n.dodge = 2))
 ```
 
 **f.** Finally make a similar figure, but on an hourly scale.
 How could this plot be improved?
+
+***TO DO: Similar updates***
 
 ```{r by-hour-log}
 ggplot(beijing_long, aes(y = concentration, fill = factor(hour))) +
@@ -158,15 +191,12 @@ Use `stat_density_ridges` to add quantile lines to the plot.
 **Hint:** See https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
 
 ```{r by-hour-ridge-plot}
-library(ggridges)
-
-ggplot(beijing_long, aes(x=concentration, y=factor(hour))) + 
+ggplot(beijing_long, aes(x = concentration, y = factor(hour))) +
   geom_density_ridges() +
   scale_x_continuous(trans = "log10") +
-  scale_y_discrete("Time of Day", breaks=c(2, 6, 10, 14, 18, 22), labels=c("2AM", "6AM", "10AM", "2PM", "6PM", "10PM")) +
-  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf=TRUE, quantiles = 4, quantile_lines = TRUE) +
-  facet_wrap(~pollutant, scales="free")
-
+  scale_y_discrete("Time of Day", breaks = c(2, 6, 10, 14, 18, 22), labels = c("2AM", "6AM", "10AM", "2PM", "6PM", "10PM")) +
+  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE, quantiles = 4, quantile_lines = TRUE) +
+  facet_wrap(~pollutant, scales = "free")
 ```
 
 ## 3. Wind Direction
@@ -184,44 +214,44 @@ Your data frame should allow someone to quickly answer the following questions:
 **Hint**: You may find the following code chunk helpful.
 
 ```{r wind-direction-mapping}
-# https://stackoverflow.com/questions/42597344/convert-from-compass-direcitions-to-degrees-r
-wind_direction_map <- setNames(
-  seq(0, 337.5, by = 22.5),
-  c(
+wind_direction_map <- tibble(
+  angle = seq(0, 337.5, by = 22.5),
+  direction = c(
     "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
     "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
   )
 )
-
-print(wind_direction_map["N"])
 ```
 
 ```{r wind-direction-summary}
-wind_direction_info <- beijing_long %>%
-  drop_na(wd, pollutant) %>%
-  group_by(wd, pollutant) %>%
+wind_direction_info <- beijing_long |>
+  drop_na(wd, pollutant) |>
+  group_by(wd, pollutant) |>
   summarise(
     mean_speed = mean(WSPM),
-    mean_value = mean(na.omit(concentration)),
-    angle = wind_direction_map[first(wd)]
-  )
+    mean_value = mean(concentration, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  left_join(wind_direction_map, by = c("wd" = "direction"))
 
-head(wind_direction_info)
+wind_direction_info |>
+  slice_head(n = 6)
 
-max_mean_by_pollutant <- wind_direction_info %>%
-  group_by(pollutant) %>%
-  summarise(max_mean = max(mean_value))
+wind_direction_info <- wind_direction_info |>
+  group_by(pollutant) |>
+  mutate(max_mean = max(mean_value)) |>
+  ungroup()
 
-wind_direction_info <-
-  inner_join(wind_direction_info, max_mean_by_pollutant, by = c("pollutant"))
-
-head(wind_direction_info)
+wind_direction_info |>
+  slice_head(n = 6)
 ```
 
 **b.** Build a single figure using polar coordinates which describes the average *relative* magnitude for each pollutant when grouped by wind direction.
 Account for wind speed in some way in your figure.
 
 **Hint:** Your data frame from above may work best with the following columns: `wind_dir, pollutant, mean_speed, mean_concentration, angle, max_concentration_mean_for_direction`.
+
+***TO DO: Make chunk labels yaml style***
 
 ```{r wind-direction-vis}
 ggplot(
@@ -273,8 +303,8 @@ Name your dataframe `beijing_by_day`.
 `"year", "month", "day", "pollutant", "average_concentration", "day_of_year"`
 
 ```{r aggregate-to-day}
-beijing_by_day <- beijing_long %>%
-  group_by(year, month, day, pollutant) %>%
+beijing_by_day <- beijing_long |>
+  group_by(year, month, day, pollutant) |>
   summarise(
     average_concentration = mean(na.omit(concentration)),
     day_of_year = first(day_of_year)
@@ -287,9 +317,9 @@ Fill in the starter code below with your choice of rolling average and an approp
 
 ```{r smooth-data}
 library(zoo)
-beijing_smoothed <- beijing_by_day %>%
-  arrange(day_of_year) %>%
-  group_by(pollutant, year) %>%
+beijing_smoothed <- beijing_by_day |>
+  arrange(day_of_year) |>
+  group_by(pollutant, year) |>
   summarise(
     # below line is one that needs to be filled in
     rolling_average = rollmedian(average_concentration, 7,
@@ -347,10 +377,10 @@ Make sure the `lat` and `long` values are included in your summary data frame.
 Filter your data frame to a reasonable time frame, e.g. if you are calculating by day, you may want to filter to a two-month period, if by month, maybe use all months.
 
 ```{r single-data}
-stations_for_pollutant <- beijing_long %>%
-  filter(pollutant == "SO2") %>%
-  drop_na() %>%
-  group_by(station, wd, year, month, day) %>%
+stations_for_pollutant <- beijing_long |>
+  filter(pollutant == "SO2") |>
+  drop_na() |>
+  group_by(station, wd, year, month, day) |>
   summarise(
     lat = first(lat),
     long = first(long),
@@ -362,7 +392,7 @@ stations_for_pollutant <- beijing_long %>%
     mean_RAIN = mean(RAIN),
     mean_WSPM = mean(WSPM),
     mean_concentration = log(mean(concentration))
-  ) %>%
+  ) |>
   # Visualizing October and November of 2015 by day
   filter(year == 2015, month %in% c(10, 11))
 
@@ -377,7 +407,7 @@ Use `ggmap` to make a map with the following specifications:
 ```{r}
 
 # Some wind directions will be missing because they do not happen on this given day
-single_measurement <- stations_for_pollutant %>% filter(
+single_measurement <- stations_for_pollutant |> filter(
   month == 10,
   day == 10
 )
@@ -385,7 +415,7 @@ single_measurement <- stations_for_pollutant %>% filter(
 # Drawing circles with geom_path
 ggmap(map, extent = "device", legend = "bottomright") +
   geom_path(
-    data = single_measurement %>% arrange(angle),
+    data = single_measurement |> arrange(angle),
     aes(
       x = long + cos(angle * pi / 180) * mean_concentration / 100,
       y = lat + sin(angle * pi / 180) * mean_concentration / 100,
@@ -450,7 +480,7 @@ our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
 library(transformr)
 our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
   geom_path(
-    data = stations_for_pollutant %>% arrange(angle),
+    data = stations_for_pollutant |> arrange(angle),
     aes(
       x = long + cos(angle * pi / 180) * mean_concentration / 100,
       y = lat + sin(angle * pi / 180) * mean_concentration / 100,
