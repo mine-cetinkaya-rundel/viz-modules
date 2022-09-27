@@ -6,8 +6,6 @@ execute:
   echo: true
 ---
 
-# Spatiotemporal Data
-
 ## Background.
 
 Industrialization and manufacturing growth in China has been accompanied by major growth in pollution.
