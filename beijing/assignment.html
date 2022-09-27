@@ -128,35 +128,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="background.">Background.</h2>
 <p>Industrialization and manufacturing growth in China has been accompanied by major growth in pollution. Key pollutants include fine particulate matter (PM2.5 and PM10), nitrogen dioxide (NO2), sulfur dioxide (SO2), surface ozone (O3), and carbon monoxide (CO). The US EPA’s Air Quality Index (AQI) is one index of air quality based on these six pollutants. To attain a “good” AQI based on PM2.5, the 24-hour average has to be less than 12 μg/m^3; a 24-hour average PM2.5-level of at least 55.5 μg/m^3 is considered “unhealthy,” while levels above 250.5 μg/m3 are considered “hazardous.” The data here come from Beijing, notable for poor air quality.</p>
 </section>
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
-<p>The file <code>beijing.csv</code> contains 420,768 hourly measurements of six pollutants and weather-related factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February 28, 2017. These files have not been cleaned. The data are as follows, with all pollutants measured in micrograms per cubic meter (μg/m^3).</p>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<p>In this analysis we’ll use the following packages:</p>
 <ul>
-<li>year: year of measurement</li>
-<li>month: month of measurement</li>
-<li>day: day of measurement</li>
-<li>hour: hour of measurement</li>
-<li>PM2.5: PM2.5 concentration</li>
-<li>PM10: PM10 concentration</li>
-<li>SO2: sulfur dioxide concentration</li>
-<li>NO2: nitrogen dioxide concentration</li>
-<li>O3: surface ozone concentration</li>
-<li>CO: carbon monoxide concentration</li>
-<li>TEMP: temperature in degrees Celsius</li>
-<li>PRES: barometric pressure in hectopascals</li>
-<li>RAIN: precipitation in millimeters</li>
-<li>wd: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)</li>
-<li>WSPM: wind speed in meters per second</li>
-<li>station: monitoring site (twelve unique sites spaced around the city)</li>
-</ul>
-</section>
-<section id="data-cleaning" class="level2">
-<h2 class="anchored" data-anchor-id="data-cleaning">1. Data Cleaning</h2>
-<p><strong>a.</strong> We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful:</p>
-<ul>
-<li>Use <code>ISOdate()</code> to build a new column called <code>as_datetime</code>. Set the minute and hour to 0.</li>
-<li>Add a column for “day of year” (for example, January 3rd is the third day of the year) using the <code>yday</code> function in the <code>lubridate</code> package.</li>
-<li>Add a column for “weekday” using your method of choice. <strong>Hint:</strong> <code>format( , "%A")</code> may be useful.</li>
+<li><strong>tidyverse</strong>: for data wrangling and visualization</li>
+<li><strong>lubridate</strong>: for dealing with dates</li>
+<li><strong>ggridges</strong>: for ridge plots</li>
+<li><strong>zoo</strong>: to compute rolling summary statistics</li>
+<li><strong>ggmap</strong>: to build visualizations on real maps</li>
+<li><strong>gganimate</strong>: to build an animated visualizing utilizing both temporal and spatial aspects of the data</li>
+<li><strong>transformr</strong>: Optionally used to animate <code>geom_line</code>’s in an animation (safe to ignore)</li>
 </ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -184,39 +166,130 @@ Attaching package: 'lubridate'</code></pre>
 
     date, intersect, setdiff, union</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>beijing <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"beijing.csv"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>beijing<span class="sc">$</span>as_datetime <span class="ot">&lt;-</span> <span class="fu">ISOdate</span>(beijing<span class="sc">$</span>year, beijing<span class="sc">$</span>month, beijing<span class="sc">$</span>day, beijing<span class="sc">$</span>hour, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>beijing<span class="sc">$</span>weekday <span class="ot">&lt;-</span> <span class="fu">format</span>(beijing<span class="sc">$</span>as_datetime, <span class="st">"%A"</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>beijing<span class="sc">$</span>day_of_year <span class="ot">&lt;-</span> <span class="fu">yday</span>(beijing<span class="sc">$</span>as_datetime)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'zoo'</code></pre>
 </div>
-<p><strong>b.</strong> Each measurement is associated with a weather station. The location of each station in is <code>stations.csv</code>. Inner join the information from that file into our air quality data.</p>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Google's Terms of Service: https://cloud.google.com/maps-platform/terms/.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Please cite ggmap if you use it! See citation("ggmap") for details.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gganimate)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(transformr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The file <code>beijing.csv</code> contains 420,768 hourly measurements of six pollutants and weather-related factors measured at 12 monitoring stations around Beijing from March 1, 2013 through February 28, 2017. These files have not been cleaned. The data are as follows, with all pollutants measured in micrograms per cubic meter (μg/m^3).</p>
+<ul>
+<li><code>year</code>: year of measurement</li>
+<li><code>month</code>: month of measurement</li>
+<li><code>day</code>: day of measurement</li>
+<li>`hour: hour of measurement</li>
+<li><code>PM2.5</code>: PM2.5 concentration</li>
+<li><code>PM10</code>: PM10 concentration</li>
+<li><code>SO2</code>: sulfur dioxide concentration</li>
+<li><code>NO2</code>: nitrogen dioxide concentration</li>
+<li><code>O3</code>: surface ozone concentration</li>
+<li><code>CO</code>: carbon monoxide concentration</li>
+<li><code>TEMP</code>: temperature in degrees Celsius</li>
+<li><code>PRES</code>: barometric pressure in hectopascals</li>
+<li><code>RAIN</code>: precipitation in millimeters</li>
+<li><code>wd</code>: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)</li>
+<li><code>WSPM</code>: wind speed in meters per second</li>
+<li><code>station</code>: monitoring site (twelve unique sites spaced around the city)</li>
+</ul>
+<p>So let’s load the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>stations <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"stations.csv"</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>beijing <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(beijing, stations, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"station"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>beijing <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"beijing/data/beijing.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 420768 Columns: 17</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (2): wd, station
+dbl (15): year, month, day, hour, PM2.5, PM10, SO2, NO2, CO, O3, TEMP, PRES,...</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">1. Data Cleaning</h2>
+<p><strong>a.</strong> We have data at an hourly scale, but there are a couple derived attributes related to date that we may find useful:</p>
+<ul>
+<li>Use <code>ISOdate()</code> to build a new column called <code>as_datetime</code>. Set the minute and hour to 0.</li>
+<li>Add a column for “day of year” (for example, January 3rd is the third day of the year) using the <code>yday</code> function in the <code>lubridate</code> package.</li>
+<li>Add a column for “weekday” using your method of choice. <strong>Hint:</strong> <code>?wday</code> could be useful.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>beijing <span class="ot">&lt;-</span> beijing <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">as_datetime =</span> <span class="fu">ISOdate</span>(year, month, day, hour, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">weekday     =</span> <span class="fu">wday</span>(as_datetime, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">day_of_year =</span> <span class="fu">yday</span>(as_datetime)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>b.</strong> Each measurement is associated with a weather station. The location of each station in is <code>stations.csv</code>. Inner join the information from that file into our air quality data, joining by the <code>station</code> column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>stations <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"beijing/data/stations.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 12 Columns: 3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): station
+dbl (2): lat, long</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>beijing <span class="ot">&lt;-</span> <span class="fu">inner_join</span>(beijing, stations, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"station"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>c.</strong> This data is currently in a wide format with respect to the pollutants (one column for each pollutant), but we would like to compare trends across pollutants. Ideally we would have figures that summarizes ALL our data, while splitting up by pollutant. This calls for a long format. Use the <code>pivot_longer</code> function from the <code>tidyverse</code> to make a new data frame with a row for each pollutant, and a column titled <code>pollutant</code> for the name of the pollutant and <code>concentration</code> for the concentration of it.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>beijing_long <span class="ot">&lt;-</span> <span class="fu">pivot_longer</span>(beijing,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">"PM2.5"</span>, <span class="st">"PM10"</span>, <span class="st">"SO2"</span>, <span class="st">"NO2"</span>, <span class="st">"CO"</span>, <span class="st">"O3"</span>),</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">names_to =</span> <span class="st">"pollutant"</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">values_to =</span> <span class="st">"concentration"</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>beijing_long <span class="ot">&lt;-</span> beijing <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"PM2.5"</span>, <span class="st">"PM10"</span>, <span class="st">"SO2"</span>, <span class="st">"NO2"</span>, <span class="st">"CO"</span>, <span class="st">"O3"</span>),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"pollutant"</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"concentration"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="temporal-patterns" class="level2">
 <h2 class="anchored" data-anchor-id="temporal-patterns">2. Temporal patterns</h2>
 <p><strong>a.</strong> Build a single figure that describes the distribution of the pollutants depending on the day of the week. To make your figure more informative, consider the order that the weekdays are displayed. For this first figure, do not use <code>facet_wrap</code> or <code>facet_grid</code> and instead set the <code>x</code> aesthetic to <code>pollutant</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>beijing_long<span class="sc">$</span>weekday <span class="ot">&lt;-</span> <span class="fu">factor</span>(beijing_long<span class="sc">$</span>weekday,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">levels =</span> <span class="fu">c</span>(</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Monday"</span>, <span class="st">"Tuesday"</span>, <span class="st">"Wednesday"</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Thursday"</span>, <span class="st">"Friday"</span>, <span class="st">"Saturday"</span>,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Sunday"</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, <span class="fu">aes</span>(pollutant, concentration, <span class="at">fill =</span> weekday)) <span class="sc">+</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>beijing_long <span class="ot">&lt;-</span> beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">weekday =</span> <span class="fu">fct_relevel</span>(</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>      weekday,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Monday"</span>, <span class="st">"Tuesday"</span>, <span class="st">"Wednesday"</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Thursday"</span>, <span class="st">"Friday"</span>, <span class="st">"Saturday"</span>,</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Sunday"</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> pollutant, <span class="at">y =</span> concentration, <span class="at">fill =</span> weekday)) <span class="sc">+</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 70303 rows containing non-finite values (stat_boxplot).</code></pre>
 </div>
@@ -226,9 +299,10 @@ Attaching package: 'lubridate'</code></pre>
 </div>
 <p><strong>b.</strong> Wow that figure looks pretty rough since the pollutants concentrations vary not only across pollutants, but also within due to the huge amount of outliers! Make the same figure but use a log scale. What base of the logarithm should you use?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, <span class="fu">aes</span>(pollutant, concentration, <span class="at">fill =</span> weekday)) <span class="sc">+</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> pollutant, <span class="at">y =</span> concentration, <span class="at">fill =</span> weekday)) <span class="sc">+</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 70303 rows containing non-finite values (stat_boxplot).</code></pre>
 </div>
@@ -236,30 +310,31 @@ Attaching package: 'lubridate'</code></pre>
 <p><img src="assignment_files/figure-html/day-of-the-week-log-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p><strong>c.</strong> Now make the same graph but use <code>facet_wrap</code> or <code>facet_grid</code>. Should you use <code>scales="free"</code>? Is this figure, or the one above more informative (your opinion)?</p>
+<p><strong>c.</strong> Now make the same graph but use <code>facet_wrap</code> or <code>facet_grid</code>. Should you use <code>scales = "free"</code>? Is this figure, or the one above more informative (your opinion)?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, <span class="fu">aes</span>(<span class="at">y =</span> concentration, <span class="at">fill =</span> weekday)) <span class="sc">+</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> weekday, <span class="at">y =</span> concentration, <span class="at">fill =</span> weekday)) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">n.dodge =</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 70303 rows containing non-finite values (stat_boxplot).</code></pre>
 </div>
 <div class="cell-output-display">
 <p><img src="assignment_files/figure-html/day-of-the-week-log-facet-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove ticks</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>d.</strong> The distributions look much easier to visualize now while not compromising the conclusions we can draw. Does the day of the week seem to make a difference?</p>
 <p><strong>e.</strong> Make a similar figure with a log scale, but showing the change in pollutants by month. It is your choice if you would like to facet or not. Describe some patterns you see in the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, <span class="fu">aes</span>(<span class="at">y =</span> concentration, <span class="at">fill =</span> <span class="fu">factor</span>(month))) <span class="sc">+</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">labels =</span> month.abb) <span class="sc">+</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">factor</span>(month)) <span class="sc">|&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> concentration, <span class="at">fill =</span> month)) <span class="sc">+</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> month.abb, <span class="at">guide =</span> <span class="fu">guide_axis</span>(<span class="at">n.dodge =</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 70303 rows containing non-finite values (stat_boxplot).</code></pre>
 </div>
@@ -269,11 +344,13 @@ Attaching package: 'lubridate'</code></pre>
 </div>
 <p><strong>f.</strong> Finally make a similar figure, but on an hourly scale. How could this plot be improved?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, <span class="fu">aes</span>(<span class="at">y =</span> concentration, <span class="at">fill =</span> <span class="fu">factor</span>(hour))) <span class="sc">+</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">hour =</span> <span class="fu">factor</span>(hour)) <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> hour, <span class="at">y =</span> concentration, <span class="at">fill =</span> hour)) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"2AM"</span>, <span class="st">"8AM"</span>, <span class="st">"2PM"</span>, <span class="st">"8PM"</span>), <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">9</span>, <span class="dv">15</span>, <span class="dv">21</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 70303 rows containing non-finite values (stat_boxplot).</code></pre>
 </div>
@@ -284,14 +361,14 @@ Attaching package: 'lubridate'</code></pre>
 <p><strong>g.</strong> Use <code>ggridges</code> to make a faceted ridge plot. Replace the tick labels for hour with an appropriate time format. Use <code>stat_density_ridges</code> to add quantile lines to the plot.</p>
 <p><strong>Hint:</strong> See https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(beijing_long, <span class="fu">aes</span>(<span class="at">x=</span>concentration, <span class="at">y=</span><span class="fu">factor</span>(hour))) <span class="sc">+</span> </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>() <span class="sc">+</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="st">"Time of Day"</span>, <span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">14</span>, <span class="dv">18</span>, <span class="dv">22</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"2AM"</span>, <span class="st">"6AM"</span>, <span class="st">"10AM"</span>, <span class="st">"2PM"</span>, <span class="st">"6PM"</span>, <span class="st">"10PM"</span>)) <span class="sc">+</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_density_ridges</span>(<span class="at">geom =</span> <span class="st">"density_ridges_gradient"</span>, <span class="at">calc_ecdf=</span><span class="cn">TRUE</span>, <span class="at">quantiles =</span> <span class="dv">4</span>, <span class="at">quantile_lines =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales=</span><span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">hour =</span> <span class="fu">factor</span>(hour)) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> concentration, <span class="at">y =</span> hour)) <span class="sc">+</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density_ridges</span>() <span class="sc">+</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="st">"Time of Day"</span>, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">14</span>, <span class="dv">18</span>, <span class="dv">22</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"2AM"</span>, <span class="st">"6AM"</span>, <span class="st">"10AM"</span>, <span class="st">"2PM"</span>, <span class="st">"6PM"</span>, <span class="st">"10PM"</span>)) <span class="sc">+</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_density_ridges</span>(<span class="at">geom =</span> <span class="st">"density_ridges_gradient"</span>, <span class="at">calc_ecdf =</span> <span class="cn">TRUE</span>, <span class="at">quantiles =</span> <span class="dv">4</span>, <span class="at">quantile_lines =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Picking joint bandwidth of 0.0452</code></pre>
 </div>
@@ -350,97 +427,87 @@ Attaching package: 'lubridate'</code></pre>
 </ul>
 <p><strong>Hint</strong>: You may find the following code chunk helpful.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://stackoverflow.com/questions/42597344/convert-from-compass-direcitions-to-degrees-r</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>wind_direction_map <span class="ot">&lt;-</span> <span class="fu">setNames</span>(</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fl">337.5</span>, <span class="at">by =</span> <span class="fl">22.5</span>),</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span>, <span class="st">"NNE"</span>, <span class="st">"NE"</span>, <span class="st">"ENE"</span>, <span class="st">"E"</span>, <span class="st">"ESE"</span>, <span class="st">"SE"</span>, <span class="st">"SSE"</span>,</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"S"</span>, <span class="st">"SSW"</span>, <span class="st">"SW"</span>, <span class="st">"WSW"</span>, <span class="st">"W"</span>, <span class="st">"WNW"</span>, <span class="st">"NW"</span>, <span class="st">"NNW"</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(wind_direction_map[<span class="st">"N"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>N 
-0 </code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>wind_direction_map <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">angle =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fl">337.5</span>, <span class="at">by =</span> <span class="fl">22.5</span>),</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="fu">c</span>(</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"N"</span>, <span class="st">"NNE"</span>, <span class="st">"NE"</span>, <span class="st">"ENE"</span>, <span class="st">"E"</span>, <span class="st">"ESE"</span>, <span class="st">"SE"</span>, <span class="st">"SSE"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"S"</span>, <span class="st">"SSW"</span>, <span class="st">"SW"</span>, <span class="st">"WSW"</span>, <span class="st">"W"</span>, <span class="st">"WNW"</span>, <span class="st">"NW"</span>, <span class="st">"NNW"</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>wind_direction_info <span class="ot">&lt;-</span> beijing_long <span class="sc">%&gt;%</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(wd, pollutant) <span class="sc">%&gt;%</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(wd, pollutant) <span class="sc">%&gt;%</span></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_speed =</span> <span class="fu">mean</span>(WSPM),</span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_value =</span> <span class="fu">mean</span>(<span class="fu">na.omit</span>(concentration)),</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> wind_direction_map[<span class="fu">first</span>(wd)]</span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'wd'. You can override using the `.groups` argument.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wind_direction_info)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>wind_direction_info <span class="ot">&lt;-</span> beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(wd, pollutant) <span class="sc">|&gt;</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(wd, pollutant) <span class="sc">|&gt;</span></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_speed =</span> <span class="fu">mean</span>(WSPM),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_concentration =</span> <span class="fu">mean</span>(concentration, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(wind_direction_map, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"wd"</span> <span class="ot">=</span> <span class="st">"direction"</span>))</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>wind_direction_info <span class="sc">|&gt;</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 5
-# Groups:   wd [1]
-  wd    pollutant mean_speed mean_value angle
-  &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
-1 E     CO              1.31     1579.     90
-2 E     NO2             1.31       59.7    90
-3 E     O3              1.31       47.7    90
-4 E     PM10            1.31      124.     90
-5 E     PM2.5           1.31      102.     90
-6 E     SO2             1.31       18.4    90</code></pre>
+  wd    pollutant mean_speed mean_concentration angle
+  &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;              &lt;dbl&gt; &lt;dbl&gt;
+1 E     CO              1.31             1579.     90
+2 E     NO2             1.31               59.7    90
+3 E     O3              1.31               47.7    90
+4 E     PM10            1.31              124.     90
+5 E     PM2.5           1.31              102.     90
+6 E     SO2             1.31               18.4    90</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>max_mean_by_pollutant <span class="ot">&lt;-</span> wind_direction_info <span class="sc">%&gt;%</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pollutant) <span class="sc">%&gt;%</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">max_mean =</span> <span class="fu">max</span>(mean_value))</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>wind_direction_info <span class="ot">&lt;-</span></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(wind_direction_info, max_mean_by_pollutant, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"pollutant"</span>))</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(wind_direction_info)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>wind_direction_info <span class="ot">&lt;-</span> wind_direction_info <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pollutant) <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">max_mean_concentration =</span> <span class="fu">max</span>(mean_concentration)) <span class="sc">|&gt;</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>wind_direction_info <span class="sc">|&gt;</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 6
-# Groups:   wd [1]
-  wd    pollutant mean_speed mean_value angle max_mean
-  &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
-1 E     CO              1.31     1579.     90   1621. 
-2 E     NO2             1.31       59.7    90     64.1
-3 E     O3              1.31       47.7    90     95.3
-4 E     PM10            1.31      124.     90    126. 
-5 E     PM2.5           1.31      102.     90    102. 
-6 E     SO2             1.31       18.4    90     18.7</code></pre>
+  wd    pollutant mean_speed mean_concentration angle max_mean_concentration
+  &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;              &lt;dbl&gt; &lt;dbl&gt;                  &lt;dbl&gt;
+1 E     CO              1.31             1579.     90                 1621. 
+2 E     NO2             1.31               59.7    90                   64.1
+3 E     O3              1.31               47.7    90                   95.3
+4 E     PM10            1.31              124.     90                  126. 
+5 E     PM2.5           1.31              102.     90                  102. 
+6 E     SO2             1.31               18.4    90                   18.7</code></pre>
 </div>
 </div>
 <p><strong>b.</strong> Build a single figure using polar coordinates which describes the average <em>relative</em> magnitude for each pollutant when grouped by wind direction. Account for wind speed in some way in your figure.</p>
 <p><strong>Hint:</strong> Your data frame from above may work best with the following columns: <code>wind_dir, pollutant, mean_speed, mean_concentration, angle, max_concentration_mean_for_direction</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  wind_direction_info,</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> angle,</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> mean_value <span class="sc">/</span> max_mean,</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> mean_speed</span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(</span>
-<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="fl">22.5</span>,</span>
-<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stat =</span> <span class="st">"identity"</span>,</span>
-<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span></span>
-<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"blue"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="at">start =</span> <span class="sc">-</span>pi <span class="sc">/</span> <span class="dv">16</span>) <span class="sc">+</span></span>
-<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
-<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key.width =</span> <span class="fu">unit</span>(<span class="fl">1.5</span>, <span class="st">"cm"</span>)</span>
-<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(angle, <span class="fl">1.1</span>, <span class="at">label =</span> wd), <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Average of Pollutant vs. Direction"</span>) <span class="sc">+</span></span>
-<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_colorbar</span>(<span class="at">title =</span> <span class="st">"Wind Speed (m/s)"</span>)) <span class="sc">+</span></span>
-<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  wind_direction_info,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> angle,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> mean_concentration <span class="sc">/</span> max_mean_concentration,</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> mean_speed</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="fl">22.5</span>,</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stat =</span> <span class="st">"identity"</span>,</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span></span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"blue"</span>, <span class="at">high =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="at">start =</span> <span class="sc">-</span>pi <span class="sc">/</span> <span class="dv">16</span>) <span class="sc">+</span></span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.key.width =</span> <span class="fu">unit</span>(<span class="fl">1.5</span>, <span class="st">"cm"</span>)</span>
+<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(angle, <span class="fl">1.1</span>, <span class="at">label =</span> wd), <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Mean of Pollutant by Direction"</span>) <span class="sc">+</span></span>
+<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_colorbar</span>(<span class="at">title =</span> <span class="st">"Wind Speed (m/s)"</span>)) <span class="sc">+</span></span>
+<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="assignment_files/figure-html/wind-direction-vis-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -455,67 +522,59 @@ Attaching package: 'lubridate'</code></pre>
 <p><strong>Hint:</strong> Your new dataframe should have at least the following column names:</p>
 <p><code>"year", "month", "day", "pollutant", "average_concentration", "day_of_year"</code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>beijing_by_day <span class="ot">&lt;-</span> beijing_long <span class="sc">%&gt;%</span></span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, month, day, pollutant) <span class="sc">%&gt;%</span></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_concentration =</span> <span class="fu">mean</span>(<span class="fu">na.omit</span>(concentration)),</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">day_of_year =</span> <span class="fu">first</span>(day_of_year)</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'year', 'month', 'day'. You can override using the `.groups` argument.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># label: aggregate-to-day</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>beijing_by_day <span class="ot">&lt;-</span> beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, month, day, pollutant) <span class="sc">|&gt;</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_concentration =</span> <span class="fu">mean</span>(concentration, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">day_of_year =</span> <span class="fu">first</span>(day_of_year),</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>b.</strong> Because the data is so erratic, it helps to visualize the trends by using some type of rolling average. Use <code>rollmean</code>, <code>rollmax</code>, <code>rollmedian</code>, <strong>or</strong> <code>rollsum</code> from the <code>zoo</code> package to do some type of smoothing and make a new data frame with the smoothed data. Fill in the starter code below with your choice of rolling average and an appropriate smoothing window.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(zoo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'zoo'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>beijing_smoothed <span class="ot">&lt;-</span> beijing_by_day <span class="sc">%&gt;%</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(day_of_year) <span class="sc">%&gt;%</span></span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pollutant, year) <span class="sc">%&gt;%</span></span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># below line is one that needs to be filled in</span></span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">rolling_average =</span> <span class="fu">rollmedian</span>(average_concentration, <span class="dv">7</span>,</span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.pad =</span> <span class="cn">TRUE</span></span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">day_of_year =</span> day_of_year</span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'pollutant', 'year'. You can override using the `.groups` argument.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># label: smooth-data</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>beijing_smoothed <span class="ot">&lt;-</span> beijing_by_day <span class="sc">|&gt;</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(day_of_year) <span class="sc">|&gt;</span></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pollutant, year) <span class="sc">|&gt;</span></span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># below line is one that needs to be filled in</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">rolling_average =</span> <span class="fu">rollmedian</span>(average_concentration, <span class="dv">7</span>,</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">na.pad =</span> <span class="cn">TRUE</span></span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">day_of_year =</span> day_of_year,</span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>c.</strong> Create the plot mentioned above with your smoothed data.</p>
 <p><strong>Hint:</strong> Use the “day of year” column defined earlier.</p>
 <p><strong>Bonus:</strong> Format the x-axis ticks to display an appropriate date format.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  beijing_smoothed,</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> day_of_year,</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> rolling_average,</span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="fu">factor</span>(year),</span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fu">factor</span>(year)</span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales=</span><span class="st">"free"</span>) <span class="sc">+</span></span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Day of Year"</span>) <span class="sc">+</span></span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Log of 7-day rolling median for pollutant daily mean"</span>) <span class="sc">+</span></span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>)) <span class="sc">+</span></span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">91</span>, <span class="dv">182</span>, <span class="dv">274</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Jan"</span>, <span class="st">"Apr"</span>, <span class="st">"Jul"</span>, <span class="st">"Oct"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># label: year-by-year</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>beijing_smoothed <span class="sc">|&gt;</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">factor</span>(year)) <span class="sc">|&gt;</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> day_of_year,</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> rolling_average,</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> year,</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">alpha =</span> year</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>pollutant, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Day of Year"</span>) <span class="sc">+</span></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Log of 7-day rolling median for pollutant daily mean"</span>) <span class="sc">+</span></span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">trans =</span> <span class="st">"log10"</span>) <span class="sc">+</span></span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>)) <span class="sc">+</span></span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">91</span>, <span class="dv">182</span>, <span class="dv">274</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Jan"</span>, <span class="st">"Apr"</span>, <span class="st">"Jul"</span>, <span class="st">"Oct"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Removed 30 row(s) containing missing values (geom_path).</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="assignment_files/figure-html/year-by-year-1.png" class="img-fluid" width="672"></p>
+<p><img src="assignment_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p><strong>d.</strong> What visual evidence (if any) is there that the plan in 2013 was effective? Justify your choice of smoothing function and window.</p>
@@ -524,86 +583,78 @@ Attaching package: 'zoo'</code></pre>
 <h2 class="anchored" data-anchor-id="map-summary">5. Map Summary</h2>
 <p><strong>a.</strong> We will now visualize the difference among the stations in the data with <code>ggmap</code>. Pick a map from the <code>./maps</code> folder. Justify your map choice. You can see what a map looks like with code similar to the below chunk:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Google's Terms of Service: https://cloud.google.com/maps-platform/terms/.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Please cite ggmap if you use it! See citation("ggmap") for details.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"./maps/terrain_lines_bw.RData"</span>) <span class="co"># sets map variable</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"./maps/terrain_lines_bw.RData"</span>) <span class="co"># sets map variable</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="assignment_files/figure-html/check-map-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p><strong>b.</strong> For simplicity, choose a single pollutant you would like to visualize. Build a data frame summarizing the average of that pollutants concentration for every station and wind direction for some time granularity i.e.&nbsp;every hour, day, week, or month, etc. Be sure to also calculate the average <code>TEMP</code>, <code>PRES</code>, <code>DEWP</code>, <code>RAIN</code> and <code>WSPM</code>. Make sure the <code>lat</code> and <code>long</code> values are included in your summary data frame. Filter your data frame to a reasonable time frame, e.g.&nbsp;if you are calculating by day, you may want to filter to a two-month period, if by month, maybe use all months.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>stations_for_pollutant <span class="ot">&lt;-</span> beijing_long <span class="sc">%&gt;%</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pollutant <span class="sc">==</span> <span class="st">"SO2"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station, wd, year, month, day) <span class="sc">%&gt;%</span></span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">lat =</span> <span class="fu">first</span>(lat),</span>
-<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">long =</span> <span class="fu">first</span>(long),</span>
-<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">as_date =</span> <span class="fu">min</span>(<span class="fu">as.Date</span>(as_datetime)),</span>
-<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> wind_direction_map[<span class="fu">first</span>(wd)],</span>
-<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_TEMP =</span> <span class="fu">mean</span>(TEMP),</span>
-<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_PRES =</span> <span class="fu">mean</span>(PRES),</span>
-<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_DEWP =</span> <span class="fu">mean</span>(DEWP),</span>
-<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_RAIN =</span> <span class="fu">mean</span>(RAIN),</span>
-<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_WSPM =</span> <span class="fu">mean</span>(WSPM),</span>
-<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_concentration =</span> <span class="fu">log</span>(<span class="fu">mean</span>(concentration))</span>
-<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Visualizing October and November of 2015 by day</span></span>
-<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2015</span>, month <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">11</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'station', 'wd', 'year', 'month'. You can override using the `.groups` argument.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>stations_for_pollutant <span class="ot">&lt;-</span> beijing_long <span class="sc">|&gt;</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(pollutant <span class="sc">==</span> <span class="st">"SO2"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station, wd, year, month, day) <span class="sc">|&gt;</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">lat =</span> <span class="fu">first</span>(lat),</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">long =</span> <span class="fu">first</span>(long),</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">as_date =</span> <span class="fu">min</span>(<span class="fu">as.Date</span>(as_datetime)),</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_TEMP =</span> <span class="fu">mean</span>(TEMP),</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_PRES =</span> <span class="fu">mean</span>(PRES),</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_DEWP =</span> <span class="fu">mean</span>(DEWP),</span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_RAIN =</span> <span class="fu">mean</span>(RAIN),</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_WSPM =</span> <span class="fu">mean</span>(WSPM),</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_mean_concentration =</span> <span class="fu">log</span>(<span class="fu">mean</span>(concentration)),</span>
+<span id="cb62-15"><a href="#cb62-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb62-16"><a href="#cb62-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb62-17"><a href="#cb62-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(wind_direction_map, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"wd"</span> <span class="ot">=</span> <span class="st">"direction"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb62-18"><a href="#cb62-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Visualizing October and November of 2015 by day</span></span>
+<span id="cb62-19"><a href="#cb62-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2015</span>, month <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">11</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>c.</strong> Filter your data frame down to a single time granule e.g.&nbsp;if you are doing calculations by day, filter to a single day. Use <code>ggmap</code> to make a map with the following specifications:</p>
 <ul>
-<li>Use either <code>geom_segment</code> or <code>geom_path</code> to draw a small figure around the location of each station, where each point in the path or segment drawn corresponds to a wind direction, and the size of it is proportional to the mean concentration, or log of the mean concentration. Some starter code is below.</li>
+<li>Use either <code>geom_segment</code> or <code>geom_path</code> to draw a small figure around the location of each station, where each point in the path or segment drawn corresponds to a wind direction, and the length of it is proportional to the mean concentration, or log of the mean concentration. Some starter code is below.</li>
 <li>Pick one of <code>DEWP</code>, <code>RAIN</code>, <code>PRES</code>, <code>TEMP</code> to color the figure around each station.</li>
 </ul>
+<p><strong>Hint:</strong> Use the angles of the wind directions to convert from <a href="https://tutorial.math.lamar.edu/classes/calcii/polarcoordinates.aspx">polar to Cartesian coordinates</a>. The “radius” should correspond to the concentration.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Some wind directions will be missing because they do not happen on this given day</span></span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>single_measurement <span class="ot">&lt;-</span> stations_for_pollutant <span class="sc">%&gt;%</span> <span class="fu">filter</span>(</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  month <span class="sc">==</span> <span class="dv">10</span>,</span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  day <span class="sc">==</span> <span class="dv">10</span></span>
-<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Drawing circles with geom_path</span></span>
-<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
-<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(</span>
-<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> single_measurement <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(angle),</span>
-<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">group =</span> station,</span>
-<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP</span>
-<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Some wind directions will be missing because they do not happen on this given day</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>single_measurement <span class="ot">&lt;-</span> stations_for_pollutant <span class="sc">|&gt;</span> <span class="fu">filter</span>(</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  month <span class="sc">==</span> <span class="dv">10</span>,</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  day <span class="sc">==</span> <span class="dv">10</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Drawing circles with geom_path</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> single_measurement <span class="sc">|&gt;</span> <span class="fu">arrange</span>(angle),</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">group =</span> station,</span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="assignment_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+<p><img src="assignment_files/figure-html/single-frame-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drawing arrows with geom_segment</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> single_measurement,</span>
-<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long,</span>
-<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat,</span>
-<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP</span>
-<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"cm"</span>))</span>
-<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drawing arrows with geom_segment</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> single_measurement,</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long,</span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat,</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP</span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"cm"</span>))</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="assignment_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+<p><img src="assignment_files/figure-html/single-frame-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p><strong>d.</strong> Use <code>gganimate</code> to animate the data for your selected time period. Reuse your code above for each frame. Consider the following:</p>
@@ -613,60 +664,60 @@ Attaching package: 'zoo'</code></pre>
 <li>Show an appropriate number of frames per second.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gganimate)</span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Arrows</span></span>
-<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>our_animation <span class="ot">&lt;-</span> <span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
-<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
-<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stations_for_pollutant,</span>
-<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long,</span>
-<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat,</span>
-<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP,</span>
-<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">group =</span> station</span>
-<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"cm"</span>))</span>
-<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span> </span>
-<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transition_time</span>(as_date) <span class="sc">+</span></span>
-<span id="cb63-19"><a href="#cb63-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shadow_mark</span>(<span class="at">size =</span> .<span class="dv">1</span>, <span class="at">alpha =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb63-20"><a href="#cb63-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb63-21"><a href="#cb63-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Longitude"</span>,</span>
-<span id="cb63-22"><a href="#cb63-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Latitude"</span>,</span>
-<span id="cb63-23"><a href="#cb63-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"{frame_time}"</span>,</span>
-<span id="cb63-24"><a href="#cb63-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"DEWP"</span></span>
-<span id="cb63-25"><a href="#cb63-25" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb63-26"><a href="#cb63-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-27"><a href="#cb63-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Path</span></span>
-<span id="cb63-28"><a href="#cb63-28" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(transformr)</span>
-<span id="cb63-29"><a href="#cb63-29" aria-hidden="true" tabindex="-1"></a>our_animation <span class="ot">&lt;-</span> <span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
-<span id="cb63-30"><a href="#cb63-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(</span>
-<span id="cb63-31"><a href="#cb63-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stations_for_pollutant <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(angle),</span>
-<span id="cb63-32"><a href="#cb63-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
-<span id="cb63-33"><a href="#cb63-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb63-34"><a href="#cb63-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
-<span id="cb63-35"><a href="#cb63-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">group =</span> station,</span>
-<span id="cb63-36"><a href="#cb63-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP</span>
-<span id="cb63-37"><a href="#cb63-37" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb63-38"><a href="#cb63-38" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb63-39"><a href="#cb63-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span> </span>
-<span id="cb63-40"><a href="#cb63-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transition_time</span>(as_date) <span class="sc">+</span></span>
-<span id="cb63-41"><a href="#cb63-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shadow_mark</span>(<span class="at">size =</span> .<span class="dv">25</span>, <span class="at">alpha =</span> .<span class="dv">25</span>) <span class="sc">+</span></span>
-<span id="cb63-42"><a href="#cb63-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb63-43"><a href="#cb63-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Longitude"</span>,</span>
-<span id="cb63-44"><a href="#cb63-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Latitude"</span>,</span>
-<span id="cb63-45"><a href="#cb63-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"{frame_time}"</span>,</span>
-<span id="cb63-46"><a href="#cb63-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"DEWP"</span></span>
-<span id="cb63-47"><a href="#cb63-47" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>our_animation <span class="ot">&lt;-</span> <span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stations_for_pollutant,</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long,</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat,</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP,</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">group =</span> station</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">arrow =</span> <span class="fu">arrow</span>(<span class="at">length =</span> <span class="fu">unit</span>(<span class="fl">0.1</span>, <span class="st">"cm"</span>))</span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span> </span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transition_time</span>(as_date) <span class="sc">+</span></span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shadow_mark</span>(<span class="at">size =</span> .<span class="dv">1</span>, <span class="at">alpha =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Longitude"</span>,</span>
+<span id="cb65-19"><a href="#cb65-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Latitude"</span>,</span>
+<span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"{frame_time}"</span>,</span>
+<span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"DEWP"</span></span>
+<span id="cb65-22"><a href="#cb65-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-24"><a href="#cb65-24" aria-hidden="true" tabindex="-1"></a><span class="fu">animate</span>(our_animation, <span class="at">fps =</span> <span class="dv">6</span>, <span class="at">nframes =</span> <span class="dv">100</span>, <span class="at">width =</span> <span class="dv">1000</span>, <span class="at">height =</span> <span class="dv">1000</span>, <span class="at">renderer =</span> <span class="fu">gifski_renderer</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="assignment_files/figure-html/animating-with-arrows-1.gif" class="img-fluid"></p>
+</div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anim_save</span>(<span class="st">"arrows.gif"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">animate</span>(our_animation, <span class="at">fps =</span> <span class="dv">6</span>, <span class="at">nframes =</span> <span class="dv">100</span>, <span class="at">width =</span> <span class="dv">1000</span>, <span class="at">height =</span> <span class="dv">1000</span>, <span class="at">renderer =</span> <span class="fu">gifski_renderer</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>our_animation <span class="ot">&lt;-</span> <span class="fu">ggmap</span>(map, <span class="at">extent =</span> <span class="st">"device"</span>, <span class="at">legend =</span> <span class="st">"bottomright"</span>) <span class="sc">+</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> stations_for_pollutant <span class="sc">|&gt;</span> <span class="fu">arrange</span>(angle),</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> long <span class="sc">+</span> <span class="fu">cos</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> lat <span class="sc">+</span> <span class="fu">sin</span>(angle <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span>) <span class="sc">*</span> log_mean_concentration <span class="sc">/</span> <span class="dv">100</span>,</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">group =</span> station,</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">color =</span> mean_DEWP</span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis_c</span>() <span class="sc">+</span> </span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transition_time</span>(as_date) <span class="sc">+</span></span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">shadow_mark</span>(<span class="at">size =</span> .<span class="dv">25</span>, <span class="at">alpha =</span> .<span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb67-15"><a href="#cb67-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Longitude"</span>,</span>
+<span id="cb67-16"><a href="#cb67-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Latitude"</span>,</span>
+<span id="cb67-17"><a href="#cb67-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"{frame_time}"</span>,</span>
+<span id="cb67-18"><a href="#cb67-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"DEWP"</span></span>
+<span id="cb67-19"><a href="#cb67-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb67-20"><a href="#cb67-20" aria-hidden="true" tabindex="-1"></a><span class="fu">animate</span>(our_animation, <span class="at">fps =</span> <span class="dv">6</span>, <span class="at">nframes =</span> <span class="dv">100</span>, <span class="at">width =</span> <span class="dv">1000</span>, <span class="at">height =</span> <span class="dv">1000</span>, <span class="at">renderer =</span> <span class="fu">gifski_renderer</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="assignment_files/figure-html/unnamed-chunk-6-1.gif" class="img-fluid"></p>
+<p><img src="assignment_files/figure-html/animating-with-paths-1.gif" class="img-fluid"></p>
 </div>
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anim_save</span>(<span class="st">"output.gif"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anim_save</span>(<span class="st">"paths.gif"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>e.</strong> Based on your animation, what features on the map seem to be correlated with pollutant concentration? Is it obvious if your choice of weather covariate is correlated with pollutant concentration?</p>
 </section>

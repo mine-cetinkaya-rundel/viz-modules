@@ -111,7 +111,7 @@ ggplot(beijing_long, aes(pollutant, concentration, fill = weekday)) +
 ggplot(beijing_long, aes(y = concentration, fill = weekday)) +
   geom_boxplot() +
   scale_y_continuous(trans = "log10") +
-  facet_wrap(~pollutant, scales="free") +
+  facet_wrap(~pollutant, scales = "free") +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 # Remove ticks
 ```
@@ -128,7 +128,7 @@ ggplot(beijing_long, aes(y = concentration, fill = factor(month))) +
   geom_boxplot() +
   scale_y_continuous(trans = "log10") +
   scale_fill_discrete(labels = month.abb) +
-  facet_wrap(~pollutant, scales="free") +
+  facet_wrap(~pollutant, scales = "free") +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 ```
 
@@ -138,7 +138,7 @@ ggplot(beijing_long, aes(y = concentration, fill = factor(month))) +
 ggplot(beijing_long, aes(y = concentration, fill = factor(hour))) +
   geom_boxplot() +
   scale_y_continuous(trans = "log10") +
-  facet_wrap(~pollutant, scales="free") +
+  facet_wrap(~pollutant, scales = "free") +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 ```
 
@@ -149,13 +149,12 @@ ggplot(beijing_long, aes(y = concentration, fill = factor(hour))) +
 ```{r by-hour-ridge-plot}
 library(ggridges)
 
-ggplot(beijing_long, aes(x=concentration, y=factor(hour))) + 
+ggplot(beijing_long, aes(x = concentration, y = factor(hour))) +
   geom_density_ridges() +
   scale_x_continuous(trans = "log10") +
-  scale_y_discrete("Time of Day", breaks=c(2, 6, 10, 14, 18, 22), labels=c("2AM", "6AM", "10AM", "2PM", "6PM", "10PM")) +
-  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf=TRUE, quantiles = 4, quantile_lines = TRUE) +
-  facet_wrap(~pollutant, scales="free")
-
+  scale_y_discrete("Time of Day", breaks = c(2, 6, 10, 14, 18, 22), labels = c("2AM", "6AM", "10AM", "2PM", "6PM", "10PM")) +
+  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE, quantiles = 4, quantile_lines = TRUE) +
+  facet_wrap(~pollutant, scales = "free")
 ```
 
 
@@ -308,7 +307,7 @@ ggplot(
   )
 ) +
   geom_line() +
-  facet_wrap(~pollutant, scales="free") +
+  facet_wrap(~pollutant, scales = "free") +
   xlab("Day of Year") +
   ylab("Log of 7-day rolling median for pollutant daily mean") +
   scale_y_continuous(trans = "log10") +
@@ -351,7 +350,6 @@ stations_for_pollutant <- beijing_long %>%
   ) %>%
   # Visualizing October and November of 2015 by day
   filter(year == 2015, month %in% c(10, 11))
-
 ```
 
 **c.** Filter your data frame down to a single time granule e.g. if you are doing calculations by day, filter to a single day. Use `ggmap` to make a map with the following specifications:
@@ -419,7 +417,7 @@ our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
     ),
     arrow = arrow(length = unit(0.1, "cm"))
   ) +
-  scale_color_viridis_c() + 
+  scale_color_viridis_c() +
   transition_time(as_date) +
   shadow_mark(size = .1, alpha = .1) +
   labs(
@@ -441,7 +439,7 @@ our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
       color = mean_DEWP
     ),
   ) +
-  scale_color_viridis_c() + 
+  scale_color_viridis_c() +
   transition_time(as_date) +
   shadow_mark(size = .25, alpha = .25) +
   labs(

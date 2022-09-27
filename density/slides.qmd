@@ -26,19 +26,32 @@ Some questions MLB may want to answer are:
 
 1. What years had the 
 
-* Our dataset comes from the R package "Lahman".
+## Data
+
+* Our dataset comes from the R package `Lahman`.
 
 ```{r}
 library(Lahman)
 colnames(Batting)
 ```
 
-Each row in the dataframe is the hitting stats of a player for a given year. We will mostly be using the `HR`, `RBI`, `SB`, and `yearID` columns:
+Each row in the dataframe is the hitting stats of a player for a given year. We will mostly be using the `HR`, `RBI`, `SB`, and `yearID`, `G` columns:
 
 * `yearID`: The year for the statistics
 * `HR`: The number of homeruns a player hit in a given year
 * `RBI`: Runs batted in, the number of runs (or points) a player achieved in a given year
 * `SB`: Stolen bases; more stolen bases = faster player
+
+```{r}
+starting_players_by_year <- Batting %>%
+  filter(AB > 450, yearID > 1920)
+
+starting_players_by_year <- Batting %>%
+  filter(G > 100, yearID > 1920)
+
+ggplot(starting_players_by_year %>% filter(yearID %in% 1990:2000), aes(HR)) +
+
+```
 
 ## Density Graph Examples
 
@@ -59,9 +72,13 @@ ggplot(Batting %>% filter(yearID >= 1900, G > 100), aes(x=factor(yearID), log10(
 
 ## Bandwidth
 
-> Silverman's rule of thumb
+* Silverman's rule of thumb
 
-> Sheather-Jones should probably be the default
+```{r}
+ggplot()
+```
+
+* Sheather-Jones should probably be the default
 
 
 

@@ -20,8 +20,12 @@ To attain a "good" AQI based on PM2.5, the 24-hour average has to be less than 1
 In this analysis we'll use the following packages:
 
 -   **tidyverse**: for data wrangling and visualization
--   **lubridate**: for deadling with dates
+-   **lubridate**: for dealing with dates
 -   **ggridges**: for ridge plots
+-   **zoo**: to compute rolling summary statistics
+-   **ggmap**: to build visualizations on real maps
+-   **gganimate**: to build an animated visualizing utilizing both temporal and spatial aspects of the data
+-   **transformr**: Optionally used to animate `geom_line`'s in an animation (safe to ignore)
 
 ```{r}
 #| label: load-pkgs
@@ -29,6 +33,10 @@ In this analysis we'll use the following packages:
 library(tidyverse)
 library(lubridate)
 library(ggridges)
+library(zoo)
+library(ggmap)
+library(gganimate)
+library(transformr)
 ```
 
 ## Data
@@ -40,25 +48,24 @@ The data are as follows, with all pollutants measured in micrograms per cubic me
 -   `year`: year of measurement
 -   `month`: month of measurement
 -   `day`: day of measurement
--   hour: hour of measurement
--   PM2.5: PM2.5 concentration
--   PM10: PM10 concentration
--   SO2: sulfur dioxide concentration
--   NO2: nitrogen dioxide concentration
--   O3: surface ozone concentration
--   CO: carbon monoxide concentration
--   TEMP: temperature in degrees Celsius
--   PRES: barometric pressure in hectopascals
--   RAIN: precipitation in millimeters
--   wd: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)
--   WSPM: wind speed in meters per second
--   station: monitoring site (twelve unique sites spaced around the city)
+-   `hour`: hour of measurement
+-   `PM2.5`: PM2.5 concentration
+-   `PM10`: PM10 concentration
+-   `SO2`: sulfur dioxide concentration
+-   `NO2`: nitrogen dioxide concentration
+-   `O3`: surface ozone concentration
+-   `CO`: carbon monoxide concentration
+-   `TEMP`: temperature in degrees Celsius
+-   `PRES`: barometric pressure in hectopascals
+-   `RAIN`: precipitation in millimeters
+-   `wd`: wind direction; 16 compass directions (N, NNE, NE, ENE, E, etc.)
+-   `WSPM`: wind speed in meters per second
+-   `station`: monitoring site (twelve unique sites spaced around the city)
 
 So let's load the data.
 
 ```{r}
 #| label: load-data
-
 beijing <- read_csv(here::here("beijing/data/beijing.csv"))
 ```
 
@@ -68,7 +75,7 @@ beijing <- read_csv(here::here("beijing/data/beijing.csv"))
 
 -   Use `ISOdate()` to build a new column called `as_datetime`. Set the minute and hour to 0.
 -   Add a column for "day of year" (for example, January 3rd is the third day of the year) using the `yday` function in the `lubridate` package.
--   Add a column for "weekday" using your method of choice. **Hint:** `format( , "%A")` may be useful.
+-   Add a column for "weekday" using your method of choice. **Hint:** `?wday` could be useful.
 
 ```{r}
 #| label: date-cleaning
@@ -114,7 +121,9 @@ beijing_long <- beijing |>
 To make your figure more informative, consider the order that the weekdays are displayed.
 For this first figure, do not use `facet_wrap` or `facet_grid` and instead set the `x` aesthetic to `pollutant`.
 
-```{r day-of-the-week}
+```{r}
+#| label: day-of-the-week
+
 beijing_long <- beijing_long |>
   mutate(
     weekday = fct_relevel(
@@ -134,7 +143,9 @@ ggplot(beijing_long,
 Make the same figure but use a log scale.
 What base of the logarithm should you use?
 
-```{r day-of-the-week-log}
+```{r}
+#| label: day-of-the-week-log
+
 ggplot(beijing_long, 
        aes(x = pollutant, y = concentration, fill = weekday)) +
   geom_boxplot() +
@@ -145,7 +156,9 @@ ggplot(beijing_long,
 Should you use `scales = "free"`?
 Is this figure, or the one above more informative (your opinion)?
 
-```{r day-of-the-week-log-facet}
+```{r}
+#| label: day-of-the-week-log-facet
+
 ggplot(beijing_long, 
        aes(x = weekday, y = concentration, fill = weekday)) +
   geom_boxplot(show.legend = FALSE) +
@@ -161,7 +174,9 @@ Does the day of the week seem to make a difference?
 It is your choice if you would like to facet or not.
 Describe some patterns you see in the data.
 
-```{r by-month-log}
+```{r}
+#| label: by-month-log
+
 beijing_long |>
   mutate(month = factor(month)) |>
   ggplot(aes(x = month, y = concentration, fill = month)) +
@@ -174,14 +189,16 @@ beijing_long |>
 **f.** Finally make a similar figure, but on an hourly scale.
 How could this plot be improved?
 
-***TO DO: Similar updates***
+```{r}
+#| label: by-hour-log
 
-```{r by-hour-log}
-ggplot(beijing_long, aes(y = concentration, fill = factor(hour))) +
-  geom_boxplot() +
+beijing_long |>
+  mutate(hour = factor(hour)) |>
+  ggplot(aes(x = hour, y = concentration, fill = hour)) +
+  geom_boxplot(show.legend = FALSE) +
   scale_y_continuous(trans = "log10") +
-  facet_wrap(~pollutant, scales="free") +
-  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+  facet_wrap(~pollutant, scales = "free") +
+  scale_x_discrete(labels = c("2AM", "8AM", "2PM", "8PM"), breaks = c(3, 9, 15, 21))
 ```
 
 **g.** Use `ggridges` to make a faceted ridge plot.
@@ -190,8 +207,12 @@ Use `stat_density_ridges` to add quantile lines to the plot.
 
 **Hint:** See https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
 
-```{r by-hour-ridge-plot}
-ggplot(beijing_long, aes(x = concentration, y = factor(hour))) +
+```{r}
+#| label: by-hour-ridge-plot
+
+beijing_long |>
+  mutate(hour = factor(hour)) |>
+  ggplot(aes(x = concentration, y = hour)) +
   geom_density_ridges() +
   scale_x_continuous(trans = "log10") +
   scale_y_discrete("Time of Day", breaks = c(2, 6, 10, 14, 18, 22), labels = c("2AM", "6AM", "10AM", "2PM", "6PM", "10PM")) +
@@ -213,7 +234,9 @@ Your data frame should allow someone to quickly answer the following questions:
 
 **Hint**: You may find the following code chunk helpful.
 
-```{r wind-direction-mapping}
+```{r}
+#| label: wind-direction-mapping
+
 wind_direction_map <- tibble(
   angle = seq(0, 337.5, by = 22.5),
   direction = c(
@@ -223,13 +246,15 @@ wind_direction_map <- tibble(
 )
 ```
 
-```{r wind-direction-summary}
+```{r}
+#| label: wind-direction-summary
+
 wind_direction_info <- beijing_long |>
   drop_na(wd, pollutant) |>
   group_by(wd, pollutant) |>
   summarise(
     mean_speed = mean(WSPM),
-    mean_value = mean(concentration, na.rm = TRUE),
+    mean_concentration = mean(concentration, na.rm = TRUE),
     .groups = "drop"
   ) |>
   left_join(wind_direction_map, by = c("wd" = "direction"))
@@ -239,7 +264,7 @@ wind_direction_info |>
 
 wind_direction_info <- wind_direction_info |>
   group_by(pollutant) |>
-  mutate(max_mean = max(mean_value)) |>
+  mutate(max_mean_concentration = max(mean_concentration)) |>
   ungroup()
 
 wind_direction_info |>
@@ -251,14 +276,14 @@ Account for wind speed in some way in your figure.
 
 **Hint:** Your data frame from above may work best with the following columns: `wind_dir, pollutant, mean_speed, mean_concentration, angle, max_concentration_mean_for_direction`.
 
-***TO DO: Make chunk labels yaml style***
+```{r}
+#| label: wind-direction-vis
 
-```{r wind-direction-vis}
 ggplot(
   wind_direction_info,
   aes(
     x = angle,
-    y = mean_value / max_mean,
+    y = mean_concentration / max_mean_concentration,
     fill = mean_speed
   )
 ) +
@@ -278,7 +303,7 @@ ggplot(
     legend.key.width = unit(1.5, "cm")
   ) +
   geom_text(aes(angle, 1.1, label = wd), color = "black", size = 2) +
-  ggtitle("Average of Pollutant vs. Direction") +
+  ggtitle("Mean of Pollutant by Direction") +
   guides(fill = guide_colorbar(title = "Wind Speed (m/s)")) +
   facet_wrap(~pollutant)
 ```
@@ -302,12 +327,15 @@ Name your dataframe `beijing_by_day`.
 
 `"year", "month", "day", "pollutant", "average_concentration", "day_of_year"`
 
-```{r aggregate-to-day}
+```{r}
+# label: aggregate-to-day
+
 beijing_by_day <- beijing_long |>
   group_by(year, month, day, pollutant) |>
   summarise(
-    average_concentration = mean(na.omit(concentration)),
-    day_of_year = first(day_of_year)
+    average_concentration = mean(concentration, na.rm = TRUE),
+    day_of_year = first(day_of_year),
+    .groups = "drop"
   )
 ```
 
@@ -315,8 +343,8 @@ beijing_by_day <- beijing_long |>
 Use `rollmean`, `rollmax`, `rollmedian`, **or** `rollsum` from the `zoo` package to do some type of smoothing and make a new data frame with the smoothed data.
 Fill in the starter code below with your choice of rolling average and an appropriate smoothing window.
 
-```{r smooth-data}
-library(zoo)
+```{r}
+# label: smooth-data
 beijing_smoothed <- beijing_by_day |>
   arrange(day_of_year) |>
   group_by(pollutant, year) |>
@@ -325,7 +353,8 @@ beijing_smoothed <- beijing_by_day |>
     rolling_average = rollmedian(average_concentration, 7,
       na.pad = TRUE
     ),
-    day_of_year = day_of_year
+    day_of_year = day_of_year,
+    .groups = "drop"
   )
 ```
 
@@ -335,18 +364,21 @@ beijing_smoothed <- beijing_by_day |>
 
 **Bonus:** Format the x-axis ticks to display an appropriate date format.
 
-```{r year-by-year}
-ggplot(
-  beijing_smoothed,
-  aes(
-    x = day_of_year,
-    y = rolling_average,
-    color = factor(year),
-    alpha = factor(year)
-  )
-) +
+```{r}
+# label: year-by-year
+
+beijing_smoothed |>
+  mutate(year = factor(year)) |>
+  ggplot(
+    aes(
+      x = day_of_year,
+      y = rolling_average,
+      color = year,
+      alpha = year
+    )
+  ) +
   geom_line() +
-  facet_wrap(~pollutant, scales="free") +
+  facet_wrap(~pollutant, scales = "free") +
   xlab("Day of Year") +
   ylab("Log of 7-day rolling median for pollutant daily mean") +
   scale_y_continuous(trans = "log10") +
@@ -364,8 +396,9 @@ Pick a map from the `./maps` folder.
 Justify your map choice.
 You can see what a map looks like with code similar to the below chunk:
 
-```{r check-map}
-library(ggmap)
+```{r}
+#| label: check-map
+
 load(file = "./maps/terrain_lines_bw.RData") # sets map variable
 ggmap(map)
 ```
@@ -376,7 +409,9 @@ Be sure to also calculate the average `TEMP`, `PRES`, `DEWP`, `RAIN` and `WSPM`.
 Make sure the `lat` and `long` values are included in your summary data frame.
 Filter your data frame to a reasonable time frame, e.g. if you are calculating by day, you may want to filter to a two-month period, if by month, maybe use all months.
 
-```{r single-data}
+```{r}
+#| label: single-data
+
 stations_for_pollutant <- beijing_long |>
   filter(pollutant == "SO2") |>
   drop_na() |>
@@ -385,14 +420,15 @@ stations_for_pollutant <- beijing_long |>
     lat = first(lat),
     long = first(long),
     as_date = min(as.Date(as_datetime)),
-    angle = wind_direction_map[first(wd)],
     mean_TEMP = mean(TEMP),
     mean_PRES = mean(PRES),
     mean_DEWP = mean(DEWP),
     mean_RAIN = mean(RAIN),
     mean_WSPM = mean(WSPM),
-    mean_concentration = log(mean(concentration))
+    log_mean_concentration = log(mean(concentration)),
+    .groups = "drop"
   ) |>
+  left_join(wind_direction_map, by = c("wd" = "direction")) |>
   # Visualizing October and November of 2015 by day
   filter(year == 2015, month %in% c(10, 11))
 
@@ -401,10 +437,13 @@ stations_for_pollutant <- beijing_long |>
 **c.** Filter your data frame down to a single time granule e.g. if you are doing calculations by day, filter to a single day.
 Use `ggmap` to make a map with the following specifications:
 
--   Use either `geom_segment` or `geom_path` to draw a small figure around the location of each station, where each point in the path or segment drawn corresponds to a wind direction, and the size of it is proportional to the mean concentration, or log of the mean concentration. Some starter code is below.
+-   Use either `geom_segment` or `geom_path` to draw a small figure around the location of each station, where each point in the path or segment drawn corresponds to a wind direction, and the length of it is proportional to the mean concentration, or log of the mean concentration. Some starter code is below.
 -   Pick one of `DEWP`, `RAIN`, `PRES`, `TEMP` to color the figure around each station.
 
+**Hint:** Use the angles of the wind directions to convert from [polar to Cartesian coordinates](https://tutorial.math.lamar.edu/classes/calcii/polarcoordinates.aspx). The "radius" should correspond to the concentration.
+
 ```{r}
+#| label: single-frame
 
 # Some wind directions will be missing because they do not happen on this given day
 single_measurement <- stations_for_pollutant |> filter(
@@ -417,8 +456,8 @@ ggmap(map, extent = "device", legend = "bottomright") +
   geom_path(
     data = single_measurement |> arrange(angle),
     aes(
-      x = long + cos(angle * pi / 180) * mean_concentration / 100,
-      y = lat + sin(angle * pi / 180) * mean_concentration / 100,
+      x = long + cos(angle * pi / 180) * log_mean_concentration / 100,
+      y = lat + sin(angle * pi / 180) * log_mean_concentration / 100,
       group = station,
       color = mean_DEWP
     ),
@@ -432,8 +471,8 @@ ggmap(map, extent = "device", legend = "bottomright") +
     aes(
       x = long,
       y = lat,
-      xend = long + cos(angle * pi / 180) * mean_concentration / 100,
-      yend = lat + sin(angle * pi / 180) * mean_concentration / 100,
+      xend = long + cos(angle * pi / 180) * log_mean_concentration / 100,
+      yend = lat + sin(angle * pi / 180) * log_mean_concentration / 100,
       color = mean_DEWP
     ),
     arrow = arrow(length = unit(0.1, "cm"))
@@ -450,17 +489,15 @@ Consider the following:
 -   Show an appropriate number of frames per second.
 
 ```{r}
-library(gganimate)
-
-# Arrows
+#| label: animating-with-arrows
 our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
   geom_segment(
     data = stations_for_pollutant,
     aes(
       x = long,
       y = lat,
-      xend = long + cos(angle * pi / 180) * mean_concentration / 100,
-      yend = lat + sin(angle * pi / 180) * mean_concentration / 100,
+      xend = long + cos(angle * pi / 180) * log_mean_concentration / 100,
+      yend = lat + sin(angle * pi / 180) * log_mean_concentration / 100,
       color = mean_DEWP,
       group = station
     ),
@@ -476,14 +513,20 @@ our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
     color = "DEWP"
   )
 
-# Path
-library(transformr)
+animate(our_animation, fps = 6, nframes = 100, width = 1000, height = 1000, renderer = gifski_renderer())
+anim_save("arrows.gif")
+
+```
+
+
+```{r}
+#| label: animating-with-paths
 our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
   geom_path(
     data = stations_for_pollutant |> arrange(angle),
     aes(
-      x = long + cos(angle * pi / 180) * mean_concentration / 100,
-      y = lat + sin(angle * pi / 180) * mean_concentration / 100,
+      x = long + cos(angle * pi / 180) * log_mean_concentration / 100,
+      y = lat + sin(angle * pi / 180) * log_mean_concentration / 100,
       group = station,
       color = mean_DEWP
     ),
@@ -497,12 +540,17 @@ our_animation <- ggmap(map, extent = "device", legend = "bottomright") +
     title = "{frame_time}",
     color = "DEWP"
   )
+animate(our_animation, fps = 6, nframes = 100, width = 1000, height = 1000, renderer = gifski_renderer())
+anim_save("paths.gif")
 ```
 
-```{r}
-animate(our_animation, fps = 6, nframes = 100, width = 1000, height = 1000, renderer = gifski_renderer())
-anim_save("output.gif")
-```
 
 **e.** Based on your animation, what features on the map seem to be correlated with pollutant concentration?
 Is it obvious if your choice of weather covariate is correlated with pollutant concentration?
+
+**f. (Optional)** Please share any feedback about this assignment. Some things to consider: 
+
+- Was it too long or difficult? 
+- Were the instructions clear? 
+- Did you learn anything? 
+- Are there any parts you would change?
