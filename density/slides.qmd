@@ -1,169 +1,874 @@
 ---
 title: "Density Graphs"
-format: revealjs
-editor: visual
+subtitle: "Visualizing Full Distributions"
+author:
+  - Slides by Sam Rosen
+format:
+  revealjs: 
+    slide-number: true
+    chalkboard: 
+      buttons: false
+    preview-links: auto
+    # logo: images/quarto.png
+    css: styles.scss
 ---
+
+## Distributions {.smaller}
+
+There are many properties of a distribution of values
+
+-   **Center**: Mean, Median, Modes
+-   **Spread**: Variance, Range (Support), Interquartile range
+-   **Shape**: Skewness, Kurtosis, Quantiles
+-   Any statistic you can think of
+
+Ultimately when analyzing data, the distribution is important to know how to proceed:
+
+-   Parametric tests
+-   Erratic Data
+-   Outliers
+
+So let's visualize them!
+
+## Histograms {.smaller fig-align="center"}
 
 ```{r}
 #| label: load-packages
-#| include: false
-
 library(tidyverse)
-library(palmerpenguins)
 ```
 
-## Less, but some abbreviations, dataset descriptors
-## Motivating Example
-
-* Baseball! A Homerun in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/nxuTG5SEHn8"></iframe>
-
-* Homeruns are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase homeruns to help the game be more entertaining.
-  * In short terms, **Homeruns = Money**.
-
-Some questions MLB may want to answer are:
-
-1. What years had the 
-
-## Data
-
-* Our dataset comes from the R package `Lahman`.
+Histogram of 1000 random numbers generated from a $\textsf{Normal}(\mu=-1, \sigma=0.5)$ and 2000 generated from a $\textsf{Normal}(\mu=2, \sigma=0.75)$:
 
 ```{r}
+#| fig-width: 10
+#| fig-height: 4.5
+
+example_data <- data.frame(random_values=c(rnorm(200, -1, 0.5), rnorm(n=400, 2, 0.75)))
+ggplot(example_data, aes(random_values)) +
+  geom_histogram(binwidth = 0.1) +
+  ggtitle("Histogram of two random normal variables") +
+  xlim(-2.5, 5)
+```
+
+## Density Plots {.smaller fig-align="center"}
+
+**What's the difference?**
+
+-   Histograms are *counts* of bins of *observed* data.
+-   Density plots are *estimates* of the *unknown* distribution.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 4.5
+
+ggplot(example_data, aes(random_values)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.1, alpha=0.25) +
+  geom_density(fill=4, alpha=0.50) +
+  ggtitle("Density plot of two random normal variables") +
+  xlim(-2.5, 5)
+```
+
+## So what? {.smaller}
+
+-   Histograms are sensitive to where the bins are cut, i.e. the min and max
+-   Histograms vary more per random sample than density plots
+-   Density graphs are estimates for what a very fine histogram with lots of data would show
+
+```{ojs}
+//| panel: sidebar
+
+viewof binWidth = Inputs.range([0.01, 0.5], {value: 0.2, step: 0.001, label: "Bin Wdith"});
+viewof numPoints = Inputs.range([0, 9000], {value: 900, step: 1, label: "Number of Points"});
+viewof generate = Inputs.button("Regenerate Data");
+```
+
+```{ojs}
+//| panel: fill
+import { plotNewData, regenerateData } from "./histoSampling.js";
+
+// Generate does not actually get used just forces a refresh
+plotNewData(regenerateData(numPoints / 3), binWidth, generate);
+
+```
+
+::: footer
+Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mike Bostock
+:::
+
+## Motivating Example {.smaller}
+
+-   Baseball! A home run in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nxuTG5SEHn8">
+
+</iframe>
+
+-   Home runs are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase home runs to help the game be more entertaining.
+
+    -   In short terms, **Home runs = Money**, but if everyone hits the same number of home runs they become less exciting.
+    -   Examining the distribution of home runs year-by-year we may be able to see how rule changes have changed the prevalence.
+
+## Data {.smaller}
+
+-   Our dataset comes from the R package `Lahman`.
+
+```{r}
+#| echo: TRUE
+
 library(Lahman)
 colnames(Batting)
 ```
 
-Each row in the dataframe is the hitting stats of a player for a given year. We will mostly be using the `HR`, `RBI`, `SB`, and `yearID`, `G` columns:
+Each row in the data frame is the hitting stats of a player for a given year. We will mostly be using the `HR`, `RBI`, `SB`, `yearID`, and `G` columns:
 
-* `yearID`: The year for the statistics
-* `HR`: The number of homeruns a player hit in a given year
-* `RBI`: Runs batted in, the number of runs (or points) a player achieved in a given year
-* `SB`: Stolen bases; more stolen bases = faster player
+-   `yearID`: The year for the statistics
+-   `HR`: The number of home runs a player hit in a given year
+-   `RBI`: Runs batted in, the number of runs (or points) a player achieved in a given year
+-   `SB`: Stolen bases; more stolen bases = faster player
+-   `G`: Number of games played; there are 162 games in a baseball season (154 before 1961)
+
+## More Data
+
+::: panel-tabset
+### Data we will use {.hide-aside}
 
 ```{r}
-starting_players_by_year <- Batting %>%
-  filter(AB > 450, yearID > 1920)
-
-starting_players_by_year <- Batting %>%
-  filter(G > 100, yearID > 1920)
-
-ggplot(starting_players_by_year %>% filter(yearID %in% 1990:2000), aes(HR)) +
-
+#| echo: True
+home_runs <- Batting %>%
+  filter(G >= 100 | 
+           (G >= 40 & yearID == 2020) | 
+           (G >= 70 & yearID == 1994), 
+         yearID > 1920,
+         lgID %in% c("AL", "NL"))
 ```
+
+### Context {.smaller-aside style="font-size:0.6em"}
+
+-   We are interested in the distribution of the number of home runs individual players have hit per year. [^1]
+
+-   There are many players in the dataset that played very little games per year, so we will limit to players that played at least 100 games in a given year, with the following years excepted:
+
+    -   In 1994 only about 115 games were played due to labor strikes, so will filter to at least 70 games.
+    -   In 2020 COVID shortened the season to only 60 games, so we will filter at least 40 games.
+
+-   We are only concerned with years after 1920 (known as the "live-ball era").
+
+    -   Very few home runs were hit before 1920 as the same baseball was used for the entire game. About 100 baseballs are used every game today!
+
+-   We are only considering the `AL` and `NL` leagues as they have the best stat-tracking and are the only Major leagues still around today.
+
+
+[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for **\$517,000**!
+
+:::
+
 
 ## Density Graph Examples
 
 ```{r}
-ggplot(Batting, aes(HR)) +
+ggplot(home_runs, aes(HR)) +
   geom_density()
 
 
-ggplot(Batting %>% filter(yearID >= 1900, G > 100), aes(x=factor(yearID), log10(HR))) +
+ggplot(home_runs, aes(x=factor(yearID), log10(HR))) +
      geom_violin()
 
 ```
 
 ## Getting Fancy with it
 
-> Markup with summary statistics
-> Stacked plots
+> Markup with summary statistics Stacked plots
+
+## Violin Plot
+
+## Ridge Plot
 
 ## Bandwidth
 
-* Silverman's rule of thumb
+-   Also sensitive to bandwidth, but a continuous degradation in performance
+
+-   Silverman's rule of thumb
 
 ```{r}
-ggplot()
 ```
 
-* Sheather-Jones should probably be the default
-
-
+-   Sheather-Jones should probably be the default
 
 ## Kernel
 
-> Gaussian is typically robust
-> Kernel choice matters **a lot** less than bandwidth
-
+> Gaussian is typically robust Kernel choice matters **a lot** less than bandwidth
 
 ## Caveats
 
-> Density outside of data range
-> Powerlaw distributions
-> 
-
+> Density outside of data range Powerlaw distributions
 
 ## 2D Density
 
 ```{r}
-ggplot(Batting %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
+ggplot(home_runs %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
   geom_density_2d_filled()
 
-ggplot(Batting %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
+ggplot(home_runs %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
   geom_hex(binwidth=c(2,2)) +
   scale_fill_gradientn(colours=rainbow(5))
 
-ggplot(Batting %>% filter(G > 100), aes(yearID, HR)) +
+ggplot(home_runs %>% filter(G > 100), aes(yearID, HR)) +
     geom_hex(binwidth=c(1,2)) +
     scale_fill_gradientn(colours=rainbow(5))
 
-ggplot(Batting %>% filter(G > 100), aes(RBI, HR)) +
+ggplot(home_runs %>% filter(G > 100), aes(RBI, HR)) +
   geom_density_2d_filled()
 ```
 
-> Harder to visualize outliers
-> Good to visualize trends, but can be clouded by lack of extremes for both variables
+> Harder to visualize outliers Good to visualize trends, but can be clouded by lack of extremes for both variables
 
 # 3D ?
 
-## Empirical CDF
+## Empirical CDF {.smaller}
 
-## Comparing distributions
+-   Unlike the histogram and density plot, the empirical CDF does NOT depend on a bin width or bandwidth.
+-   Computed in R with `ecdf`
+
+```{r}
+#| echo: True
+
+new_example_data <- c(rnorm(n = 2000, mean = -1, sd = 0.5), 
+                      rnorm(n = 4000, mean = 2, sd = 0.75))
+example_ecdf <- ecdf(new_example_data)
+```
+
+::: columns
+::: {.column width="48%"}
+```{r}
+knitr::kable(data.frame(
+  func_call = paste("example_ecdf(", c(-3, -1, 0, 2, 5), ")"),
+  prob = example_ecdf(c(-3, -1, 0, 2, 5))
+),
+digits = 4, format = "html", table.attr = "class=\"code-style\"",
+col.names = c("Function Call", "Probability less than value")
+)
+
+```
+:::
+
+::: {.column width="2%"}
+:::
+
+::: {.column width="50%"}
+```{r}
+as_df <- data.frame(vals = new_example_data, empirical_cdf = example_ecdf(new_example_data))
+
+ggplot(as_df, aes(x=vals)) +
+    stat_density(aes(x=vals, y=..scaled..), geom="line", color="green") +
+  stat_ecdf(geom = "step", color="red")
 
 
-> Kolmogorov-Smirnov statistic
-> Eye-test
-> 
+```
+:::
+:::
+
+## Comparing distributions {.smaller}
+
+-   **Theorem**: If two random quantities have equal CDF's they have the exact same distribution.
+-   The *Kolmogorov-Smirnov Test* finds the maximum difference between two empirical CDF's and outputs a test statistic best on the sample sizes.
+
+::: columns
+::: {.column width="40%"}
+```{r}
+#| label: ks-test
+#| echo: TRUE
+HRearly2010s <- home_runs %>% 
+  filter(yearID %in% 2011:2014, G > 100) # Closest years
+HRlate2010s <- 
+  home_runs %>% filter(yearID %in% 2016:2019, G > 100) # Years up to COVID season
+
+ks.test(HRearly2010s$HR, HRlate2010s$HR)
+```
+
+Major League Baseball was accused of using "juiced" baseballs (easier to hit home runs) in the latter half of the 2010's. Is there credence to this claim?
+:::
+
+::: {.column width="2%"}
+:::
+
+::: {.column width="58%"}
+```{r}
+get_ks_df <- function(dat1, dat2) {
+  ecdf1 <- ecdf(dat1)
+  ecdf2 <- ecdf(dat2)
+  grid_points <- seq(0, max(c(dat1, dat2)), length.out = 1000)
+  differences <- abs(ecdf1(grid_points) - ecdf2(grid_points))
+  ks_stat <- max(differences)
+  first_max_location <- grid_points[which(differences == ks_stat)[1]]
+  data.frame(
+    x = first_max_location,
+    xend = first_max_location,
+    y = ecdf1(first_max_location),
+    yend = ecdf2(first_max_location)
+  )
+}
+
+ks_stat_2010s = get_ks_df(HRearly2010s$HR, HRlate2010s$HR)
+
+
+ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015))) +
+  stat_ecdf(geom = "step") +
+  geom_segment(data=ks_stat_2010s, aes(x=x, y=y, xend=xend, yend=yend), color="black", linetype="dashed")
+  
+```
+:::
+:::
+
+## Comparing distributions 2 {.smaller}
+
+::: columns
+::: {.column width="40%"}
+```{r}
+#| label: ks-test-2
+#| echo: TRUE
+HR2005 <- home_runs %>% filter(yearID == 2005, G > 100)
+HR2006 <- home_runs %>% filter(yearID == 2006, G > 100)
+
+ks.test(HR2005$HR, HR2006$HR)
+```
+:::
+
+2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.
+
+::: {.column width="2%"}
+:::
+
+::: {.column width="58%"}
+```{r}
+
+ks_stat_0506 = get_ks_df(HR2005$HR, HR2006$HR)
+
+
+ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
+  stat_ecdf(geom = "step") +
+  geom_segment(data=ks_stat_0506, aes(x=x, y=y, xend=xend, yend=yend), color="black", linetype="dashed")
+
+```
+:::
+:::
+
+## Bonus: Comparing Distributions 3!
+
+```{r}
+#| cache: TRUE
+
+years <- 1921:2021
+ks_matrix = data.frame(
+  year1 = c(-1),
+  year2 = c(-1),
+  ks_stat = c(-1),
+  p_val = c(-1)
+)
+
+Batting_to_search <- home_runs %>% select(yearID, HR)
+row_num <- 1
+
+options(warn=-1)
+
+for(year1 in years) {
+  for(year2 in years) {
+    if(year1 == year2) {
+      next
+    }
+    year1HR = Batting_to_search %>% filter(yearID == year1)
+    year2HR = Batting_to_search %>% filter(yearID == year2)
+    
+    test <- ks.test(
+      year1HR$HR,
+      year2HR$HR
+    )
+    
+    ks_matrix[row_num, ] <- c(year1, year2, test$statistic, test$p.value)
+    row_num <- row_num + 1
+  }
+}
+
+options(warn=0)
+
+ks_matrix$signif <- cut(ks_matrix$p_val, breaks=c(0, 0.01, 0.05, 0.1, 1.001), include.lowest = T, right = F)
+ks_matrix$signif <- factor(ks_matrix$signif, ordered=TRUE)
+
+ks_matrix$adjusted_p <- p.adjust(ks_matrix$p_val, "BY")
+ks_matrix$signif_adjusted <- cut(ks_matrix$adjusted_p, breaks=c(0, 0.01, 0.05, 0.1, 1.001), include.lowest = T, right = F)
+ks_matrix$signif_adjusted <- factor(ks_matrix$signif_adjusted, ordered=TRUE)
+```
+
+```{r}
+ggplot(ks_matrix, aes(x=year1, y=year2, fill=factor(signif_adjusted))) +
+  geom_tile() +
+  scale_x_continuous(breaks = 1920 + seq(0, 10)*10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10)*10) +
+  scale_fill_manual(values = colorspace::heat_hcl(4))
+
+```
 
 ## Summary
 
 Pros:
 
-> **Visualize entire distribution**
-  > Mean, median, variance, outliers, support, skewness, normality
-  > `plot(density(Batting$HR))` is usually the first thing I do when analyzing data
+-   **Visualize entire distribution**
+-   Mean, median, variance, outliers, support, skewness, normality etc.
+-   `plot(density(Batting$HR))` is usually the first thing I do when analyzing data
 
-Cons: 
+Cons:
 
-> Sensitive to bandwidth choices
-> Harder to communicate to non-statisticians
-> Difficult to build yourself (use libraries!)
+-   Sensitive to bandwidth choices
+-   Harder to communicate to non-statisticians
+-   Difficult to build yourself (use libraries!)
 
+*\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^* \^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^
 
+## Code Animations {auto-animate="true" transition="slide"}
 
+-   Over 20 syntax highlighting themes available
+-   Default theme optimized for accessibility
 
-![](https://raw.githubusercontent.com/quarto-dev/quarto-web/main/docs/get-started/hello/rstudio/lter_penguins.png){style="float:right;" fig-alt="Illustration of three species of Palmer Archipelago penguins: Chinstrap, Gentoo, and Adelie. Artwork by @allison_horst." width="401"}
+``` r
+# Define a server for the Shiny app
+function(input, output) {
+  
+  # Fill in the spot we created for a plot
+  output$phonePlot <- renderPlot({
+    # Render a barplot
+    barplot(WorldPhones[,input$region]*1000, 
+            main=input$region,
+            ylab="Number of Telephones",
+            xlab="Year")
+  })
+}
+```
 
-The `penguins` data from the [**palmerpenguins**](https://allisonhorst.github.io/palmerpenguins "palmerpenguins R package") package contains size measurements for `r nrow(penguins)` penguins from three species observed on three islands in the Palmer Archipelago, Antarctica.
+::: footer
+Learn more: [Code Animations](https://quarto.org/docs/presentations/revealjs/advanced.html#code-animations)
+:::
 
-The plot below shows the relationship between flipper and bill lengths of these penguins.
+## Line Highlighting
+
+-   Highlight specific lines for emphasis
+-   Incrementally highlight additional lines
+
+``` {.python code-line-numbers="4-5|7|10"}
+import numpy as np
+import matplotlib.pyplot as plt
+
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+ax.grid(True)
+plt.show()
+```
+
+::: footer
+Learn more: [Line Highlighting](https://quarto.org/docs/presentations/revealjs/#line-highlighting)
+:::
+
+## Executable Code
 
 ```{r}
-#| label: plot-penguins
-#| warning: false
-#| echo: false
-
-ggplot(penguins, 
-       aes(x = flipper_length_mm, y = bill_length_mm)) +
-  geom_point(aes(color = species, shape = species)) +
-  scale_color_manual(values = c("darkorange","purple","cyan4")) +
-  labs(
-    title = "Flipper and bill length",
-    subtitle = "Dimensions for penguins at Palmer Station LTER",
-    x = "Flipper length (mm)", y = "Bill length (mm)",
-    color = "Penguin species", shape = "Penguin species"
-  ) +
-  theme_minimal()
+#| echo: true
+#| fig-width: 10
+#| fig-height: 4.5
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg, color = am)) +
+  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
 ```
+
+::: footer
+Learn more: [Executable Code](https://quarto.org/docs/presentations/revealjs/#executable-code)
+:::
+
+## LaTeX Equations
+
+[MathJax](https://www.mathjax.org/) rendering of equations to HTML
+
+::: columns
+::: {.column width="40%"}
+``` tex
+\begin{gather*}
+a_1=b_1+c_1\\
+a_2=b_2+c_2-d_2+e_2
+\end{gather*}
+
+\begin{align}
+a_{11}& =b_{11}&
+  a_{12}& =b_{12}\\
+a_{21}& =b_{21}&
+  a_{22}& =b_{22}+c_{22}
+\end{align}
+```
+:::
+
+::: {.column width="60%"}
+```{=tex}
+\begin{gather*}
+a_1=b_1+c_1\\
+a_2=b_2+c_2-d_2+e_2
+\end{gather*}
+```
+```{=tex}
+\begin{align}
+a_{11}& =b_{11}&
+  a_{12}& =b_{12}\\
+a_{21}& =b_{21}&
+  a_{22}& =b_{22}+c_{22}
+\end{align}
+```
+:::
+:::
+
+::: footer
+Learn more: [LaTeX Equations](https://quarto.org/docs/authoring/markdown-basics.html#equations)
+:::
+
+## Incremental Lists
+
+Lists can optionally be displayed incrementally:
+
+::: incremental
+-   First item
+-   Second item
+-   Third item
+:::
+
+. . .
+
+<br/> Insert pauses to make other types of content display incrementally.
+
+::: footer
+Learn more: [Incremental Lists](https://quarto.org/docs/presentations/revealjs/#incremental-lists)
+:::
+
+## Fragments
+
+Incremental text display and animation with fragments:
+
+<br/>
+
+::: {.fragment .fade-in}
+Fade in
+:::
+
+::: {.fragment .fade-up}
+Slide up while fading in
+:::
+
+::: {.fragment .fade-left}
+Slide left while fading in
+:::
+
+::: {.fragment .fade-in-then-semi-out}
+Fade in then semi out
+:::
+
+. . .
+
+::: {.fragment .strike}
+Strike
+:::
+
+::: {.fragment .highlight-red}
+Highlight red
+:::
+
+::: footer
+Learn more: [Fragments](https://quarto.org/docs/presentations/revealjs/advanced.html#fragments)
+:::
+
+## Slide Backgrounds {background="#43464B"}
+
+Set the `background` attribute on a slide to change the background color (all CSS color formats are supported).
+
+Different background transitions are available via the `background-transition` option.
+
+::: footer
+Learn more: [Slide Backgrounds](https://quarto.org/docs/presentations/revealjs/#color-backgrounds)
+:::
+
+## Media Backgrounds {background="#43464B" background-image="images/milky-way.jpeg"}
+
+You can also use the following as a slide background:
+
+-   An image: `background-image`
+
+-   A video: `background-video`
+
+-   An iframe: `background-iframe`
+
+::: footer
+Learn more: [Media Backgrounds](https://quarto.org/docs/presentations/revealjs/#image-backgrounds)
+:::
+
+## Absolute Position
+
+Position images or other elements at precise locations
+
+![](mini/images/kitten-400-350.jpeg){.absolute top="170" left="30" width="400" height="400"}
+
+![](mini/images/kitten-450-250.jpeg){.absolute .fragment top="150" right="80" width="450"}
+
+![](mini/images/kitten-300-200.jpeg){.absolute .fragment bottom="110" right="130" width="300"}
+
+::: footer
+Learn more: [Absolute Position](https://quarto.org/docs/presentations/revealjs/advanced.html#absolute-position)
+:::
+
+## Auto-Animate {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+Automatically animate matching elements across slides with Auto-Animate.
+
+::: r-hstack
+::: {data-id="box1" auto-animate-delay="0" style="background: #2780e3; width: 200px; height: 150px; margin: 10px;"}
+:::
+
+::: {data-id="box2" auto-animate-delay="0.1" style="background: #3fb618; width: 200px; height: 150px; margin: 10px;"}
+:::
+
+::: {data-id="box3" auto-animate-delay="0.2" style="background: #e83e8c; width: 200px; height: 150px; margin: 10px;"}
+:::
+:::
+
+::: footer
+Learn more: [Auto-Animate](https://quarto.org/docs/presentations/revealjs/advanced.html#auto-animate)
+:::
+
+## Auto-Animate {auto-animate="true" auto-animate-easing="ease-in-out"}
+
+Automatically animate matching elements across slides with Auto-Animate.
+
+::: r-stack
+::: {data-id="box1" style="background: #2780e3; width: 350px; height: 350px; border-radius: 200px;"}
+:::
+
+::: {data-id="box2" style="background: #3fb618; width: 250px; height: 250px; border-radius: 200px;"}
+:::
+
+::: {data-id="box3" style="background: #e83e8c; width: 150px; height: 150px; border-radius: 200px;"}
+:::
+:::
+
+::: footer
+Learn more: [Auto-Animate](https://quarto.org/docs/presentations/revealjs/advanced.html#auto-animate)
+:::
+
+## Slide Transitions {.smaller}
+
+The next few slides will transition using the `slide` transition
+
++-------------+------------------------------------------------------------------------+
+| Transition  | Description                                                            |
++=============+========================================================================+
+| `none`      | No transition (default, switch instantly)                              |
++-------------+------------------------------------------------------------------------+
+| `fade`      | Cross fade                                                             |
++-------------+------------------------------------------------------------------------+
+| `slide`     | Slide horizontally                                                     |
++-------------+------------------------------------------------------------------------+
+| `convex`    | Slide at a convex angle                                                |
++-------------+------------------------------------------------------------------------+
+| `concave`   | Slide at a concave angle                                               |
++-------------+------------------------------------------------------------------------+
+| `zoom`      | Scale the incoming slide so it grows in from the center of the screen. |
++-------------+------------------------------------------------------------------------+
+
+::: footer
+Learn more: [Slide Transitions](https://quarto.org/docs/presentations/revealjs/advanced.html#slide-transitions)
+:::
+
+## Tabsets {.smaller .scrollable transition="slide"}
+
+::: panel-tabset
+### Plot
+
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(hp, mpg, color = am)) +
+  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
+```
+
+### Data
+
+```{r}
+knitr::kable(mtcars)
+```
+:::
+
+::: footer
+Learn more: [Tabsets](https://quarto.org/docs/presentations/revealjs/#tabsets)
+:::
+
+## Interactive Slides {.smaller transition="slide"}
+
+Include Jupyter widgets and htmlwidgets in your presentations
+
+```{r}
+#| echo: false
+#| fig-height: 5
+# library(leaflet)
+# leaflet() %>%
+#   addTiles() %>%  # Add default OpenStreetMap map tiles
+#   addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+```
+
+::: footer
+Learn more: [Jupyter widgets](https://quarto.org/docs/interactive/widgets/jupyter.html), [htmlwidgets](https://quarto.org/docs/interactive/widgets/htmlwidgets.html)
+:::
+
+## Interactive Slides {.smaller transition="slide"}
+
+Turn presentations into applications with Observable and Shiny. Use component layout to position inputs and outputs.
+
+```{r}
+ojs_define(actors = data.frame(
+  x = rnorm(100),
+  y = rnorm(100)
+))
+```
+
+```{ojs}
+//| panel: sidebar
+viewof talentWeight = Inputs.range([-2, 2], { value: 0.7, step: 0.01, label: "talent weight" })
+viewof looksWeight = Inputs.range([-2, 2], { value: 0.7, step: 0.01, label: "looks weight" })
+viewof minimum = Inputs.range([-2, 2], { value: 1, step: 0.01, label: "min fame" })
+```
+
+::: footer
+Learn more: [Observable](https://quarto.org/docs/interactive/ojs/), [Shiny](https://quarto.org/docs/interactive/shiny/), [Component Layout](https://quarto.org/docs/interactive/layout.html)
+:::
+
+## Preview Links
+
+Navigate to hyperlinks without disrupting the flow of your presentation.
+
+Use the `preview-links` option to open links in an iframe on top of your slides. Try clicking the link below for a demonstration:
+
+::: {style="text-align: center; margin-top: 1em"}
+[Matplotlib: Visualization with Python](https://matplotlib.org/){preview-link="true" style="text-align: center"}
+:::
+
+::: footer
+Learn more: [Preview Links](https://quarto.org/docs/presentations/revealjs/presenting.html#preview-links)
+:::
+
+## Themes
+
+10 Built-in Themes (or [create your own](https://quarto.org/docs/presentations/revealjs/themes.html#creating-themes))
+
+::: {layout-ncol="2"}
+![](images/moon.png)
+
+![](images/sky.png)
+:::
+
+::: footer
+Learn more: [Themes](https://quarto.org/docs/presentations/revealjs/themes.html)
+:::
+
+## Easy Navigation
+
+::: {style="margin-bottom: 0.9em;"}
+Quickly jump to other parts of your presentation
+:::
+
+::: {layout="[1, 20]"}
+![](images/presentation-menu.png){width="41"}
+
+Toggle the slide menu with the menu button (bottom left of slide) to go to other slides and access presentation tools.
+:::
+
+You can also press `m` to toggle the menu open and closed.
+
+::: footer
+Learn more: [Navigation](https://quarto.org/docs/presentations/revealjs/presenting.html#navigation-menu)
+:::
+
+## Chalkboard {chalkboard-buttons="true"}
+
+::: {style="margin-bottom: 0.9em;"}
+Free form drawing and slide annotations
+:::
+
+::: {layout="[1, 20]"}
+![](images/presentation-chalkboard.png){width="41"}
+
+Use the chalkboard button at the bottom left of the slide to toggle the chalkboard.
+:::
+
+::: {layout="[1, 20]"}
+![](images/presentation-notes-canvas.png){width="41"}
+
+Use the notes canvas button at the bottom left of the slide to toggle drawing on top of the current slide.
+:::
+
+You can also press `b` to toggle the chalkboard or `c` to toggle the notes canvas.
+
+::: footer
+Learn more: [Chalkboard](https://quarto.org/docs/presentations/revealjs/presenting.html#chalkboard)
+:::
+
+## Point of View
+
+Press `o` to toggle overview mode:
+
+![](images/overview-mode.png){.border}
+
+Hold down the `Alt` key (or `Ctrl` in Linux) and click on any element to zoom towards it---try it now on this slide.
+
+::: footer
+Learn more: [Overview Mode](https://quarto.org/docs/presentations/revealjs/presenting.html#overview-mode), [Slide Zoom](https://quarto.org/docs/presentations/revealjs/presenting.html#slide-zoom)
+:::
+
+## Speaker View
+
+Press `s` (or use the presentation menu) to open speaker view
+
+![](images/speaker-view.png){fig-align="center" style="border: 3px solid #dee2e6;" width="780"}
+
+::: footer
+Learn more: [Speaker View](https://quarto.org/docs/presentations/revealjs/presenting.html#speaker-view)
+:::
+
+## Authoring Tools {.smaller}
+
+Live side-by-side preview for any notebook or text editor including Jupyter and VS Code
+
+::: columns
+::: {.column width="50%"}
+![](images/jupyter-edit.png){.border .border-thick}
+:::
+
+::: {.column width="50%"}
+![](images/jupyter-preview.png){.border .border-thick}
+:::
+:::
+
+::: footer
+Learn more: [Jupyter](https://quarto.org/docs/tools/jupyter-lab.html), [VS Code](https://quarto.org/docs/tools/vscode.html), [Text Editors](https://quarto.org/docs/tools/text-editors.html)
+:::
+
+## Authoring Tools {.smaller}
+
+RStudio includes an integrated presentation preview pane
+
+![](images/rstudio.png){.border width="900"}
+
+::: footer
+Learn more: [RStudio](https://quarto.org/docs/tools/rstudio.html)
+:::
+
+## And More...
+
+-   [Touch](https://quarto.org/docs/presentations/revealjs/advanced.html#touch-navigation) optimized (presentations look great on mobile, swipe to navigate slides)
+-   [Footer & Logo](https://quarto.org/docs/presentations/revealjs/#footer-logo) (optionally specify custom footer per-slide)
+-   [Auto-Slide](https://quarto.org/docs/presentations/revealjs/presenting.html#auto-slide) (step through slides automatically, without any user input)
+-   [Multiplex](https://quarto.org/docs/presentations/revealjs/presenting.html#multiplex) (allows your audience to follow the slides of the presentation you are controlling on their own phone, tablet or laptop).
+
+::: footer
+Learn more: [Quarto Presentations](https://quarto.org/docs/presentations/revealjs/)
+:::
