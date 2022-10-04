@@ -42,6 +42,7 @@ Histogram of 1000 random numbers generated from a $\textsf{Normal}(\mu=-1, \sigm
 ```{r}
 #| fig-width: 10
 #| fig-height: 4.5
+#| fig-align: center
 
 example_data <- data.frame(random_values=c(rnorm(200, -1, 0.5), rnorm(n=400, 2, 0.75)))
 ggplot(example_data, aes(random_values)) +
@@ -50,7 +51,7 @@ ggplot(example_data, aes(random_values)) +
   xlim(-2.5, 5)
 ```
 
-## Density Plots {.smaller fig-align="center"}
+## Density Plots {.smaller}
 
 **What's the difference?**
 
@@ -60,6 +61,7 @@ ggplot(example_data, aes(random_values)) +
 ```{r}
 #| fig-width: 10
 #| fig-height: 4.5
+#| fig-align: center
 
 ggplot(example_data, aes(random_values)) +
   geom_histogram(aes(y = ..density..), binwidth = 0.1, alpha=0.25) +
@@ -77,7 +79,7 @@ ggplot(example_data, aes(random_values)) +
 ```{ojs}
 //| panel: sidebar
 
-viewof binWidth = Inputs.range([0.01, 0.5], {value: 0.2, step: 0.001, label: "Bin Wdith"});
+viewof binWidth = Inputs.range([0.01, 0.5], {value: 0.2, step: 0.001, label: "Bin Width"});
 viewof numPoints = Inputs.range([0, 9000], {value: 900, step: 1, label: "Number of Points"});
 viewof generate = Inputs.button("Regenerate Data");
 ```
@@ -99,10 +101,11 @@ Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mi
 
 -   Baseball! A home run in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
 
+<div style="text-align: center">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/nxuTG5SEHn8">
 
 </iframe>
-
+</div>
 -   Home runs are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase home runs to help the game be more entertaining.
 
     -   In short terms, **Home runs = Money**, but if everyone hits the same number of home runs they become less exciting.
@@ -162,6 +165,7 @@ home_runs <- Batting %>%
 
 :::
 
+## Break activity somewhere
 
 ## Density Graph Examples
 
@@ -183,13 +187,76 @@ ggplot(home_runs, aes(x=factor(yearID), log10(HR))) +
 
 ## Ridge Plot
 
+```{r}
+library(ggridges)
+
+ggplot(home_runs %>% filter(yearID %in% 1980:2019),
+       aes(x = HR, y = factor(yearID))) + 
+  geom_density_ridges(aes(height=..density..),
+                      stat="density",
+                      bw="SJ",
+                      scale = 2.5,
+                      rel_min_height = 0.001,
+                      size=0.25,
+                      alpha=0.5) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient", calc_ecdf = TRUE,
+    quantiles = 4, quantile_lines = TRUE
+  )
+
+ggplot(home_runs %>% filter(yearID %in% 1980:2019),
+       aes(x = HR, y = factor(yearID))) + 
+  geom_density_ridges(stat = "binline",
+                      binwidth=1,
+                      scale = 2.5,
+                      rel_min_height = 0.001,
+                      size=0.25,
+                      alpha=0.5)
+
+ggplot(home_runs, aes(HR, yearID)) +
+    geom_hex(binwidth=c(1,1)) +
+    scale_fill_gradientn(colours=rainbow(5))
+
+
+# ggplot(home_runs %>% filter(yearID %in% 1980:2019),
+#        aes(x = tto, y = factor(yearID))) + 
+#     geom_density_ridges(aes(height=..density..),
+#                         stat="density",
+#                         bw="SJ",
+#                         scale = 2.5,
+#                         rel_min_height = 0.0001,
+#                         size=0.25,
+#                         alpha=0.5) + 
+#   geom_density_ridges(
+#     jittered_points = TRUE, quantile_lines = TRUE, scale = 2.5, alpha = 0.7,
+#     vline_size = 1, vline_color = "red",
+#     point_size = 0.4, point_alpha = 1,
+#     position = position_points_jitter(height = 0)
+#   )
+```
+
 ## Bandwidth
 
 -   Also sensitive to bandwidth, but a continuous degradation in performance
 
 -   Silverman's rule of thumb
 
-```{r}
+```{ojs}
+//| panel: sidebar
+
+viewof binWidth2 = Inputs.range([0.01, 0.5], {value: 0.2, step: 0.001, label: "Bin Width"});
+viewof bandwidth = Inputs.range([0.01, 2], {value: 0.2, step: 0.001, label: "Bandwidth"});
+viewof numPoints2 = Inputs.range([0, 9000], {value: 900, step: 1, label: "Number of Points"});
+viewof generate2 = Inputs.button("Regenerate Data");
+```
+
+```{ojs}
+//| panel: fill
+import { plotNewDataBW } from "./bandwidthSampling.js";
+
+// Generate does not actually get used just forces a refresh
+plotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);
+
 ```
 
 -   Sheather-Jones should probably be the default
@@ -218,11 +285,25 @@ ggplot(home_runs %>% filter(G > 100), aes(yearID, HR)) +
 
 ggplot(home_runs %>% filter(G > 100), aes(RBI, HR)) +
   geom_density_2d_filled()
+
+
+home_runs <- home_runs %>% mutate(
+  batting_avg = H / AB,
+  obp = (H + BB + HBP) / (AB + BB + HBP + SF),
+  slugging = (4 * HR + 3 * X3B + 2 * X2B + (H - X2B - X3B - HR)) / AB,
+  tto = (BB + HR + SO) / (AB + BB + HBP)
+)
+
+ggplot(home_runs, aes(HR, SO + BB)) +
+  geom_density_2d() +
+  geom_point(alpha = 0.05)
 ```
 
 > Harder to visualize outliers Good to visualize trends, but can be clouded by lack of extremes for both variables
 
 # 3D ?
+
+# Density Graphs 2
 
 ## Empirical CDF {.smaller}
 
@@ -353,6 +434,8 @@ ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
 :::
 
 ## Bonus: Comparing Distributions 3!
+
+### Show different multiple testing
 
 ```{r}
 #| cache: TRUE
