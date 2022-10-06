@@ -1,30 +1,18 @@
 /*-- scss:defaults --*/
 
 // fonts
-// @import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap';
 
-// $font-family-sans-serif: "Atkinson Hyperlegible", sans-serif;
-// $presentation-heading-color: #325b74; /* Pantone Midnight - Fall 2022 */
-// $presentation-title-slide-text-align: "left";
-// $link-color: #325b74;
-// $code-block-font-size: 0.7em; */
+$font-family-sans-serif: "Atkinson Hyperlegible", sans-serif;
+$presentation-heading-color: #325b74; /* Pantone Midnight - Fall 2022 */
+$presentation-title-slide-text-align: "left";
+$link-color: #325b74;
+$code-block-font-size: 0.7em;
 
 /*-- scss:rules --*/
 
-.code-style {
-  font-family: monospace;
-}
-
 details>summary {
   font-size: 0.75em;
-}
-
-.smaller-aside {
-  font-size: 0.4em;
-}
-
-.no-aside > aside {
-  display: none;
 }
 
 #title-slide .subtitle {
@@ -42,10 +30,6 @@ details>summary {
 
 .small {
   font-size: 0.75em;
-}
-
-.smallest {
-  font-size: 0.5em;
 }
 
 .reveal .slide .question {
@@ -70,4 +54,19 @@ details>summary {
   margin-bottom: 0.5em;
   padding: 0.5em;
   background: #EBF7FF;
+}
+
+
+#ecdf-table {
+  font-family: monospace;
+  font-size: 0.75em;
+
+}
+
+.no-list-margins > ul > li {
+  margin: 0;
+}
+
+.no-list-margins > ul {
+  margin-bottom: 0;
 }

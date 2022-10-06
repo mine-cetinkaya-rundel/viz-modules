@@ -1,0 +1,35 @@
+---
+title: "ordinal-testing"
+format:
+  html:
+    theme: default
+---
+
+```{r}
+durham_2020 <- read_csv("./data/durham_2020_cleaner_headers.csv")
+```
+
+```{r}
+
+first_question <- durham_2020[, c(1:10, 222)] %>% 
+  pivot_longer(2:10, names_to="question")
+
+ggplot(first_question, aes(x=question, y=factor(value), color=zip, group=id)) +
+  facet_wrap(~zip) + 
+  geom_line(alpha = 0.2)
+
+```
+
+```{r}
+
+covid_question <- durham_2020[, c(1, 41, 37:40, 222)] %>% 
+  pivot_longer(2:6, names_to="question")
+
+ggplot(covid_question, aes(x=question, y=factor(value), color=zip, group=id)) +
+  facet_wrap(~zip) + 
+  geom_line(alpha = 0.2)
+
+```
+
+
+

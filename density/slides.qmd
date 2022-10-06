@@ -10,10 +10,13 @@ format:
       buttons: false
     preview-links: auto
     # logo: images/quarto.png
-    css: styles.scss
+    theme: theme.scss
 ---
 
+## Accompanying  interactive repo
+
 ## Distributions {.smaller}
+
 
 There are many properties of a distribution of values
 
@@ -70,7 +73,7 @@ ggplot(example_data, aes(random_values)) +
   xlim(-2.5, 5)
 ```
 
-## So what? {.smaller}
+## So what? {.smaller .no-list-margins}
 
 -   Histograms are sensitive to where the bins are cut, i.e. the min and max
 -   Histograms vary more per random sample than density plots
@@ -79,7 +82,7 @@ ggplot(example_data, aes(random_values)) +
 ```{ojs}
 //| panel: sidebar
 
-viewof binWidth = Inputs.range([0.01, 0.5], {value: 0.2, step: 0.001, label: "Bin Width"});
+viewof binWidth = Inputs.range([0.01, 1.5], {value: 0.2, step: 0.001, label: "Bin Width"});
 viewof numPoints = Inputs.range([0, 9000], {value: 900, step: 1, label: "Number of Points"});
 viewof generate = Inputs.button("Regenerate Data");
 ```
@@ -101,11 +104,12 @@ Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mi
 
 -   Baseball! A home run in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
 
-<div style="text-align: center">
+::: {style="text-align: center"}
 <iframe width="560" height="315" src="https://www.youtube.com/embed/nxuTG5SEHn8">
 
 </iframe>
-</div>
+:::
+
 -   Home runs are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase home runs to help the game be more entertaining.
 
     -   In short terms, **Home runs = Money**, but if everyone hits the same number of home runs they become less exciting.
@@ -113,6 +117,7 @@ Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mi
 
 ## Data {.smaller}
 
+::: {style="font-size: 0.4em;"}
 -   Our dataset comes from the R package `Lahman`.
 
 ```{r}
@@ -129,6 +134,8 @@ Each row in the data frame is the hitting stats of a player for a given year. We
 -   `RBI`: Runs batted in, the number of runs (or points) a player achieved in a given year
 -   `SB`: Stolen bases; more stolen bases = faster player
 -   `G`: Number of games played; there are 162 games in a baseball season (154 before 1961)
+-   
+:::
 
 ## More Data
 
@@ -159,13 +166,9 @@ home_runs <- Batting %>%
     -   Very few home runs were hit before 1920 as the same baseball was used for the entire game. About 100 baseballs are used every game today!
 
 -   We are only considering the `AL` and `NL` leagues as they have the best stat-tracking and are the only Major leagues still around today.
-
-
-[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for **\$517,000**!
-
 :::
 
-## Break activity somewhere
+[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for **\$517,000**!
 
 ## Density Graph Examples
 
@@ -237,14 +240,12 @@ ggplot(home_runs, aes(HR, yearID)) +
 
 ## Bandwidth
 
--   Also sensitive to bandwidth, but a continuous degradation in performance
-
--   Silverman's rule of thumb
+-   Density graphs are sensitive to **bandwidth**, but it is a continuous degradation of performance.
 
 ```{ojs}
 //| panel: sidebar
 
-viewof binWidth2 = Inputs.range([0.01, 0.5], {value: 0.2, step: 0.001, label: "Bin Width"});
+viewof binWidth2 = Inputs.range([0.01, 1.5], {value: 0.2, step: 0.001, label: "Bin Width"});
 viewof bandwidth = Inputs.range([0.01, 2], {value: 0.2, step: 0.001, label: "Bandwidth"});
 viewof numPoints2 = Inputs.range([0, 9000], {value: 900, step: 1, label: "Number of Points"});
 viewof generate2 = Inputs.button("Regenerate Data");
@@ -259,15 +260,123 @@ plotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);
 
 ```
 
--   Sheather-Jones should probably be the default
+## Automatic Bandwidth Selection {.smaller}
 
-## Kernel
+### Add .Rmd link
 
-> Gaussian is typically robust Kernel choice matters **a lot** less than bandwidth
+-   Because change in bandwidth leads to a continuous change in the density estimate, it is often easier to automatically pick a bandwidth!
+
+-   Silverman's 'rule-of-thumb' `bw.nrd0` :
+
+    $$ 
+    \begin{align*}
+      h = 0.9 * n^{-1/5} \min(s, IQR/1.34)
+    \end{align*}
+    $$
+
+    -   One of the most optimal bandwidth selectors **if** your data comes from a normal distribution
+    -   Default in `ggplot2` and `R`
+
+-   Sheather-Jones `bw.SJ`
+
+-   More complicated bandwidth selector that "would rather fit" as the default
+
+-   Less likely to give over-smoothed density graphs
+
+-   `geom_density(bw="SJ")` to use
+
+-   Other methods
+
+-   Scott's plug in estimator `bw.nrd`: similar to Silverman's
+
+-   `bw.ucv` and `bw.bcv`: cross validation based methods that are less useful for data visualization
+
+-   `bw.SJ( , method="dpi")`: An easier to calculate Sheather-Jones estimate that gives worse results
+
+## Kernel Density Estimates (Advanced) {.smaller}
+
+-   Density graphs are illustrations of Kernel Density Estimates:
+
+$$
+\begin{align*}
+\hat f_h(x) & = \frac{1}{nh} \sum_{i=1}^n K\left(\frac{x - x_i}{h}\right)
+\end{align*}
+$$
+
+-   $x_i$ is the $i^{th}$ data point
+
+-   $h$ is the bandwidth of the Kernel
+
+-   $K$ is the Kernel
+
+    -   $K$ can be a number of functions (see `kernel` option from `?density` or [Wikipedia](https://en.wikipedia.org/wiki/Kernel_(statistics)#Kernel_functions_in_common_use)) but is usually the Gaussian kernel: $K(x) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{x^2}{2}\right)$.
+    -   Choice of $K$ will give different looking density graphs, but choice of bandwidth is **a lot** more important than choice of Kernel. The Gaussian Kernel is by far the most used.
+    -   To see examples of Kernel choices, see this [shiny app](https://shinyserv.es/shiny/kde/) by Eduardo García-Portugués.
+
+::: {.footer style="font-size: 1em;"}
+To learn more, see [Chapter 2](https://bookdown.org/egarpor/NP-UC3M/kde-i-kde.html) of *Nonparametric Statistics* by Eduardo García-Portugués.
+:::
+
+## 
 
 ## Caveats
 
-> Density outside of data range Powerlaw distributions
+::: panel-tabset
+### Density Below 0
+
+```{r}
+#| echo: True
+long_tailed_data <- data.frame(random_values = rlnorm(1000, -3, 1))
+```
+
+```{r}
+#| echo: True
+
+# Base R plotting
+plot(density(long_tailed_data$random_values, bw="SJ"), 
+     main="Density graph of positive numbers with density below 0") 
+abline(v = 0, col="red", lty = 2)
+```
+
+```{r}
+plot(density(long_tailed_data$random_values, bw="SJ", from = 0),
+     main="Density graph of positive numbers with correct density")
+abline(v = 0, col="red", lty = 2)
+
+```
+
+-   `ggplot2` generally handles this for you by putting bounds at the range of your data, but it can occasionally skip this depending on how complicated your graph becomes.
+
+### Powerlaw Data {.smaller-aside style="font-size:0.6em" fig-align="center"}
+
+```{r}
+#| echo: True
+longer_tailed_data <- data.frame(random_values = rlnorm(1000, -6, 5))
+```
+
+::: columns
+::: {.column width="49%"}
+```{r}
+#| echo: True
+
+ggplot(longer_tailed_data, aes(random_values)) +
+  geom_density()
+```
+:::
+
+::: {.column width="2%"}
+:::
+
+::: {.column width="49%"}
+```{r}
+#| echo: True
+ggplot(longer_tailed_data, aes(random_values)) +
+  geom_density() +
+  scale_x_continuous(trans="log")
+```
+:::
+:::
+:::
 
 ## 2D Density
 
@@ -305,10 +414,47 @@ ggplot(home_runs, aes(HR, SO + BB)) +
 
 # Density Graphs 2
 
-## Empirical CDF {.smaller}
+## Cumulative Distribution Functions (CDF) {.smaller}
 
--   Unlike the histogram and density plot, the empirical CDF does NOT depend on a bin width or bandwidth.
--   Computed in R with `ecdf`
+-   For a random variable $X$, the CDF describes the probability that $X$ is below a certain value:
+
+    -   Between 0 and 1 (like all probabilities)
+    -   Non-decreasing
+    -   Derivative is the PDF, i.e. the larger the PDF the faster the CDF is increasing.
+    -   Example: If $X \sim \textsf{Normal}(0, 1)$
+
+    $$
+    \begin{align*}
+      F_X(x) & = P(X \leq x) \\
+      F_x(-\infty) & = 0 \\ 
+      F_x(-1) & = 0.1587 \\ 
+      F_x(0) & = 1/2 \\ 
+      F_x(1) & =  0.8413 \\ 
+      F_x(\infty) & = 1
+    \end{align*}
+    $$
+
+## Empirical Cumulative Distribution Functions (ECDF) {.smaller}
+
+-   The empirical CDF of data is the proportion of data below a certain value:
+
+    -   Between 0 and 1 (like all probabilities)
+    -   Non-decreasing
+    -   Increases at every value of observed data (step function)
+    -   Example: `X = c(0, 1, 2, 2, 3, 3.5, 4)`
+
+$$
+\begin{align*}
+  F_n(t) & = \frac{1}{n} \sum_{i=1}^n \begin{cases} 1 & x_i \leq t \\ 0 & \text{otherwise} \end{cases} \\
+  F_7(-1) & = 0 \\
+  F_7(0) & = 1/7 \\ 
+  F_7(2.5) & = 4/7 \\
+  F_7(4) & = 1 \\
+  F_7(5) & = 1
+\end{align*}
+$$
+
+## Empirical CDFs in R {.smaller}
 
 ```{r}
 #| echo: True
@@ -319,13 +465,13 @@ example_ecdf <- ecdf(new_example_data)
 ```
 
 ::: columns
-::: {.column width="48%"}
+::: {.column width="45%"}
 ```{r}
 knitr::kable(data.frame(
   func_call = paste("example_ecdf(", c(-3, -1, 0, 2, 5), ")"),
   prob = example_ecdf(c(-3, -1, 0, 2, 5))
 ),
-digits = 4, format = "html", table.attr = "class=\"code-style\"",
+digits = 4, format = "html", table.attr = "id=\"ecdf-table\"",
 col.names = c("Function Call", "Probability less than value")
 )
 
@@ -335,7 +481,7 @@ col.names = c("Function Call", "Probability less than value")
 ::: {.column width="2%"}
 :::
 
-::: {.column width="50%"}
+::: {.column width="45%"}
 ```{r}
 as_df <- data.frame(vals = new_example_data, empirical_cdf = example_ecdf(new_example_data))
 
@@ -490,7 +636,7 @@ ggplot(ks_matrix, aes(x=year1, y=year2, fill=factor(signif_adjusted))) +
 
 ```
 
-## Summary
+## Density Graphs Summary
 
 Pros:
 
