@@ -56,17 +56,33 @@ details>summary {
   background: #EBF7FF;
 }
 
-
 #ecdf-table {
   font-family: monospace;
-  font-size: 0.75em;
+  font-size: 0.6em;
 
 }
 
-.no-list-margins > ul > li {
+li.no-list-margins {
   margin: 0;
 }
 
 .no-list-margins > ul {
   margin-bottom: 0;
+}
+
+.smallest {
+  font-size: 0.5em;
+}
+
+.smallerr {
+  font-size: 0.6em;
+}
+
+.small-header > h2 {
+  font-size: 1em;
+}
+
+#fn2 {
+  font-size: 0.6em;
+  bottom: 10px;
 }

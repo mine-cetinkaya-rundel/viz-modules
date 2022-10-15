@@ -13,10 +13,9 @@ format:
     theme: theme.scss
 ---
 
-## Accompanying  interactive repo
+## Accompanying interactive repo
 
 ## Distributions {.smaller}
-
 
 There are many properties of a distribution of values
 
@@ -75,9 +74,13 @@ ggplot(example_data, aes(random_values)) +
 
 ## So what? {.smaller .no-list-margins}
 
--   Histograms are sensitive to where the bins are cut, i.e. the min and max
+::: {.no-list-margins style="font-size:0.75em;"}
+-   Histograms are sensitive to where the bins are cut
+
 -   Histograms vary more per random sample than density plots
+
 -   Density graphs are estimates for what a very fine histogram with lots of data would show
+:::
 
 ```{ojs}
 //| panel: sidebar
@@ -100,7 +103,7 @@ plotNewData(regenerateData(numPoints / 3), binWidth, generate);
 Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mike Bostock
 :::
 
-## Motivating Example {.smaller}
+## Motivating Example {.smallest}
 
 -   Baseball! A home run in baseball occurs when a player hits a fair ball outside of the playing field. Examples:
 
@@ -113,12 +116,11 @@ Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mi
 -   Home runs are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase home runs to help the game be more entertaining.
 
     -   In short terms, **Home runs = Money**, but if everyone hits the same number of home runs they become less exciting.
-    -   Examining the distribution of home runs year-by-year we may be able to see how rule changes have changed the prevalence.
+    -   Examining the distribution of home runs year-by-year we may be able to see the effect of rule changes.
 
-## Data {.smaller}
+## Data {.smallest}
 
-::: {style="font-size: 0.4em;"}
--   Our dataset comes from the R package `Lahman`.
+<div>
 
 ```{r}
 #| echo: TRUE
@@ -127,120 +129,361 @@ library(Lahman)
 colnames(Batting)
 ```
 
-Each row in the data frame is the hitting stats of a player for a given year. We will mostly be using the `HR`, `RBI`, `SB`, `yearID`, and `G` columns:
+Our dataset comes from the R package `Lahman`. Each row in the data frame is the hitting stats of a player for a given year. We will mostly be using the following columns:
 
--   `yearID`: The year for the statistics
--   `HR`: The number of home runs a player hit in a given year
--   `RBI`: Runs batted in, the number of runs (or points) a player achieved in a given year
--   `SB`: Stolen bases; more stolen bases = faster player
--   `G`: Number of games played; there are 162 games in a baseball season (154 before 1961)
--   
-:::
+| Variable | Description                                                                        |
+|--------------------------|----------------------------------------------|
+| `yearID` | The year for the statistics                                                        |
+| `HR`     | The number of home runs a player hit in a given year                               |
+| `RBI`    | Runs batted in, the number of runs (or points) a player achieved in a given year   |
+| `SB`     | Stolen bases; more stolen bases = faster player                                    |
+| `G`      | Number of games played; there are 162 games in a baseball season (154 before 1961) |
+| `BB`     | Walks; more walks = defense is worried about player hitting home runs              |
+| `SO`     | Strike outs; more strikeouts = Hitter is swinging recklessly                       |
 
-## More Data
+</div>
 
-::: panel-tabset
-### Data we will use {.hide-aside}
+## Data we will use {auto-animate="true"}
 
 ```{r}
 #| echo: True
-home_runs <- Batting %>%
+#| eval: False
+home_runs <- Batting
+```
+
+We are interested in the distribution of the number of home runs individual players have hit per year. [^1]
+
+[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for **\$517,000**!
+
+## Context 1 {auto-animate="true"}
+
+```{r}
+#| echo: True
+#| eval: False
+home_runs <- Batting |> 
   filter(G >= 100 | 
            (G >= 40 & yearID == 2020) | 
-           (G >= 70 & yearID == 1994), 
+           (G >= 70 & yearID == 1994),
+         )
+```
+
+::: r-fit-text
+-   There are many players in the dataset that played very little games per year, so we will limit to players that played at least 100 games in a given year, with the following years excepted:
+
+    -   In 1994 only about 115 games were played due to labor strikes, so will filter to at least 70 games.
+
+    -   In 2020 COVID shortened the season to only 60 games, so we will filter at least 40 games.
+:::
+
+## Context 2 {auto-animate="true"}
+
+```{r}
+#| echo: True
+#| eval: False
+home_runs <- Batting |> 
+  filter(G >= 100 | 
+           (G >= 40 & yearID == 2020) | 
+           (G >= 70 & yearID == 1994),
+         yearID > 1920,
+         )
+```
+
+-   We are only concerned with years after 1920 (known as the "live-ball era").
+-   Very few home runs were hit before 1920 as the same baseball was used for the entire game. About 100 baseballs are used every game today!
+
+## Context 3 {auto-animate="true"}
+
+```{r}
+#| echo: True
+#| eval: True
+home_runs <- Batting |> 
+  filter(G >= 100 | 
+           (G >= 40 & yearID == 2020) | 
+           (G >= 70 & yearID == 1994),
          yearID > 1920,
          lgID %in% c("AL", "NL"))
 ```
 
-### Context {.smaller-aside style="font-size:0.6em"}
-
--   We are interested in the distribution of the number of home runs individual players have hit per year. [^1]
-
--   There are many players in the dataset that played very little games per year, so we will limit to players that played at least 100 games in a given year, with the following years excepted:
-
-    -   In 1994 only about 115 games were played due to labor strikes, so will filter to at least 70 games.
-    -   In 2020 COVID shortened the season to only 60 games, so we will filter at least 40 games.
-
--   We are only concerned with years after 1920 (known as the "live-ball era").
-
-    -   Very few home runs were hit before 1920 as the same baseball was used for the entire game. About 100 baseballs are used every game today!
-
 -   We are only considering the `AL` and `NL` leagues as they have the best stat-tracking and are the only Major leagues still around today.
+
+## Density Graph Example {.smallest}
+
+::: panel-tabset
+## Plot
+
+```{r}
+#| fig-height: 4
+ggplot(home_runs, aes(HR)) +
+  geom_density() + 
+  xlab("Home runs per player per year")
+```
+
+-   Most players hit just a few home runs per year and the distribution is very right-skewed.
+-   Very few players hit more than 40 per year.
+
+## Code
+
+```{r}
+#| eval: False
+#| echo: True
+
+ggplot(home_runs, aes(HR)) +
+  geom_density() + 
+  xlab("Home runs per player per year")
+```
 :::
 
-[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for **\$517,000**!
+## Stacked Density Graph By Decade {.smallest}
 
-## Density Graph Examples
+::: panel-tabset
+## Plot
 
 ```{r}
-ggplot(home_runs, aes(HR)) +
-  geom_density()
+#| fig-height: 4
 
 
-ggplot(home_runs, aes(x=factor(yearID), log10(HR))) +
-     geom_violin()
+home_runs |>
+  mutate(decade = cut(
+    yearID,
+    breaks = seq(1920, 2030, 10),
+    labels = paste0(seq(1920, 2020, 10),
+                    "'s")
+  )) |>
+  ggplot(aes(HR, fill = decade)) +
+  geom_density(position = "stack") +
+  xlab("Home runs per player per year")
+```
+
+-   If we stratify by decade, we can see the **mode** of the density graphs slowly creep forward, but it is difficult to see the tail of the distribution.
+
+## Code
+
+```{r}
+#| eval: False
+#| echo: True
+home_runs |>
+  mutate(decade = cut(
+    yearID,
+    breaks = seq(1920, 2030, 10),
+    labels = paste0(seq(1920, 2020, 10),
+                    "'s")
+  )) |>
+  ggplot(aes(HR, color = decade)) +
+  geom_density() +
+  xlab("Home runs per player per year")
+```
+:::
+
+## Overlapping Density Graphs By Decade {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 4
+
+home_runs |>
+  mutate(decade = cut(
+    yearID,
+    breaks = seq(1920, 2030, 10),
+    labels = paste0(seq(1920, 2020, 10),
+                    "'s")
+  )) |>
+  ggplot(aes(HR, color = decade)) +
+  geom_density() +
+  xlab("Home runs per player per year")
+```
+
+-   The modes moving forward is a little more apparent now, but the graphs are too coupled to digest easily.
+
+### Code
+
+```{r}
+#| eval: False
+#| echo: True
+home_runs |>
+  mutate(decade = cut(
+    yearID,
+    breaks = seq(1920, 2030, 10),
+    labels = paste0(seq(1920, 2020, 10),
+                    "'s")
+  )) |>
+  ggplot(aes(HR, color = decade)) +
+  geom_density() +
+  xlab("Home runs per player per year")
+```
+:::
+
+## Stacked Density Graph with Conditional Probabilities {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 4
+
+home_runs |>
+  mutate(decade = cut(
+    yearID,
+    breaks = seq(1920, 2030, 10),
+    labels = paste0(seq(1920, 2020, 10),
+                    "'s")
+  )) |>
+  ggplot(aes(x = HR, y = after_stat(count), fill = decade)) +
+  geom_density(position = "fill") +
+  geom_vline(xintercept = 60, linetype = 2) +
+  xlab("Home runs per player per year")
 
 ```
 
-## Getting Fancy with it
+-   By using `position="fill"` and `y=after_stat(count)` we graph the conditional probability that of a decade given a player has hit a certain number of home runs.
+-   We see that players would hit about 60 homeruns in the 20's and 30's, but that disappears until the 90's and 2000's [^2] which quickly take up the conditional probability for years with more than 60 home runs. What happened?
 
-> Markup with summary statistics Stacked plots
-
-## Violin Plot
-
-## Ridge Plot
+### Code
 
 ```{r}
+#| echo: True
+#| eval: False
+
+home_runs |>
+  mutate(decade = cut(
+    yearID,
+    breaks = seq(1920, 2030, 10),
+    labels = paste0(seq(1920, 2020, 10),
+                    "'s")
+  )) |>
+  ggplot(aes(x = HR, y = after_stat(count), fill = decade)) +
+  geom_density(position = "fill") +
+  geom_vline(xintercept = 60, linetype = 2) +
+  xlab("Home runs per player per year")
+```
+:::
+
+[^2]: With the exception of 1961, the year Roger Maris hit 61 home runs.
+
+## Violin Plot {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 4
+
+home_runs |>
+  filter(yearID %in% 1985:2005) |>
+  ggplot(aes(HR, x = factor(yearID))) +
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+  geom_jitter(
+    data = ~ filter(.x, HR >= 30),
+    height = 0,
+    width = 0.1,
+    alpha = 0.5
+  ) +
+  xlab("Home runs per player per year")
+```
+
+-   Let's examine the years near the change point, 1985 to 2005. All points shown are players that hit 30 or more homeruns in a given year. It looks like around 1995 players started hitting **a lot** more home runs.
+
+### Code
+
+```{r}
+#| echo: True
+#| eval: False
+home_runs |>
+  filter(yearID %in% 1985:2005) |>
+  ggplot(aes(HR, x = factor(yearID))) +
+  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
+  geom_jitter(
+    data = ~ filter(.x, HR >= 30),
+    height = 0,
+    width = 0.1,
+    alpha = 0.5
+  ) +
+  xlab("Home runs per player per year")
+
+```
+:::
+
+## Ridge Plot {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 4
+
 library(ggridges)
 
-ggplot(home_runs %>% filter(yearID %in% 1980:2019),
-       aes(x = HR, y = factor(yearID))) + 
-  geom_density_ridges(aes(height=..density..),
-                      stat="density",
-                      bw="SJ",
-                      scale = 2.5,
-                      rel_min_height = 0.001,
-                      size=0.25,
-                      alpha=0.5) +
+home_runs |>
+  filter(yearID %in% 1985:2010) |>
+  ggplot(aes(x = HR,
+             y = factor(yearID))) +
   stat_density_ridges(
-    geom = "density_ridges_gradient", calc_ecdf = TRUE,
-    quantiles = 4, quantile_lines = TRUE
-  )
+    mapping = aes(fill = factor(stat(quantile))),
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(.25, .50, .75, .95),
+    quantile_lines = TRUE,
+    scale = 2,
+    rel_min_height = 0.01
+  ) +
+  scale_fill_viridis_d(name = "Quantiles",
+                       labels = c("0", "25th", "50th", "75th", "95th")) +
+  geom_jitter(
+    data = ~ filter(.x, HR >= 30),
+    height = 0.2,
+    width = 0,
+    alpha = 0.3,
+  ) +
+  xlab("Home runs per player per year") +
+  ylab("Year") +
+  xlim(c(0, 73))
 
-ggplot(home_runs %>% filter(yearID %in% 1980:2019),
-       aes(x = HR, y = factor(yearID))) + 
-  geom_density_ridges(stat = "binline",
-                      binwidth=1,
-                      scale = 2.5,
-                      rel_min_height = 0.001,
-                      size=0.25,
-                      alpha=0.5)
-
-ggplot(home_runs, aes(HR, yearID)) +
-    geom_hex(binwidth=c(1,1)) +
-    scale_fill_gradientn(colours=rainbow(5))
-
-
-# ggplot(home_runs %>% filter(yearID %in% 1980:2019),
-#        aes(x = tto, y = factor(yearID))) + 
-#     geom_density_ridges(aes(height=..density..),
-#                         stat="density",
-#                         bw="SJ",
-#                         scale = 2.5,
-#                         rel_min_height = 0.0001,
-#                         size=0.25,
-#                         alpha=0.5) + 
-#   geom_density_ridges(
-#     jittered_points = TRUE, quantile_lines = TRUE, scale = 2.5, alpha = 0.7,
-#     vline_size = 1, vline_color = "red",
-#     point_size = 0.4, point_alpha = 1,
-#     position = position_points_jitter(height = 0)
-#   )
 ```
 
-## Bandwidth
+-   The quantiles also have a consistent increase, along with many more players hitting 30 or more home runs!
+-   In 1998 there was a home run record race between two players; this brought a lot of interest back into baseball.
+-   1995 to about 2005 is known as the *Steroid Era* in baseball. During this time, players would take performance enhancing drugs freely as the league did not enforce the ban on them. League-wide testing began in 2003.
 
--   Density graphs are sensitive to **bandwidth**, but it is a continuous degradation of performance.
+### Code
+
+```{r}
+#| echo: True
+#| eval: False
+
+library(ggridges)
+
+home_runs |>
+  filter(yearID %in% 1985:2010) |>
+  ggplot(aes(x = HR,
+             y = factor(yearID))) +
+  stat_density_ridges(
+    mapping = aes(fill = factor(stat(quantile))),
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE,
+    quantiles = c(.25, .50, .75, .95),
+    quantile_lines = TRUE,
+    scale = 2,
+    rel_min_height = 0.01
+  ) +
+  scale_fill_viridis_d(name = "Quantiles",
+                       labels = c("0", "25th", "50th", "75th", "95th")) +
+  geom_jitter(
+    data = ~ filter(.x, HR >= 30),
+    height = 0.2,
+    width = 0,
+    alpha = 0.3,
+  ) +
+  xlab("Home runs per player per year") +
+  ylab("Year") +
+  xlim(c(0, 73))
+
+```
+:::
+
+## Bandwidth {.smaller}
+
+-   Density graphs are sensitive to **bandwidth**, but this is a continuous degradation of performance.
 
 ```{ojs}
 //| panel: sidebar
@@ -260,9 +503,7 @@ plotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);
 
 ```
 
-## Automatic Bandwidth Selection {.smaller}
-
-### Add .Rmd link
+## Automatic Bandwidth Selection {.smallest}
 
 -   Because change in bandwidth leads to a continuous change in the density estimate, it is often easier to automatically pick a bandwidth!
 
@@ -279,21 +520,83 @@ plotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);
 
 -   Sheather-Jones `bw.SJ`
 
--   More complicated bandwidth selector that "would rather fit" as the default
+    -   More complicated bandwidth selector that "would rather fit" as the default
 
--   Less likely to give over-smoothed density graphs
+    -   Less likely to give over-smoothed density graphs
 
--   `geom_density(bw="SJ")` to use
+    -   `geom_density(bw="SJ")` to use
 
 -   Other methods
 
--   Scott's plug in estimator `bw.nrd`: similar to Silverman's
+    -   Scott's plug in estimator `bw.nrd`: similar to Silverman's
 
--   `bw.ucv` and `bw.bcv`: cross validation based methods that are less useful for data visualization
+    -   `bw.ucv` and `bw.bcv`: cross validation based methods that are less useful for data visualization
 
--   `bw.SJ( , method="dpi")`: An easier to calculate Sheather-Jones estimate that gives worse results
+    -   `bw.SJ( , method="dpi")`: An easier to calculate Sheather-Jones estimate that gives worse results
 
-## Kernel Density Estimates (Advanced) {.smaller}
+## Sheather Jones Example
+
+::: panel-tabset
+### Useful
+
+```{r}
+example_data <- data.frame(vals = c(rnorm(1000, 0, 1), rnorm(1000, 20, 1)))
+true_density <- data.frame(x = c(seq(-4, 24, length.out = 10000)))
+true_density <-
+  true_density |> mutate(y = 0.5 * dnorm(x, 0, 1) + 0.5 * dnorm(x, 20, 1),
+                         y_scaled = y / max(y))
+ggplot(example_data, aes(x = vals)) +
+  stat_density(aes(y = ..scaled.., color = "black"),
+               geom = "line",
+               bw = "SJ") +
+  stat_density(aes(y = ..scaled.., color = "red"), geom = "line") +
+  geom_line(
+    data = true_density,
+    mapping = aes(x = x,
+                  y = y_scaled,
+                  color = "blue",),
+    linetype = "dashed"
+  ) +
+  scale_color_identity(
+    name = "Bandwidth Estimator",
+    breaks = c("black", "red", "blue"),
+    labels = c("SJ", "Silverman's", "True Density"),
+    guide = "legend"
+  ) +
+  labs(x = "Random Values", 
+       y = "Scaled Density", 
+       title = "Density of mixture of two random normals",
+       subtitle = "Silverman's can over smooth even if generated from a Normal")
+
+```
+
+### Not useful? {.smallest}
+
+```{r}
+
+ggplot(home_runs, aes(x = HR)) +
+  stat_density(aes(y = ..scaled.., color = "black"),
+               geom = "line",
+               bw = "SJ",
+  ) +
+  stat_density(aes(y = ..scaled.., color = "red"), geom = "line") +
+  scale_color_identity(
+    name = "Bandwidth Estimator",
+    breaks = c("black", "red"),
+    labels = c("SJ", "Silverman's"),
+    guide = "legend"
+  ) +
+  labs(
+    y = "Scaled Density",
+    x = "Home runs per player per year",
+    title = "Density of Home runs per person per year",
+    subtitle = "Sheather Jones only puts density at integer values"
+  )
+
+```
+:::
+
+## Kernel Density Estimates (Advanced) {.smallest}
 
 -   Density graphs are illustrations of Kernel Density Estimates:
 
@@ -313,44 +616,53 @@ $$
     -   Choice of $K$ will give different looking density graphs, but choice of bandwidth is **a lot** more important than choice of Kernel. The Gaussian Kernel is by far the most used.
     -   To see examples of Kernel choices, see this [shiny app](https://shinyserv.es/shiny/kde/) by Eduardo García-Portugués.
 
-::: {.footer style="font-size: 1em;"}
+::: {.footer style="font-size: 0.5em;"}
 To learn more, see [Chapter 2](https://bookdown.org/egarpor/NP-UC3M/kde-i-kde.html) of *Nonparametric Statistics* by Eduardo García-Portugués.
 :::
 
-## 
-
-## Caveats
+## Cautions {.smallest}
 
 ::: panel-tabset
 ### Density Below 0
 
 ```{r}
 #| echo: True
+#| code-line-numbers: false
 long_tailed_data <- data.frame(random_values = rlnorm(1000, -3, 1))
 ```
 
+::: columns
+::: {.column width="49%"}
 ```{r}
 #| echo: True
-
 # Base R plotting
 plot(density(long_tailed_data$random_values, bw="SJ"), 
      main="Density graph of positive numbers with density below 0") 
 abline(v = 0, col="red", lty = 2)
 ```
+:::
 
+::: {.column width="2%"}
+:::
+
+::: {.column width="49%"}
 ```{r}
-plot(density(long_tailed_data$random_values, bw="SJ", from = 0),
-     main="Density graph of positive numbers with correct density")
+#| echo: True
+plot(density(long_tailed_data$random_values, bw="SJ", 
+             from = 0),
+     main="Density graph of positive numbers with cut density")
 abline(v = 0, col="red", lty = 2)
-
 ```
+:::
+:::
 
 -   `ggplot2` generally handles this for you by putting bounds at the range of your data, but it can occasionally skip this depending on how complicated your graph becomes.
 
-### Powerlaw Data {.smaller-aside style="font-size:0.6em" fig-align="center"}
+### Long Tailed Data
 
 ```{r}
 #| echo: True
+#| code-line-numbers: false
 longer_tailed_data <- data.frame(random_values = rlnorm(1000, -6, 5))
 ```
 
@@ -376,41 +688,74 @@ ggplot(longer_tailed_data, aes(random_values)) +
 ```
 :::
 :::
+
+-   This occurs in practice quite often!
 :::
 
-## 2D Density
+## 2D Density {.smallest}
+
+::: panel-tabset
+### Plot
 
 ```{r}
-ggplot(home_runs %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
-  geom_density_2d_filled()
+#| fig-height: 5
 
-ggplot(home_runs %>% filter(G > 100, yearID > 1900), aes(SB, HR)) +
-  geom_hex(binwidth=c(2,2)) +
-  scale_fill_gradientn(colours=rainbow(5))
-
-ggplot(home_runs %>% filter(G > 100), aes(yearID, HR)) +
-    geom_hex(binwidth=c(1,2)) +
-    scale_fill_gradientn(colours=rainbow(5))
-
-ggplot(home_runs %>% filter(G > 100), aes(RBI, HR)) +
-  geom_density_2d_filled()
-
-
-home_runs <- home_runs %>% mutate(
-  batting_avg = H / AB,
-  obp = (H + BB + HBP) / (AB + BB + HBP + SF),
-  slugging = (4 * HR + 3 * X3B + 2 * X2B + (H - X2B - X3B - HR)) / AB,
-  tto = (BB + HR + SO) / (AB + BB + HBP)
-)
-
-ggplot(home_runs, aes(HR, SO + BB)) +
+home_runs |>
+  ggplot(aes(HR, SO + BB)) +
+  geom_density_2d_filled() +
   geom_density_2d() +
-  geom_point(alpha = 0.05)
+  xlab("Home runs per player per year") +
+  ylab("Strike outs and walks per player per year") +
+  guides(fill = "none")
+
 ```
 
-> Harder to visualize outliers Good to visualize trends, but can be clouded by lack of extremes for both variables
+-   Players that hit lots of home runs tend to strikeout and walk more.
 
-# 3D ?
+### Code
+
+```{r}
+#| eval: False
+#| echo: True
+
+home_runs |>
+  ggplot(aes(HR, SO + BB)) +
+  geom_density_2d_filled() +
+  geom_density_2d() +
+  xlab("Home runs per player per year") +
+  ylab("Strike outs and walks per player per year") +
+  guides(fill = "none")
+
+```
+
+### Scatter plot
+
+```{r}
+#| echo: True
+
+home_runs |>
+  ggplot(aes(HR, SO + BB)) +
+  geom_jitter(width = 0.3, height = 0.3, alpha = 0.1) +
+  geom_density_2d(alpha = 0.5) +
+  xlab("Home runs per player per year") +
+  ylab("Strike outs and walks per player per year")
+
+```
+:::
+
+## Density Graphs Summary {.smaller}
+
+Pros:
+
+-   **Visualize entire distribution**
+-   Mean, median, variance, outliers, support, skewness, normality etc.
+-   `plot(density(Batting$HR))` is usually the first thing I do when analyzing data
+
+Cons:
+
+-   Sensitive to bandwidth choices
+-   Harder to communicate to non-statisticians
+-   Difficult to build yourself (use libraries!)
 
 # Density Graphs 2
 
@@ -434,7 +779,7 @@ ggplot(home_runs, aes(HR, SO + BB)) +
     \end{align*}
     $$
 
-## Empirical Cumulative Distribution Functions (ECDF) {.smaller}
+## Empirical CDF (ECDF) {.smaller}
 
 -   The empirical CDF of data is the proportion of data below a certain value:
 
@@ -461,15 +806,15 @@ $$
 
 new_example_data <- c(rnorm(n = 2000, mean = -1, sd = 0.5), 
                       rnorm(n = 4000, mean = 2, sd = 0.75))
-example_ecdf <- ecdf(new_example_data)
+mix_ecdf <- ecdf(new_example_data)
 ```
 
 ::: columns
 ::: {.column width="45%"}
 ```{r}
 knitr::kable(data.frame(
-  func_call = paste("example_ecdf(", c(-3, -1, 0, 2, 5), ")"),
-  prob = example_ecdf(c(-3, -1, 0, 2, 5))
+  func_call = paste0("mix_ecdf(", c(-3, -1, 0, 2, 5), ")"),
+  prob = mix_ecdf(c(-3, -1, 0, 2, 5))
 ),
 digits = 4, format = "html", table.attr = "id=\"ecdf-table\"",
 col.names = c("Function Call", "Probability less than value")
@@ -483,50 +828,61 @@ col.names = c("Function Call", "Probability less than value")
 
 ::: {.column width="45%"}
 ```{r}
-as_df <- data.frame(vals = new_example_data, empirical_cdf = example_ecdf(new_example_data))
+as_df <- data.frame(vals = new_example_data, empirical_cdf = mix_ecdf(new_example_data))
 
-ggplot(as_df, aes(x=vals)) +
-    stat_density(aes(x=vals, y=..scaled..), geom="line", color="green") +
-  stat_ecdf(geom = "step", color="red")
+ggplot(as_df, aes(x = vals)) +
+  stat_density(aes(x = vals, y = ..scaled..), geom = "line", color = "green") +
+  stat_ecdf(geom = "step", color = "red") +
+  labs(x = "Data Value",
+       y = "Density / Area Under Curve",
+       title = "Comparison of Density and ECDF",
+       subtitle = "The cumulative area under the density curve is the ECDF")
 
 
 ```
 :::
 :::
 
-## Comparing distributions {.smaller}
+## Kolmogorov-Smirnov Test
 
 -   **Theorem**: If two random quantities have equal CDF's they have the exact same distribution.
--   The *Kolmogorov-Smirnov Test* finds the maximum difference between two empirical CDF's and outputs a test statistic best on the sample sizes.
+-   The *Kolmogorov-Smirnov Test* finds the maximum difference between two empirical CDF's and outputs a test statistic based on the sample sizes.
+-   Assumes data is identically and independently distributed from a continuous distribution.
+-   The test is approximate in the case of discrete data, but is good enough for our purposes.
+
+
+## Comparing Distributions 1 {.smaller}
+
+
+::: panel-tabset
+### Output
 
 ::: columns
-::: {.column width="40%"}
+::: {.column width="50%"}
 ```{r}
-#| label: ks-test
-#| echo: TRUE
-HRearly2010s <- home_runs %>% 
-  filter(yearID %in% 2011:2014, G > 100) # Closest years
-HRlate2010s <- 
-  home_runs %>% filter(yearID %in% 2016:2019, G > 100) # Years up to COVID season
+#| echo: True
+#| code-line-numbers: false
+
+# Closest 4 years
+HRearly2010s <- home_runs |> filter(yearID %in% 2011:2014)
+# Years up to COVID season
+HRlate2010s <- home_runs |> filter(yearID %in% 2016:2019) 
 
 ks.test(HRearly2010s$HR, HRlate2010s$HR)
 ```
-
-Major League Baseball was accused of using "juiced" baseballs (easier to hit home runs) in the latter half of the 2010's. Is there credence to this claim?
 :::
 
-::: {.column width="2%"}
-:::
-
-::: {.column width="58%"}
+::: {.column width="50%"}
 ```{r}
+#| fig-height: 5
 get_ks_df <- function(dat1, dat2) {
   ecdf1 <- ecdf(dat1)
   ecdf2 <- ecdf(dat2)
   grid_points <- seq(0, max(c(dat1, dat2)), length.out = 1000)
   differences <- abs(ecdf1(grid_points) - ecdf2(grid_points))
   ks_stat <- max(differences)
-  first_max_location <- grid_points[which(differences == ks_stat)[1]]
+  first_max_location <-
+    grid_points[which(differences == ks_stat)[1]]
   data.frame(
     x = first_max_location,
     xend = first_max_location,
@@ -537,567 +893,453 @@ get_ks_df <- function(dat1, dat2) {
 
 ks_stat_2010s = get_ks_df(HRearly2010s$HR, HRlate2010s$HR)
 
-
 ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015))) +
   stat_ecdf(geom = "step") +
-  geom_segment(data=ks_stat_2010s, aes(x=x, y=y, xend=xend, yend=yend), color="black", linetype="dashed")
-  
+  geom_segment(
+    data = ks_stat_2010s,
+    aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend
+    ),
+    color = "black",
+    linetype = "dashed"
+  ) +
+  labs(x = "Homeruns per player per year",
+       y = "Empirical CDF",
+       title = "Empirical CDFs of player home runs per year in years 2011-2019 ",
+       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic") +
+  theme(legend.position = "bottom")
+
 ```
 :::
 :::
 
+
+- Major League Baseball was accused of replacing the standard baseballs with "juiced" baseballs (easier to hit home runs) secretly in the middle of 2015. Is there credence to this claim?
+
+### Code
+
+```{r}
+#| eval: False
+#| echo: True
+
+get_ks_df <- function(dat1, dat2) {
+  ecdf1 <- ecdf(dat1)
+  ecdf2 <- ecdf(dat2)
+  grid_points <- seq(0, max(c(dat1, dat2)), length.out = 1000)
+  differences <- abs(ecdf1(grid_points) - ecdf2(grid_points))
+  ks_stat <- max(differences)
+  first_max_location <-
+    grid_points[which(differences == ks_stat)[1]]
+  data.frame(
+    x = first_max_location,
+    xend = first_max_location,
+    y = ecdf1(first_max_location),
+    yend = ecdf2(first_max_location)
+  )
+}
+
+ks_stat_2010s = get_ks_df(HRearly2010s$HR, HRlate2010s$HR)
+
+ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015))) +
+  stat_ecdf(geom = "step") +
+  geom_segment(
+    data = ks_stat_2010s,
+    aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend
+    ),
+    color = "black",
+    linetype = "dashed"
+  ) +
+  labs(x = "Homeruns per player per year",
+       y = "Empirical CDF",
+       title = "Empirical CDFs of player home runs per year in years 2011-2019 ",
+       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic") +
+  theme(legend.position = "bottom")
+
+```
+
+:::
+
+
 ## Comparing distributions 2 {.smaller}
 
+
+::: panel-tabset
+### Output
+
 ::: columns
-::: {.column width="40%"}
+::: {.column width="50%"}
 ```{r}
-#| label: ks-test-2
-#| echo: TRUE
-HR2005 <- home_runs %>% filter(yearID == 2005, G > 100)
-HR2006 <- home_runs %>% filter(yearID == 2006, G > 100)
+#| echo: True
+#| code-line-numbers: false
+
+HR2005 <- home_runs |> filter(yearID == 2005)
+HR2006 <- home_runs |> filter(yearID == 2006)
 
 ks.test(HR2005$HR, HR2006$HR)
 ```
 :::
 
-2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.
-
-::: {.column width="2%"}
-:::
-
-::: {.column width="58%"}
+::: {.column width="50%"}
 ```{r}
+#| fig-height: 5
 
 ks_stat_0506 = get_ks_df(HR2005$HR, HR2006$HR)
 
+ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
+  stat_ecdf(geom = "step") +
+  geom_segment(
+    data = ks_stat_0506,
+    aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend
+    ),
+    color = "black",
+    linetype = "dashed"
+  ) +
+  labs(x = "Homeruns per player per year",
+       y = "Empirical CDF",
+       title = "Empirical CDFs of player home runs per year in years 2005 and 2006 ",
+       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic",
+       color = "Year") +
+  theme(legend.position = "bottom")
+
+```
+:::
+:::
+
+- 2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.
+
+
+### Code
+
+```{r}
+#| eval: False
+#| echo: True
+ks_stat_0506 = get_ks_df(HR2005$HR, HR2006$HR)
 
 ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
   stat_ecdf(geom = "step") +
-  geom_segment(data=ks_stat_0506, aes(x=x, y=y, xend=xend, yend=yend), color="black", linetype="dashed")
-
+  geom_segment(
+    data = ks_stat_0506,
+    aes(
+      x = x,
+      y = y,
+      xend = xend,
+      yend = yend
+    ),
+    color = "black",
+    linetype = "dashed"
+  ) +
+  labs(x = "Homeruns per player per year",
+       y = "Empirical CDF",
+       title = "Empirical CDFs of player home runs per year in years 2005 and 2006 ",
+       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic",
+       color = "Year") +
+  theme(legend.position = "bottom")
 ```
-:::
+
 :::
 
-## Bonus: Comparing Distributions 3!
+## Using the Kolmogorov-Smirnov statistic for visualization
 
-### Show different multiple testing
+- Our earlier motivation was to compare the distribution of homeruns over time to see if rule changes made a difference.
+- We can't use a ridge or violin plot with all 100 years; it would be too cramped.
+- What if we used the KS statistic to compare all pairs of years and emulated a correlation matrix?
+
+## Building the Matrix {.smallest}
 
 ```{r}
 #| cache: TRUE
+#| echo: TRUE
+ks_matrix <- tribble(~year1, ~year2, ~ks_stat, ~p_value)
+all_years <- unique(home_runs$yearID)
 
-years <- 1921:2021
-ks_matrix = data.frame(
-  year1 = c(-1),
-  year2 = c(-1),
-  ks_stat = c(-1),
-  p_val = c(-1)
-)
+# Save some memory
+home_runs_to_search <- home_runs |> select(yearID, HR)
 
-Batting_to_search <- home_runs %>% select(yearID, HR)
-row_num <- 1
 
-options(warn=-1)
+options(warn = -1) # Turn off ks.test warning
 
-for(year1 in years) {
-  for(year2 in years) {
-    if(year1 == year2) {
-      next
+for (year1 in all_years) {
+  year1HR <- home_runs_to_search |> filter(yearID == year1)
+  for (year2 in all_years) {
+    if (year1 == year2) {
+      next # Trivially 0 
     }
-    year1HR = Batting_to_search %>% filter(yearID == year1)
-    year2HR = Batting_to_search %>% filter(yearID == year2)
+    year2HR = home_runs_to_search |> filter(yearID == year2)
     
-    test <- ks.test(
-      year1HR$HR,
-      year2HR$HR
-    )
+    test <- ks.test(year1HR$HR,
+                    year2HR$HR)
     
-    ks_matrix[row_num, ] <- c(year1, year2, test$statistic, test$p.value)
-    row_num <- row_num + 1
+    ks_matrix <- ks_matrix %>%
+      add_row(year1 = year1, 
+              year2 = year2, 
+              ks_stat = test$statistic, 
+              p_value = test$p.value)
   }
 }
 
-options(warn=0)
-
-ks_matrix$signif <- cut(ks_matrix$p_val, breaks=c(0, 0.01, 0.05, 0.1, 1.001), include.lowest = T, right = F)
-ks_matrix$signif <- factor(ks_matrix$signif, ordered=TRUE)
-
-ks_matrix$adjusted_p <- p.adjust(ks_matrix$p_val, "BY")
-ks_matrix$signif_adjusted <- cut(ks_matrix$adjusted_p, breaks=c(0, 0.01, 0.05, 0.1, 1.001), include.lowest = T, right = F)
-ks_matrix$signif_adjusted <- factor(ks_matrix$signif_adjusted, ordered=TRUE)
+options(warn = 0)
 ```
 
-```{r}
-ggplot(ks_matrix, aes(x=year1, y=year2, fill=factor(signif_adjusted))) +
-  geom_tile() +
-  scale_x_continuous(breaks = 1920 + seq(0, 10)*10) +
-  scale_y_continuous(breaks = 1920 + seq(0, 10)*10) +
-  scale_fill_manual(values = colorspace::heat_hcl(4))
 
-```
 
-## Density Graphs Summary
 
-Pros:
 
--   **Visualize entire distribution**
--   Mean, median, variance, outliers, support, skewness, normality etc.
--   `plot(density(Batting$HR))` is usually the first thing I do when analyzing data
 
-Cons:
-
--   Sensitive to bandwidth choices
--   Harder to communicate to non-statisticians
--   Difficult to build yourself (use libraries!)
-
-*\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^* \^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^
-
-## Code Animations {auto-animate="true" transition="slide"}
-
--   Over 20 syntax highlighting themes available
--   Default theme optimized for accessibility
-
-``` r
-# Define a server for the Shiny app
-function(input, output) {
-  
-  # Fill in the spot we created for a plot
-  output$phonePlot <- renderPlot({
-    # Render a barplot
-    barplot(WorldPhones[,input$region]*1000, 
-            main=input$region,
-            ylab="Number of Telephones",
-            xlab="Year")
-  })
-}
-```
-
-::: footer
-Learn more: [Code Animations](https://quarto.org/docs/presentations/revealjs/advanced.html#code-animations)
-:::
-
-## Line Highlighting
-
--   Highlight specific lines for emphasis
--   Incrementally highlight additional lines
-
-``` {.python code-line-numbers="4-5|7|10"}
-import numpy as np
-import matplotlib.pyplot as plt
-
-r = np.arange(0, 2, 0.01)
-theta = 2 * np.pi * r
-fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-ax.plot(theta, r)
-ax.set_rticks([0.5, 1, 1.5, 2])
-ax.grid(True)
-plt.show()
-```
-
-::: footer
-Learn more: [Line Highlighting](https://quarto.org/docs/presentations/revealjs/#line-highlighting)
-:::
-
-## Executable Code
-
-```{r}
-#| echo: true
-#| fig-width: 10
-#| fig-height: 4.5
-library(ggplot2)
-ggplot(mtcars, aes(hp, mpg, color = am)) +
-  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
-```
-
-::: footer
-Learn more: [Executable Code](https://quarto.org/docs/presentations/revealjs/#executable-code)
-:::
-
-## LaTeX Equations
-
-[MathJax](https://www.mathjax.org/) rendering of equations to HTML
-
-::: columns
-::: {.column width="40%"}
-``` tex
-\begin{gather*}
-a_1=b_1+c_1\\
-a_2=b_2+c_2-d_2+e_2
-\end{gather*}
-
-\begin{align}
-a_{11}& =b_{11}&
-  a_{12}& =b_{12}\\
-a_{21}& =b_{21}&
-  a_{22}& =b_{22}+c_{22}
-\end{align}
-```
-:::
-
-::: {.column width="60%"}
-```{=tex}
-\begin{gather*}
-a_1=b_1+c_1\\
-a_2=b_2+c_2-d_2+e_2
-\end{gather*}
-```
-```{=tex}
-\begin{align}
-a_{11}& =b_{11}&
-  a_{12}& =b_{12}\\
-a_{21}& =b_{21}&
-  a_{22}& =b_{22}+c_{22}
-\end{align}
-```
-:::
-:::
-
-::: footer
-Learn more: [LaTeX Equations](https://quarto.org/docs/authoring/markdown-basics.html#equations)
-:::
-
-## Incremental Lists
-
-Lists can optionally be displayed incrementally:
-
-::: incremental
--   First item
--   Second item
--   Third item
-:::
-
-. . .
-
-<br/> Insert pauses to make other types of content display incrementally.
-
-::: footer
-Learn more: [Incremental Lists](https://quarto.org/docs/presentations/revealjs/#incremental-lists)
-:::
-
-## Fragments
-
-Incremental text display and animation with fragments:
-
-<br/>
-
-::: {.fragment .fade-in}
-Fade in
-:::
-
-::: {.fragment .fade-up}
-Slide up while fading in
-:::
-
-::: {.fragment .fade-left}
-Slide left while fading in
-:::
-
-::: {.fragment .fade-in-then-semi-out}
-Fade in then semi out
-:::
-
-. . .
-
-::: {.fragment .strike}
-Strike
-:::
-
-::: {.fragment .highlight-red}
-Highlight red
-:::
-
-::: footer
-Learn more: [Fragments](https://quarto.org/docs/presentations/revealjs/advanced.html#fragments)
-:::
-
-## Slide Backgrounds {background="#43464B"}
-
-Set the `background` attribute on a slide to change the background color (all CSS color formats are supported).
-
-Different background transitions are available via the `background-transition` option.
-
-::: footer
-Learn more: [Slide Backgrounds](https://quarto.org/docs/presentations/revealjs/#color-backgrounds)
-:::
-
-## Media Backgrounds {background="#43464B" background-image="images/milky-way.jpeg"}
-
-You can also use the following as a slide background:
-
--   An image: `background-image`
-
--   A video: `background-video`
-
--   An iframe: `background-iframe`
-
-::: footer
-Learn more: [Media Backgrounds](https://quarto.org/docs/presentations/revealjs/#image-backgrounds)
-:::
-
-## Absolute Position
-
-Position images or other elements at precise locations
-
-![](mini/images/kitten-400-350.jpeg){.absolute top="170" left="30" width="400" height="400"}
-
-![](mini/images/kitten-450-250.jpeg){.absolute .fragment top="150" right="80" width="450"}
-
-![](mini/images/kitten-300-200.jpeg){.absolute .fragment bottom="110" right="130" width="300"}
-
-::: footer
-Learn more: [Absolute Position](https://quarto.org/docs/presentations/revealjs/advanced.html#absolute-position)
-:::
-
-## Auto-Animate {auto-animate="true" auto-animate-easing="ease-in-out"}
-
-Automatically animate matching elements across slides with Auto-Animate.
-
-::: r-hstack
-::: {data-id="box1" auto-animate-delay="0" style="background: #2780e3; width: 200px; height: 150px; margin: 10px;"}
-:::
-
-::: {data-id="box2" auto-animate-delay="0.1" style="background: #3fb618; width: 200px; height: 150px; margin: 10px;"}
-:::
-
-::: {data-id="box3" auto-animate-delay="0.2" style="background: #e83e8c; width: 200px; height: 150px; margin: 10px;"}
-:::
-:::
-
-::: footer
-Learn more: [Auto-Animate](https://quarto.org/docs/presentations/revealjs/advanced.html#auto-animate)
-:::
-
-## Auto-Animate {auto-animate="true" auto-animate-easing="ease-in-out"}
-
-Automatically animate matching elements across slides with Auto-Animate.
-
-::: r-stack
-::: {data-id="box1" style="background: #2780e3; width: 350px; height: 350px; border-radius: 200px;"}
-:::
-
-::: {data-id="box2" style="background: #3fb618; width: 250px; height: 250px; border-radius: 200px;"}
-:::
-
-::: {data-id="box3" style="background: #e83e8c; width: 150px; height: 150px; border-radius: 200px;"}
-:::
-:::
-
-::: footer
-Learn more: [Auto-Animate](https://quarto.org/docs/presentations/revealjs/advanced.html#auto-animate)
-:::
-
-## Slide Transitions {.smaller}
-
-The next few slides will transition using the `slide` transition
-
-+-------------+------------------------------------------------------------------------+
-| Transition  | Description                                                            |
-+=============+========================================================================+
-| `none`      | No transition (default, switch instantly)                              |
-+-------------+------------------------------------------------------------------------+
-| `fade`      | Cross fade                                                             |
-+-------------+------------------------------------------------------------------------+
-| `slide`     | Slide horizontally                                                     |
-+-------------+------------------------------------------------------------------------+
-| `convex`    | Slide at a convex angle                                                |
-+-------------+------------------------------------------------------------------------+
-| `concave`   | Slide at a concave angle                                               |
-+-------------+------------------------------------------------------------------------+
-| `zoom`      | Scale the incoming slide so it grows in from the center of the screen. |
-+-------------+------------------------------------------------------------------------+
-
-::: footer
-Learn more: [Slide Transitions](https://quarto.org/docs/presentations/revealjs/advanced.html#slide-transitions)
-:::
-
-## Tabsets {.smaller .scrollable transition="slide"}
+## Visualizing the Matrix {.smallest}
 
 ::: panel-tabset
 ### Plot
 
 ```{r}
-library(ggplot2)
-ggplot(mtcars, aes(hp, mpg, color = am)) +
-  geom_point() +  geom_smooth(formula = y ~ x, method = "loess")
+#| fig-height: 4.5
+#| fig-align: center
+
+ks_matrix |>
+  mutate(signif = cut(
+    p_value,
+    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
+    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    include.lowest = T,
+  )) |>
+  ggplot(aes(
+    x = year1,
+    y = year2,
+    fill = factor(signif)
+  )) +
+  geom_tile() +
+  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+  labs(title = "Unadjusted p-values matrix",
+       fill = "Significance",
+       x = "Year",
+       y = "Year") +
+  coord_fixed()
 ```
 
-### Data
+- There seems to be some patterns in our matrix, but there's a problem...
+
+### Code
 
 ```{r}
-knitr::kable(mtcars)
+#| eval: False
+#| echo: True
+
+ks_matrix |>
+  mutate(signif = cut(
+    p_value,
+    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
+    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    include.lowest = T,
+  )) |>
+  ggplot(aes(
+    x = year1,
+    y = year2,
+    fill = factor(signif)
+  )) +
+  geom_tile() +
+  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+  labs(title = "Unadjusted p-values matrix",
+       fill = "Significance",
+       x = "Year",
+       y = "Year") +
+  coord_fixed()
 ```
 :::
 
-::: footer
-Learn more: [Tabsets](https://quarto.org/docs/presentations/revealjs/#tabsets)
-:::
 
-## Interactive Slides {.smaller transition="slide"}
+## Multiple Testing {.smallest}
 
-Include Jupyter widgets and htmlwidgets in your presentations
+- When performing multiple hypothesis tests, we typically want to control the *Family Wise Error Rate*: the probability we make at least 1 Type I error (a false rejection).
+
+- Newer methods focus more on controlling the *False Discovery Rate*: the probability that any particular rejected null hypothesis is actually a false positive. 
+
+- Both require adjusting p-values which is built in to `R` (`?p.adjust`).
+  - `holm`, `hochberg` and `hommel` control for Family Wise Error Rate
+    - `bonferroni` also controls for this, but is very conservative
+  - `fdr` and `BY` methods control for False Discovery Rate
 
 ```{r}
-#| echo: false
-#| fig-height: 5
-# library(leaflet)
-# leaflet() %>%
-#   addTiles() %>%  # Add default OpenStreetMap map tiles
-#   addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+#| echo: True
+
+# Let's try all the adjustments and see how they change our visualization
+ks_matrix <- ks_matrix |>
+  mutate(
+    p_holm = p.adjust(p_value, "holm"),
+    p_hochberg = p.adjust(p_value, "hochberg"),
+    p_hommel = p.adjust(p_value, "hommel"),
+    p_bonferroni = p.adjust(p_value, "bonferroni"),
+    p_fdr = p.adjust(p_value, "fdr"),
+    p_BY = p.adjust(p_value, "BY")
+  )
 ```
 
 ::: footer
-Learn more: [Jupyter widgets](https://quarto.org/docs/interactive/widgets/jupyter.html), [htmlwidgets](https://quarto.org/docs/interactive/widgets/htmlwidgets.html)
+To learn more see Chapter 13 of *An Introduction to Statistical Learning (2nd Edition)* by Hastie et al. It is [free online](https://www.statlearning.com/) and Chapter 13 is not too difficult. 
 :::
 
-## Interactive Slides {.smaller transition="slide"}
+## Visualizing the Matrix (Corrections) {.smallest}
 
-Turn presentations into applications with Observable and Shiny. Use component layout to position inputs and outputs.
+::: panel-tabset
+### Plot
 
 ```{r}
-ojs_define(actors = data.frame(
-  x = rnorm(100),
-  y = rnorm(100)
-))
+#| fig-height: 4.5
+#| fig-align: center
+ks_matrix |>
+  pivot_longer(
+    c(
+      "p_holm",
+      "p_hochberg",
+      "p_hommel",
+      "p_bonferroni",
+      "p_fdr",
+      "p_BY"
+    ),
+    names_to = "adjustment",
+    values_to = "adjusted_p"
+  ) |>
+  mutate(signif = cut(
+    adjusted_p,
+    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
+    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    include.lowest = T,
+  )) |>
+  ggplot(aes(
+    x = year1,
+    y = year2,
+    fill = factor(signif)
+  )) +
+  geom_tile() +
+  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+  labs(x = "Year",
+       y = "Year",
+       fill = "Significance") +
+  facet_wrap( ~ adjustment) +
+  coord_fixed() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
 ```
 
-```{ojs}
-//| panel: sidebar
-viewof talentWeight = Inputs.range([-2, 2], { value: 0.7, step: 0.01, label: "talent weight" })
-viewof looksWeight = Inputs.range([-2, 2], { value: 0.7, step: 0.01, label: "looks weight" })
-viewof minimum = Inputs.range([-2, 2], { value: 1, step: 0.01, label: "min fame" })
+- Controlling for the Family Wise Error Rate got rid of a lot of our interesting patterns. We don't mind some false positives so we choose the `BY` adjustment as it controls False Discovery Rate but is a bit more conservative than `FDR`.
+
+### Code
+
+```{r}
+#| eval: False
+#| echo: True
+ks_matrix |>
+  pivot_longer(
+    c(
+      "p_holm",
+      "p_hochberg",
+      "p_hommel",
+      "p_bonferroni",
+      "p_fdr",
+      "p_BY"
+    ),
+    names_to = "adjustment",
+    values_to = "adjusted_p"
+  ) |>
+  mutate(signif = cut(
+    adjusted_p,
+    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
+    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    include.lowest = T,
+  )) |>
+  ggplot(aes(
+    x = year1,
+    y = year2,
+    fill = factor(signif)
+  )) +
+  geom_tile() +
+  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+  labs(x = "Year",
+       y = "Year",
+       fill = "Significance") +
+  facet_wrap( ~ adjustment) +
+  coord_fixed() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+:::
+
+## Annotating the Matrix (Events)
+
+```{r}
+mat_BY <- 
+ks_matrix |>
+  mutate(signif = cut(
+    p_BY,
+    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
+    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    include.lowest = T,
+  )) |>
+  ggplot(aes(x = year1,
+             y = year2)) +
+  geom_tile(aes(fill = factor(signif))) +
+  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+  labs(title = "BY adjusted p-values matrix",
+       fill = "Significance",
+       x = "Year",
+       y = "Year") +
+  coord_fixed()
+
+
+mat_BY +
+  geom_tile(
+    data = tribble(~ x, ~ y, ~ height, ~ width,
+                   # Covid
+                   2020, (1921 + 2021) / 2, 101, 1,
+                  (1921 + 2021) / 2, 2020, 1, 101,
+                    # YOTP
+                   1968, (1921 + 2021) / 2, 101, 1,
+                   (1921 + 2021) / 2, 1968, 1, 101,
+                  # Strike
+                   1994, (1921 + 2021) / 2, 101, 1,
+                   (1921 + 2021) / 2, 1994, 1, 101,
+                  # US in WW2
+                   (1921 + 2021) / 2, 1943, 3, 101,
+                   1943, (1921 + 2021) / 2, 101, 3
+                    ),
+    mapping = aes(
+      x = x,
+      y = y,
+      height = height,
+      width = width
+    ),
+    alpha = 0,
+    color = "blue",
+    size = 0.75
+  )
 ```
 
-::: footer
-Learn more: [Observable](https://quarto.org/docs/interactive/ojs/), [Shiny](https://quarto.org/docs/interactive/shiny/), [Component Layout](https://quarto.org/docs/interactive/layout.html)
-:::
 
-## Preview Links
 
-Navigate to hyperlinks without disrupting the flow of your presentation.
-
-Use the `preview-links` option to open links in an iframe on top of your slides. Try clicking the link below for a demonstration:
-
-::: {style="text-align: center; margin-top: 1em"}
-[Matplotlib: Visualization with Python](https://matplotlib.org/){preview-link="true" style="text-align: center"}
-:::
-
-::: footer
-Learn more: [Preview Links](https://quarto.org/docs/presentations/revealjs/presenting.html#preview-links)
-:::
-
-## Themes
-
-10 Built-in Themes (or [create your own](https://quarto.org/docs/presentations/revealjs/themes.html#creating-themes))
-
-::: {layout-ncol="2"}
-![](images/moon.png)
-
-![](images/sky.png)
-:::
-
-::: footer
-Learn more: [Themes](https://quarto.org/docs/presentations/revealjs/themes.html)
-:::
-
-## Easy Navigation
-
-::: {style="margin-bottom: 0.9em;"}
-Quickly jump to other parts of your presentation
-:::
-
-::: {layout="[1, 20]"}
-![](images/presentation-menu.png){width="41"}
-
-Toggle the slide menu with the menu button (bottom left of slide) to go to other slides and access presentation tools.
-:::
-
-You can also press `m` to toggle the menu open and closed.
-
-::: footer
-Learn more: [Navigation](https://quarto.org/docs/presentations/revealjs/presenting.html#navigation-menu)
-:::
-
-## Chalkboard {chalkboard-buttons="true"}
-
-::: {style="margin-bottom: 0.9em;"}
-Free form drawing and slide annotations
-:::
-
-::: {layout="[1, 20]"}
-![](images/presentation-chalkboard.png){width="41"}
-
-Use the chalkboard button at the bottom left of the slide to toggle the chalkboard.
-:::
-
-::: {layout="[1, 20]"}
-![](images/presentation-notes-canvas.png){width="41"}
-
-Use the notes canvas button at the bottom left of the slide to toggle drawing on top of the current slide.
-:::
-
-You can also press `b` to toggle the chalkboard or `c` to toggle the notes canvas.
-
-::: footer
-Learn more: [Chalkboard](https://quarto.org/docs/presentations/revealjs/presenting.html#chalkboard)
-:::
-
-## Point of View
-
-Press `o` to toggle overview mode:
-
-![](images/overview-mode.png){.border}
-
-Hold down the `Alt` key (or `Ctrl` in Linux) and click on any element to zoom towards it---try it now on this slide.
-
-::: footer
-Learn more: [Overview Mode](https://quarto.org/docs/presentations/revealjs/presenting.html#overview-mode), [Slide Zoom](https://quarto.org/docs/presentations/revealjs/presenting.html#slide-zoom)
-:::
-
-## Speaker View
-
-Press `s` (or use the presentation menu) to open speaker view
-
-![](images/speaker-view.png){fig-align="center" style="border: 3px solid #dee2e6;" width="780"}
-
-::: footer
-Learn more: [Speaker View](https://quarto.org/docs/presentations/revealjs/presenting.html#speaker-view)
-:::
-
-## Authoring Tools {.smaller}
-
-Live side-by-side preview for any notebook or text editor including Jupyter and VS Code
-
-::: columns
-::: {.column width="50%"}
-![](images/jupyter-edit.png){.border .border-thick}
-:::
-
-::: {.column width="50%"}
-![](images/jupyter-preview.png){.border .border-thick}
-:::
-:::
-
-::: footer
-Learn more: [Jupyter](https://quarto.org/docs/tools/jupyter-lab.html), [VS Code](https://quarto.org/docs/tools/vscode.html), [Text Editors](https://quarto.org/docs/tools/text-editors.html)
-:::
-
-## Authoring Tools {.smaller}
-
-RStudio includes an integrated presentation preview pane
-
-![](images/rstudio.png){.border width="900"}
-
-::: footer
-Learn more: [RStudio](https://quarto.org/docs/tools/rstudio.html)
-:::
-
-## And More...
-
--   [Touch](https://quarto.org/docs/presentations/revealjs/advanced.html#touch-navigation) optimized (presentations look great on mobile, swipe to navigate slides)
--   [Footer & Logo](https://quarto.org/docs/presentations/revealjs/#footer-logo) (optionally specify custom footer per-slide)
--   [Auto-Slide](https://quarto.org/docs/presentations/revealjs/presenting.html#auto-slide) (step through slides automatically, without any user input)
--   [Multiplex](https://quarto.org/docs/presentations/revealjs/presenting.html#multiplex) (allows your audience to follow the slides of the presentation you are controlling on their own phone, tablet or laptop).
-
-::: footer
-Learn more: [Quarto Presentations](https://quarto.org/docs/presentations/revealjs/)
-:::

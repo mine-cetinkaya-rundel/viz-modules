@@ -386,9 +386,6 @@
   </style>
   <script type="module" src="slides_files/libs/quarto-ojs/quarto-ojs-runtime.js"></script>
   <link href="slides_files/libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
-  <script type="ojs-define">
-  {"contents":[{"name":"actors","value":{"x":[0.7179,-0.4702,0.5672,-0.345,-0.2666,1.0297,-0.5181,-1.4322,0.2288,-0.2929,1.4361,-0.4109,0.0925,-0.6111,1.6531,0.5747,0.3786,-0.5543,-0.5993,-0.763,0.9911,-0.192,0.3612,-1.147,-0.8824,-0.4272,0.5272,0.4296,0.7319,-0.5134,0.0731,1.2925,-0.6517,1.0746,0.2195,1.2337,0.22,-0.2235,-0.0908,0.3026,0.2388,-0.0833,-0.5654,-1.0291,0.7355,0.2058,-0.6641,1.7792,0.4456,-0.03,-2.6148,0.6425,-2.5067,0.0855,0.4495,-0.3515,0.2498,0.3335,-0.2877,-0.861,1.2673,1.6127,0.8976,0.9399,-0.8643,0.198,-1.1813,-0.1926,-1.2923,-0.7639,0.259,-1.0129,1.8659,-1.0638,-0.5102,-0.0786,0.0506,-1.1737,-0.265,-0.873,0.8278,-1.6631,-1.1029,0.9595,0.8562,0.5052,0.4041,-0.5921,-0.5925,0.405,-0.9784,-0.4294,-1.2526,0.4121,-1.7124,-0.4247,-0.03,0.2802,-3.1584,-1.1624],"y":[2.1213,-0.3641,0.9041,0.5176,-0.2002,1.5925,-1.003,-1.0389,1.2244,1.264,-1.9546,1.358,-0.1097,1.1947,-0.8376,0.6904,0.9367,-1.1197,1.3171,-1.2667,-0.4826,-0.3929,2.3668,-0.8876,-0.3105,0.3473,-1.1721,0.7386,0.8113,0.578,0.2213,0.8883,0.5558,0.2909,1.9284,-0.3535,0.3002,0.8814,0.8786,0.1361,0.1863,0.2414,0.0742,0.6489,-0.1245,0.2615,-0.2402,-0.7122,0.6942,-0.9419,-0.54,1.4326,-0.6641,-1.726,-0.1104,0.854,-0.6578,-0.0415,1.2245,1.4087,-0.0314,-0.652,-0.4525,2.4179,0.0418,1.6715,1.2131,1.0634,-1.6797,-2.3974,0.2688,-0.0984,1.2975,1.4087,-0.5714,-0.1522,1.0611,0.1277,0.6203,1.2261,0.6039,-0.6391,-0.2659,0.6256,1.618,0.4951,0.1288,0.0315,-1.6323,-0.7153,0.9788,-1.0534,0.2131,1.4301,2.2717,-0.6566,0.4358,-1.4342,0.3883,2.0944]}}]}
-  </script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -400,6 +397,9 @@
   <p class="author">Slides by Sam Rosen</p>
 </section>
 
+<section id="accompanying-interactive-repo" class="slide level2">
+<h2>Accompanying interactive repo</h2>
+</section>
 <section id="distributions" class="slide level2 smaller">
 <h2>Distributions</h2>
 <p>There are many properties of a distribution of values</p>
@@ -436,16 +436,18 @@
 <img data-src="slides_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch quarto-figure-center"></section>
 <section id="so-what" class="slide level2 smaller no-list-margins">
 <h2>So what?</h2>
+<div class="no-list-margins" style="font-size:0.75em;">
 <ul>
-<li>Histograms are sensitive to where the bins are cut, i.e.&nbsp;the min and max</li>
-<li>Histograms vary more per random sample than density plots</li>
-<li>Density graphs are estimates for what a very fine histogram with lots of data would show</li>
+<li><p>Histograms are sensitive to where the bins are cut</p></li>
+<li><p>Histograms vary more per random sample than density plots</p></li>
+<li><p>Density graphs are estimates for what a very fine histogram with lots of data would show</p></li>
 </ul>
+</div>
 <div class="layout-sidebar layout-sidebar-left">
 <div class="cell panel-sidebar">
-<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="83" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 82;"><span id="cb1-83"><a href="#cb1-83"></a>viewof binWidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
-<span id="cb1-84"><a href="#cb1-84"></a>viewof numPoints <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
-<span id="cb1-85"><a href="#cb1-85"></a>viewof generate <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="88" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 87;"><span id="cb1-88"><a href="#cb1-88"></a>viewof binWidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
+<span id="cb1-89"><a href="#cb1-89"></a>viewof numPoints <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
+<span id="cb1-90"><a href="#cb1-90"></a>viewof generate <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-1-1" data-nodetype="declaration">
@@ -469,10 +471,10 @@
 </div>
 </div>
 <div class="cell panel-fill">
-<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="90" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 89;"><span id="cb2-90"><a href="#cb2-90"></a><span class="im">import</span> { plotNewData<span class="op">,</span> regenerateData } <span class="im">from</span> <span class="st">"./histoSampling.js"</span><span class="op">;</span></span>
-<span id="cb2-91"><a href="#cb2-91"></a></span>
-<span id="cb2-92"><a href="#cb2-92"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
-<span id="cb2-93"><a href="#cb2-93"></a><span class="fu">plotNewData</span>(<span class="fu">regenerateData</span>(numPoints <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth<span class="op">,</span> generate)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="95" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 94;"><span id="cb2-95"><a href="#cb2-95"></a><span class="im">import</span> { plotNewData<span class="op">,</span> regenerateData } <span class="im">from</span> <span class="st">"./histoSampling.js"</span><span class="op">;</span></span>
+<span id="cb2-96"><a href="#cb2-96"></a></span>
+<span id="cb2-97"><a href="#cb2-97"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
+<span id="cb2-98"><a href="#cb2-98"></a><span class="fu">plotNewData</span>(<span class="fu">regenerateData</span>(numPoints <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth<span class="op">,</span> generate)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-2-1" data-nodetype="declaration">
@@ -493,7 +495,7 @@
 <p>Based on <a href="https://observablehq.com/@d3/kernel-density-estimation">example</a> by Mike Bostock</p>
 </div>
 </section>
-<section id="motivating-example" class="slide level2 smaller">
+<section id="motivating-example" class="slide level2 smallest">
 <h2>Motivating Example</h2>
 <ul>
 <li>Baseball! A home run in baseball occurs when a player hits a fair ball outside of the playing field. Examples:</li>
@@ -506,16 +508,13 @@
 <li><p>Home runs are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase home runs to help the game be more entertaining.</p>
 <ul>
 <li>In short terms, <strong>Home runs = Money</strong>, but if everyone hits the same number of home runs they become less exciting.</li>
-<li>Examining the distribution of home runs year-by-year we may be able to see how rule changes have changed the prevalence.</li>
+<li>Examining the distribution of home runs year-by-year we may be able to see the effect of rule changes.</li>
 </ul></li>
 </ul>
 </section>
-<section id="data" class="slide level2 smaller">
+<section id="data" class="slide level2 smallest">
 <h2>Data</h2>
-<div style="font-size: 0.4em;">
-<ul>
-<li>Our dataset comes from the R package <code>Lahman</code>.</li>
-</ul>
+<div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">library</span>(Lahman)</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="fu">colnames</span>(Batting)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -526,95 +525,324 @@
 [19] "HBP"      "SH"       "SF"       "GIDP"    </code></pre>
 </div>
 </div>
-<p>Each row in the data frame is the hitting stats of a player for a given year. We will mostly be using the <code>HR</code>, <code>RBI</code>, <code>SB</code>, <code>yearID</code>, and <code>G</code> columns:</p>
-<ul>
-<li><code>yearID</code>: The year for the statistics</li>
-<li><code>HR</code>: The number of home runs a player hit in a given year</li>
-<li><code>RBI</code>: Runs batted in, the number of runs (or points) a player achieved in a given year</li>
-<li><code>SB</code>: Stolen bases; more stolen bases = faster player</li>
-<li><code>G</code>: Number of games played; there are 162 games in a baseball season (154 before 1961)</li>
-<li></li>
-</ul>
+<p>Our dataset comes from the R package <code>Lahman</code>. Each row in the data frame is the hitting stats of a player for a given year. We will mostly be using the following columns:</p>
+<table>
+<colgroup>
+<col style="width: 36%">
+<col style="width: 63%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>yearID</code></td>
+<td>The year for the statistics</td>
+</tr>
+<tr class="even">
+<td><code>HR</code></td>
+<td>The number of home runs a player hit in a given year</td>
+</tr>
+<tr class="odd">
+<td><code>RBI</code></td>
+<td>Runs batted in, the number of runs (or points) a player achieved in a given year</td>
+</tr>
+<tr class="even">
+<td><code>SB</code></td>
+<td>Stolen bases; more stolen bases = faster player</td>
+</tr>
+<tr class="odd">
+<td><code>G</code></td>
+<td>Number of games played; there are 162 games in a baseball season (154 before 1961)</td>
+</tr>
+<tr class="even">
+<td><code>BB</code></td>
+<td>Walks; more walks = defense is worried about player hitting home runs</td>
+</tr>
+<tr class="odd">
+<td><code>SO</code></td>
+<td>Strike outs; more strikeouts = Hitter is swinging recklessly</td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
-<section id="more-data" class="slide level2">
-<h2>More Data</h2>
-<div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Data we will use</a></li><li><a href="#tabset-1-2">Context</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1" class="hide-aside">
+<section id="data-we-will-use" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Data we will use</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>home_runs <span class="ot">&lt;-</span> Batting <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">filter</span>(G <span class="sc">&gt;=</span> <span class="dv">100</span> <span class="sc">|</span> </span>
-<span id="cb5-3"><a href="#cb5-3"></a>           (G <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|</span> </span>
-<span id="cb5-4"><a href="#cb5-4"></a>           (G <span class="sc">&gt;=</span> <span class="dv">70</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">1994</span>), </span>
-<span id="cb5-5"><a href="#cb5-5"></a>         yearID <span class="sc">&gt;</span> <span class="dv">1920</span>,</span>
-<span id="cb5-6"><a href="#cb5-6"></a>         lgID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AL"</span>, <span class="st">"NL"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb5-1" class="hljs-ln-code"><a href="#cb5-1"></a>home_runs <span class="ot">&lt;-</span> Batting</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>We are interested in the distribution of the number of home runs individual players have hit per year. <sup>1</sup></p>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for <strong>$517,000</strong>!</p></li></ol></aside></section>
+<section id="context-1" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Context 1</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb6-1" class="hljs-ln-code"><a href="#cb6-1"></a>home_runs <span class="ot">&lt;-</span> Batting <span class="sc">|&gt;</span> </span>
+<span id="cb6-2" class="hljs-ln-code"><a href="#cb6-2"></a>  <span class="fu">filter</span>(G <span class="sc">&gt;=</span> <span class="dv">100</span> <span class="sc">|</span> </span>
+<span id="cb6-3" class="hljs-ln-code"><a href="#cb6-3"></a>           (G <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|</span> </span>
+<span id="cb6-4" class="hljs-ln-code"><a href="#cb6-4"></a>           (G <span class="sc">&gt;=</span> <span class="dv">70</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">1994</span>),</span>
+<span id="cb6-5" class="hljs-ln-code"><a href="#cb6-5"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="tabset-1-2" class="smaller-aside" style="font-size:0.6em">
+<div class="r-fit-text">
 <ul>
-<li><p>We are interested in the distribution of the number of home runs individual players have hit per year. <sup>1</sup></p></li>
 <li><p>There are many players in the dataset that played very little games per year, so we will limit to players that played at least 100 games in a given year, with the following years excepted:</p>
 <ul>
-<li>In 1994 only about 115 games were played due to labor strikes, so will filter to at least 70 games.</li>
-<li>In 2020 COVID shortened the season to only 60 games, so we will filter at least 40 games.</li>
+<li><p>In 1994 only about 115 games were played due to labor strikes, so will filter to at least 70 games.</p></li>
+<li><p>In 2020 COVID shortened the season to only 60 games, so we will filter at least 40 games.</p></li>
 </ul></li>
-<li><p>We are only concerned with years after 1920 (known as the “live-ball era”).</p>
-<ul>
-<li>Very few home runs were hit before 1920 as the same baseball was used for the entire game. About 100 baseballs are used every game today!</li>
-</ul></li>
-<li><p>We are only considering the <code>AL</code> and <code>NL</code> leagues as they have the best stat-tracking and are the only Major leagues still around today.</p></li>
 </ul>
 </div>
+</section>
+<section id="context-2" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Context 2</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb7-1" class="hljs-ln-code"><a href="#cb7-1"></a>home_runs <span class="ot">&lt;-</span> Batting <span class="sc">|&gt;</span> </span>
+<span id="cb7-2" class="hljs-ln-code"><a href="#cb7-2"></a>  <span class="fu">filter</span>(G <span class="sc">&gt;=</span> <span class="dv">100</span> <span class="sc">|</span> </span>
+<span id="cb7-3" class="hljs-ln-code"><a href="#cb7-3"></a>           (G <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|</span> </span>
+<span id="cb7-4" class="hljs-ln-code"><a href="#cb7-4"></a>           (G <span class="sc">&gt;=</span> <span class="dv">70</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">1994</span>),</span>
+<span id="cb7-5" class="hljs-ln-code"><a href="#cb7-5"></a>         yearID <span class="sc">&gt;</span> <span class="dv">1920</span>,</span>
+<span id="cb7-6" class="hljs-ln-code"><a href="#cb7-6"></a>         )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<ul>
+<li>We are only concerned with years after 1920 (known as the “live-ball era”).</li>
+<li>Very few home runs were hit before 1920 as the same baseball was used for the entire game. About 100 baseballs are used every game today!</li>
+</ul>
+</section>
+<section id="context-3" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Context 3</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb8-1" class="hljs-ln-code"><a href="#cb8-1"></a>home_runs <span class="ot">&lt;-</span> Batting <span class="sc">|&gt;</span> </span>
+<span id="cb8-2" class="hljs-ln-code"><a href="#cb8-2"></a>  <span class="fu">filter</span>(G <span class="sc">&gt;=</span> <span class="dv">100</span> <span class="sc">|</span> </span>
+<span id="cb8-3" class="hljs-ln-code"><a href="#cb8-3"></a>           (G <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|</span> </span>
+<span id="cb8-4" class="hljs-ln-code"><a href="#cb8-4"></a>           (G <span class="sc">&gt;=</span> <span class="dv">70</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">1994</span>),</span>
+<span id="cb8-5" class="hljs-ln-code"><a href="#cb8-5"></a>         yearID <span class="sc">&gt;</span> <span class="dv">1920</span>,</span>
+<span id="cb8-6" class="hljs-ln-code"><a href="#cb8-6"></a>         lgID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AL"</span>, <span class="st">"NL"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for <strong>$517,000</strong>!</p></li></ol></aside></section>
-<section id="density-graph-examples" class="slide level2">
-<h2>Density Graph Examples</h2>
+<ul>
+<li>We are only considering the <code>AL</code> and <code>NL</code> leagues as they have the best stat-tracking and are the only Major leagues still around today.</li>
+</ul>
+</section>
+<section id="density-graph-example" class="slide level2 smallest">
+<h2>Density Graph Example</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Plot</a></li><li><a href="#tabset-1-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>Most players hit just a few home runs per year and the distribution is very right-skewed.</li>
+<li>Very few players hit more than 40 per year.</li>
+</ul>
+</div>
+<div id="tabset-1-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">ggplot</span>(home_runs, <span class="fu">aes</span>(HR)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="stacked-density-graph-by-decade" class="slide level2 smallest">
+<h2>Stacked Density Graph By Decade</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Plot</a></li><li><a href="#tabset-2-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-15-2.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
+</div>
+</div>
+<ul>
+<li>If we stratify by decade, we can see the <strong>mode</strong> of the density graphs slowly creep forward, but it is difficult to see the tail of the distribution.</li>
+</ul>
+</div>
+<div id="tabset-2-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">cut</span>(</span>
+<span id="cb10-3"><a href="#cb10-3"></a>    yearID,</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2030</span>, <span class="dv">10</span>),</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2020</span>, <span class="dv">10</span>),</span>
+<span id="cb10-6"><a href="#cb10-6"></a>                    <span class="st">"'s"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, <span class="at">color =</span> decade)) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
 </div>
 </div>
 </section>
-<section id="getting-fancy-with-it" class="slide level2">
-<h2>Getting Fancy with it</h2>
-<blockquote>
-<p>Markup with summary statistics Stacked plots</p>
-</blockquote>
+<section id="overlapping-density-graphs-by-decade" class="slide level2 smallest">
+<h2>Overlapping Density Graphs By Decade</h2>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Plot</a></li><li><a href="#tabset-3-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
+</div>
+</div>
+<ul>
+<li>The modes moving forward is a little more apparent now, but the graphs are too coupled to digest easily.</li>
+</ul>
+</div>
+<div id="tabset-3-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">cut</span>(</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    yearID,</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2030</span>, <span class="dv">10</span>),</span>
+<span id="cb11-5"><a href="#cb11-5"></a>    <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2020</span>, <span class="dv">10</span>),</span>
+<span id="cb11-6"><a href="#cb11-6"></a>                    <span class="st">"'s"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, <span class="at">color =</span> decade)) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
 </section>
-<section id="violin-plot" class="slide level2">
+<section id="stacked-density-graph-with-conditional-probabilities" class="slide level2 smallest">
+<h2>Stacked Density Graph with Conditional Probabilities</h2>
+<div class="panel-tabset">
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Plot</a></li><li><a href="#tabset-4-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-33-1.png" width="960"></p>
+</div>
+</div>
+<ul>
+<li>By using <code>position="fill"</code> and <code>y=after_stat(count)</code> we graph the conditional probability that of a decade given a player has hit a certain number of home runs.</li>
+<li>We see that players would hit about 60 homeruns in the 20’s and 30’s, but that disappears until the 90’s and 2000’s <sup>1</sup> which quickly take up the conditional probability for years with more than 60 home runs. What happened?</li>
+</ul>
+</div>
+<div id="tabset-4-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">cut</span>(</span>
+<span id="cb12-3"><a href="#cb12-3"></a>    yearID,</span>
+<span id="cb12-4"><a href="#cb12-4"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2030</span>, <span class="dv">10</span>),</span>
+<span id="cb12-5"><a href="#cb12-5"></a>    <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2020</span>, <span class="dv">10</span>),</span>
+<span id="cb12-6"><a href="#cb12-6"></a>                    <span class="st">"'s"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR, <span class="at">y =</span> <span class="fu">after_stat</span>(count), <span class="at">fill =</span> decade)) <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a>  <span class="fu">geom_density</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">60</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>With the exception of 1961, the year Roger Maris hit 61 home runs.</p></li></ol></aside></section>
+<section id="violin-plot" class="slide level2 smallest">
 <h2>Violin Plot</h2>
-</section>
-<section id="ridge-plot" class="slide level2">
-<h2>Ridge Plot</h2>
+<div class="panel-tabset">
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Plot</a></li><li><a href="#tabset-5-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-17-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-37-1.png" width="960"></p>
 </div>
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-17-2.png" width="960"></p>
 </div>
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-17-3.png" width="960"></p>
+<ul>
+<li>Let’s examine the years near the change point, 1985 to 2005. All points shown are players that hit 30 or more homeruns in a given year. It looks like around 1995 players started hitting <strong>a lot</strong> more home runs.</li>
+</ul>
+</div>
+<div id="tabset-5-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">1985</span><span class="sc">:</span><span class="dv">2005</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, <span class="at">x =</span> <span class="fu">factor</span>(yearID))) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a>  <span class="fu">geom_violin</span>(<span class="at">draw_quantiles =</span> <span class="fu">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>)) <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>  <span class="fu">geom_jitter</span>(</span>
+<span id="cb13-6"><a href="#cb13-6"></a>    <span class="at">data =</span> <span class="sc">~</span> <span class="fu">filter</span>(.x, HR <span class="sc">&gt;=</span> <span class="dv">30</span>),</span>
+<span id="cb13-7"><a href="#cb13-7"></a>    <span class="at">height =</span> <span class="dv">0</span>,</span>
+<span id="cb13-8"><a href="#cb13-8"></a>    <span class="at">width =</span> <span class="fl">0.1</span>,</span>
+<span id="cb13-9"><a href="#cb13-9"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a>  ) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
 </div>
 </div>
 </section>
-<section id="bandwidth" class="slide level2">
+<section id="ridge-plot" class="slide level2 smallest">
+<h2>Ridge Plot</h2>
+<div class="panel-tabset">
+<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">Plot</a></li><li><a href="#tabset-6-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-41-1.png" width="960"></p>
+</div>
+</div>
+<ul>
+<li>The quantiles also have a consistent increase, along with many more players hitting 30 or more home runs!</li>
+<li>In 1998 there was a home run record race between two players; this brought a lot of interest back into baseball.</li>
+<li>1995 to about 2005 is known as the <em>Steroid Era</em> in baseball. During this time, players would take performance enhancing drugs freely as the league did not enforce the ban on them. League-wide testing began in 2003.</li>
+</ul>
+</div>
+<div id="tabset-6-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">library</span>(ggridges)</span>
+<span id="cb14-2"><a href="#cb14-2"></a></span>
+<span id="cb14-3"><a href="#cb14-3"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">1985</span><span class="sc">:</span><span class="dv">2010</span>) <span class="sc">|&gt;</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> HR,</span>
+<span id="cb14-6"><a href="#cb14-6"></a>             <span class="at">y =</span> <span class="fu">factor</span>(yearID))) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a>  <span class="fu">stat_density_ridges</span>(</span>
+<span id="cb14-8"><a href="#cb14-8"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">factor</span>(<span class="fu">stat</span>(quantile))),</span>
+<span id="cb14-9"><a href="#cb14-9"></a>    <span class="at">geom =</span> <span class="st">"density_ridges_gradient"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10"></a>    <span class="at">calc_ecdf =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-11"><a href="#cb14-11"></a>    <span class="at">quantiles =</span> <span class="fu">c</span>(.<span class="dv">25</span>, .<span class="dv">50</span>, .<span class="dv">75</span>, .<span class="dv">95</span>),</span>
+<span id="cb14-12"><a href="#cb14-12"></a>    <span class="at">quantile_lines =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-13"><a href="#cb14-13"></a>    <span class="at">scale =</span> <span class="dv">2</span>,</span>
+<span id="cb14-14"><a href="#cb14-14"></a>    <span class="at">rel_min_height =</span> <span class="fl">0.01</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a>  <span class="fu">scale_fill_viridis_d</span>(<span class="at">name =</span> <span class="st">"Quantiles"</span>,</span>
+<span id="cb14-17"><a href="#cb14-17"></a>                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"25th"</span>, <span class="st">"50th"</span>, <span class="st">"75th"</span>, <span class="st">"95th"</span>)) <span class="sc">+</span></span>
+<span id="cb14-18"><a href="#cb14-18"></a>  <span class="fu">geom_jitter</span>(</span>
+<span id="cb14-19"><a href="#cb14-19"></a>    <span class="at">data =</span> <span class="sc">~</span> <span class="fu">filter</span>(.x, HR <span class="sc">&gt;=</span> <span class="dv">30</span>),</span>
+<span id="cb14-20"><a href="#cb14-20"></a>    <span class="at">height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb14-21"><a href="#cb14-21"></a>    <span class="at">width =</span> <span class="dv">0</span>,</span>
+<span id="cb14-22"><a href="#cb14-22"></a>    <span class="at">alpha =</span> <span class="fl">0.3</span>,</span>
+<span id="cb14-23"><a href="#cb14-23"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-24"><a href="#cb14-24"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>) <span class="sc">+</span></span>
+<span id="cb14-25"><a href="#cb14-25"></a>  <span class="fu">ylab</span>(<span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb14-26"><a href="#cb14-26"></a>  <span class="fu">xlim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">73</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="bandwidth" class="slide level2 smaller">
 <h2>Bandwidth</h2>
 <ul>
-<li>Density graphs are sensitive to <strong>bandwidth</strong>, but it is a continuous degradation of performance.</li>
+<li>Density graphs are sensitive to <strong>bandwidth</strong>, but this is a continuous degradation of performance.</li>
 </ul>
 <div class="layout-sidebar layout-sidebar-left">
 <div class="cell panel-sidebar">
-<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="246" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 245;"><span id="cb6-246"><a href="#cb6-246"></a>viewof binWidth2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
-<span id="cb6-247"><a href="#cb6-247"></a>viewof bandwidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bandwidth"</span>})<span class="op">;</span></span>
-<span id="cb6-248"><a href="#cb6-248"></a>viewof numPoints2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
-<span id="cb6-249"><a href="#cb6-249"></a>viewof generate2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="491" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 490;"><span id="cb15-491"><a href="#cb15-491"></a>viewof binWidth2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
+<span id="cb15-492"><a href="#cb15-492"></a>viewof bandwidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bandwidth"</span>})<span class="op">;</span></span>
+<span id="cb15-493"><a href="#cb15-493"></a>viewof numPoints2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
+<span id="cb15-494"><a href="#cb15-494"></a>viewof generate2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-3-1" data-nodetype="declaration">
@@ -645,10 +873,10 @@
 </div>
 </div>
 <div class="cell panel-fill">
-<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="254" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 253;"><span id="cb7-254"><a href="#cb7-254"></a><span class="im">import</span> { plotNewDataBW } <span class="im">from</span> <span class="st">"./bandwidthSampling.js"</span><span class="op">;</span></span>
-<span id="cb7-255"><a href="#cb7-255"></a></span>
-<span id="cb7-256"><a href="#cb7-256"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
-<span id="cb7-257"><a href="#cb7-257"></a><span class="fu">plotNewDataBW</span>(<span class="fu">regenerateData</span>(numPoints2 <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth2<span class="op">,</span> bandwidth<span class="op">,</span> generate2)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="499" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 498;"><span id="cb16-499"><a href="#cb16-499"></a><span class="im">import</span> { plotNewDataBW } <span class="im">from</span> <span class="st">"./bandwidthSampling.js"</span><span class="op">;</span></span>
+<span id="cb16-500"><a href="#cb16-500"></a></span>
+<span id="cb16-501"><a href="#cb16-501"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
+<span id="cb16-502"><a href="#cb16-502"></a><span class="fu">plotNewDataBW</span>(<span class="fu">regenerateData</span>(numPoints2 <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth2<span class="op">,</span> bandwidth<span class="op">,</span> generate2)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-4-1" data-nodetype="declaration">
@@ -666,7 +894,7 @@
 </div>
 </div>
 </section>
-<section id="automatic-bandwidth-selection" class="slide level2 smaller">
+<section id="automatic-bandwidth-selection" class="slide level2 smallest">
 <h2>Automatic Bandwidth Selection</h2>
 <ul>
 <li><p>Because change in bandwidth leads to a continuous change in the density estimate, it is often easier to automatically pick a bandwidth!</p></li>
@@ -680,17 +908,43 @@
 <li>One of the most optimal bandwidth selectors <strong>if</strong> your data comes from a normal distribution</li>
 <li>Default in <code>ggplot2</code> and <code>R</code></li>
 </ul></li>
-<li><p>Sheather-Jones <code>bw.SJ</code></p></li>
+<li><p>Sheather-Jones <code>bw.SJ</code></p>
+<ul>
 <li><p>More complicated bandwidth selector that “would rather fit” as the default</p></li>
 <li><p>Less likely to give over-smoothed density graphs</p></li>
 <li><p><code>geom_density(bw="SJ")</code> to use</p></li>
-<li><p>Other methods</p></li>
+</ul></li>
+<li><p>Other methods</p>
+<ul>
 <li><p>Scott’s plug in estimator <code>bw.nrd</code>: similar to Silverman’s</p></li>
 <li><p><code>bw.ucv</code> and <code>bw.bcv</code>: cross validation based methods that are less useful for data visualization</p></li>
-<li><p><code>bw.SJ( , method="ste")</code>: An easier to calculate Sheather-Jones estimate that gives worse results</p></li>
+<li><p><code>bw.SJ( , method="dpi")</code>: An easier to calculate Sheather-Jones estimate that gives worse results</p></li>
+</ul></li>
 </ul>
 </section>
-<section id="kernel-density-estimates-advanced" class="slide level2 smaller">
+<section id="sheather-jones-example" class="slide level2">
+<h2>Sheather Jones Example</h2>
+<div class="panel-tabset">
+<ul id="tabset-7" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-7-1">Useful</a></li><li><a href="#tabset-7-2">Not useful?</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-49-1.png" width="960"></p>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="smallest">
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-51-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="kernel-density-estimates-advanced" class="slide level2 smallest">
 <h2>Kernel Density Estimates (Advanced)</h2>
 <ul>
 <li>Density graphs are illustrations of Kernel Density Estimates:</li>
@@ -710,98 +964,138 @@
 <li>To see examples of Kernel choices, see this <a href="https://shinyserv.es/shiny/kde/">shiny app</a> by Eduardo García-Portugués.</li>
 </ul></li>
 </ul>
-<div class="footer" style="font-size: 1em;">
+<div class="footer" style="font-size: 0.5em;">
 <p>To learn more, see <a href="https://bookdown.org/egarpor/NP-UC3M/kde-i-kde.html">Chapter 2</a> of <em>Nonparametric Statistics</em> by Eduardo García-Portugués.</p>
 </div>
 </section>
-<section id="section" class="slide level2">
-<h2></h2>
-</section>
-<section id="caveats" class="slide level2">
-<h2>Caveats</h2>
+<section id="cautions" class="slide level2 smallest">
+<h2>Cautions</h2>
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Density Below 0</a></li><li><a href="#tabset-2-2">Powerlaw Data</a></li></ul>
+<ul id="tabset-8" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-8-1">Density Below 0</a></li><li><a href="#tabset-8-2">Long Tailed Data</a></li></ul>
 <div class="tab-content">
-<div id="tabset-2-1">
+<div id="tabset-8-1">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>long_tailed_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">random_values =</span> <span class="fu">rlnorm</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Base R plotting</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">plot</span>(<span class="fu">density</span>(long_tailed_data<span class="sc">$</span>random_values, <span class="at">bw=</span><span class="st">"SJ"</span>), </span>
-<span id="cb9-3"><a href="#cb9-3"></a>     <span class="at">main=</span><span class="st">"Density graph of positive numbers with density below 0"</span>) </span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-27-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li><code>ggplot2</code> generally handles this for you by putting bounds at the range of your data, but it can occasionally skip this depending on how complicated your graph becomes.</li>
-</ul>
-</div>
-<div id="tabset-2-2" class="smaller-aside" style="font-size:0.6em" data-fig-align="center">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>longer_tailed_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">random_values =</span> <span class="fu">rlnorm</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">6</span>, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>long_tailed_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">random_values =</span> <span class="fu">rlnorm</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">3</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="columns">
 <div class="column" style="width:49%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">ggplot</span>(longer_tailed_data, <span class="fu">aes</span>(random_values)) <span class="sc">+</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">geom_density</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># Base R plotting</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="fu">plot</span>(<span class="fu">density</span>(long_tailed_data<span class="sc">$</span>random_values, <span class="at">bw=</span><span class="st">"SJ"</span>), </span>
+<span id="cb18-3"><a href="#cb18-3"></a>     <span class="at">main=</span><span class="st">"Density graph of positive numbers with density below 0"</span>) </span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-31-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-55-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:2%;">
 
 </div><div class="column" style="width:49%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">ggplot</span>(longer_tailed_data, <span class="fu">aes</span>(random_values)) <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans=</span><span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(long_tailed_data<span class="sc">$</span>random_values, <span class="at">bw=</span><span class="st">"SJ"</span>, </span>
+<span id="cb19-2"><a href="#cb19-2"></a>             <span class="at">from =</span> <span class="dv">0</span>),</span>
+<span id="cb19-3"><a href="#cb19-3"></a>     <span class="at">main=</span><span class="st">"Density graph of positive numbers with cut density"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-33-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-57-1.png" width="960"></p>
 </div>
 </div>
 </div>
 </div>
+<ul>
+<li><code>ggplot2</code> generally handles this for you by putting bounds at the range of your data, but it can occasionally skip this depending on how complicated your graph becomes.</li>
+</ul>
+</div>
+<div id="tabset-8-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>longer_tailed_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">random_values =</span> <span class="fu">rlnorm</span>(<span class="dv">1000</span>, <span class="sc">-</span><span class="dv">6</span>, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="columns">
+<div class="column" style="width:49%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">ggplot</span>(longer_tailed_data, <span class="fu">aes</span>(random_values)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">geom_density</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-61-1.png" width="960"></p>
+</div>
+</div>
+</div><div class="column" style="width:2%;">
+
+</div><div class="column" style="width:49%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="fu">ggplot</span>(longer_tailed_data, <span class="fu">aes</span>(random_values)) <span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans=</span><span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-63-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>This occurs in practice quite often!</li>
+</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="d-density" class="slide level2">
+<section id="d-density" class="slide level2 smallest">
 <h2>2D Density</h2>
+<div class="panel-tabset">
+<ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">Plot</a></li><li><a href="#tabset-9-2">Code</a></li><li><a href="#tabset-9-3">Scatter plot</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-65-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>Players that hit lots of home runs tend to strikeout and walk more.</li>
+</ul>
+</div>
+<div id="tabset-9-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, SO <span class="sc">+</span> BB)) <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>  <span class="fu">geom_density_2d_filled</span>() <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a>  <span class="fu">geom_density_2d</span>() <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>) <span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a>  <span class="fu">ylab</span>(<span class="st">"Strike outs and walks per player per year"</span>) <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-9-3">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>home_runs <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, SO <span class="sc">+</span> BB)) <span class="sc">+</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.3</span>, <span class="at">height =</span> <span class="fl">0.3</span>, <span class="at">alpha =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>  <span class="fu">geom_density_2d</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>) <span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a>  <span class="fu">ylab</span>(<span class="st">"Strike outs and walks per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-35-2.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-35-3.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-35-4.png" width="960"></p>
-</div>
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-35-5.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-69-1.png" width="960"></p>
 </div>
 </div>
-<blockquote>
-<p>Harder to visualize outliers Good to visualize trends, but can be clouded by lack of extremes for both variables</p>
-</blockquote>
+</div>
+</div>
+</div>
 </section>
-<section id="d" class="title-slide slide level1 center">
-<h1>3D ?</h1>
-
+<section id="density-graphs-summary" class="slide level2 smaller">
+<h2>Density Graphs Summary</h2>
+<p>Pros:</p>
+<ul>
+<li><strong>Visualize entire distribution</strong></li>
+<li>Mean, median, variance, outliers, support, skewness, normality etc.</li>
+<li><code>plot(density(Batting$HR))</code> is usually the first thing I do when analyzing data</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Sensitive to bandwidth choices</li>
+<li>Harder to communicate to non-statisticians</li>
+<li>Difficult to build yourself (use libraries!)</li>
+</ul>
 </section>
-
 <section>
 <section id="density-graphs-2" class="title-slide slide level1 center">
 <h1>Density Graphs 2</h1>
@@ -829,8 +1123,8 @@
 \]</span></p></li>
 </ul>
 </section>
-<section id="empirical-cumulative-distribution-functions-ecdf" class="slide level2 smaller">
-<h2>Empirical Cumulative Distribution Functions (ECDF)</h2>
+<section id="empirical-cdf-ecdf" class="slide level2 smaller">
+<h2>Empirical CDF (ECDF)</h2>
 <ul>
 <li><p>The empirical CDF of data is the proportion of data below a certain value:</p>
 <ul>
@@ -854,9 +1148,9 @@
 <section id="empirical-cdfs-in-r" class="slide level2 smaller">
 <h2>Empirical CDFs in R</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>new_example_data <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">2000</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">sd =</span> <span class="fl">0.5</span>), </span>
-<span id="cb13-2"><a href="#cb13-2"></a>                      <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">4000</span>, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">0.75</span>))</span>
-<span id="cb13-3"><a href="#cb13-3"></a>example_ecdf <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(new_example_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>new_example_data <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">2000</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">sd =</span> <span class="fl">0.5</span>), </span>
+<span id="cb25-2"><a href="#cb25-2"></a>                      <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">4000</span>, <span class="at">mean =</span> <span class="dv">2</span>, <span class="at">sd =</span> <span class="fl">0.75</span>))</span>
+<span id="cb25-3"><a href="#cb25-3"></a>mix_ecdf <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(new_example_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="columns">
 <div class="column" style="width:45%;">
@@ -872,23 +1166,23 @@
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> example_ecdf( -3 ) </td>
+   <td style="text-align:left;"> mix_ecdf(-3) </td>
    <td style="text-align:right;"> 0.0000 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> example_ecdf( -1 ) </td>
-   <td style="text-align:right;"> 0.1653 </td>
+   <td style="text-align:left;"> mix_ecdf(-1) </td>
+   <td style="text-align:right;"> 0.1747 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> example_ecdf( 0 ) </td>
-   <td style="text-align:right;"> 0.3255 </td>
+   <td style="text-align:left;"> mix_ecdf(0) </td>
+   <td style="text-align:right;"> 0.3278 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> example_ecdf( 2 ) </td>
+   <td style="text-align:left;"> mix_ecdf(2) </td>
    <td style="text-align:right;"> 0.6647 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> example_ecdf( 5 ) </td>
+   <td style="text-align:left;"> mix_ecdf(5) </td>
    <td style="text-align:right;"> 1.0000 </td>
   </tr>
 </tbody>
@@ -901,43 +1195,95 @@
 </div><div class="column" style="width:45%;">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-41-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-75-1.png" width="960"></p>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="comparing-distributions" class="slide level2 smaller">
-<h2>Comparing distributions</h2>
+<section id="kolmogorov-smirnov-test" class="slide level2">
+<h2>Kolmogorov-Smirnov Test</h2>
 <ul>
 <li><strong>Theorem</strong>: If two random quantities have equal CDF’s they have the exact same distribution.</li>
-<li>The <em>Kolmogorov-Smirnov Test</em> finds the maximum difference between two empirical CDF’s and outputs a test statistic best on the sample sizes.</li>
+<li>The <em>Kolmogorov-Smirnov Test</em> finds the maximum difference between two empirical CDF’s and outputs a test statistic based on the sample sizes.</li>
+<li>Assumes data is identically and independently distributed from a continuous distribution.</li>
+<li>The test is approximate in the case of discrete data, but is good enough for our purposes.</li>
 </ul>
+</section>
+<section id="comparing-distributions-1" class="slide level2 smaller">
+<h2>Comparing Distributions 1</h2>
+<div class="panel-tabset">
+<ul id="tabset-10" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-10-1">Output</a></li><li><a href="#tabset-10-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-10-1">
 <div class="columns">
-<div class="column" style="width:40%;">
+<div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>HRearly2010s <span class="ot">&lt;-</span> home_runs <span class="sc">%&gt;%</span> </span>
-<span id="cb14-2"><a href="#cb14-2"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2014</span>, G <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="co"># Closest years</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a>HRlate2010s <span class="ot">&lt;-</span> </span>
-<span id="cb14-4"><a href="#cb14-4"></a>  home_runs <span class="sc">%&gt;%</span> <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2016</span><span class="sc">:</span><span class="dv">2019</span>, G <span class="sc">&gt;</span> <span class="dv">100</span>) <span class="co"># Years up to COVID season</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="fu">ks.test</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Closest 4 years</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>HRearly2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2014</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Years up to COVID season</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>HRlate2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2016</span><span class="sc">:</span><span class="dv">2019</span>) </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Two-sample Kolmogorov-Smirnov test
 
 data:  HRearly2010s$HR and HRlate2010s$HR
-D = 0.16523, p-value = 1.563e-11
+D = 0.16691, p-value = 6.463e-12
 alternative hypothesis: two-sided</code></pre>
 </div>
 </div>
-<p>Major League Baseball was accused of using “juiced” baseballs (easier to hit home runs) in the latter half of the 2010’s. Is there credence to this claim?</p>
-</div><div class="column" style="width:2%;">
-
-</div><div class="column" style="width:58%;">
+</div><div class="column" style="width:50%;">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-44-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-79-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</div>
+<ul>
+<li>Major League Baseball was accused of replacing the standard baseballs with “juiced” baseballs (easier to hit home runs) secretly in the middle of 2015. Is there credence to this claim?</li>
+</ul>
+</div>
+<div id="tabset-10-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>get_ks_df <span class="ot">&lt;-</span> <span class="cf">function</span>(dat1, dat2) {</span>
+<span id="cb28-2"><a href="#cb28-2"></a>  ecdf1 <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(dat1)</span>
+<span id="cb28-3"><a href="#cb28-3"></a>  ecdf2 <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(dat2)</span>
+<span id="cb28-4"><a href="#cb28-4"></a>  grid_points <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(<span class="fu">c</span>(dat1, dat2)), <span class="at">length.out =</span> <span class="dv">1000</span>)</span>
+<span id="cb28-5"><a href="#cb28-5"></a>  differences <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">ecdf1</span>(grid_points) <span class="sc">-</span> <span class="fu">ecdf2</span>(grid_points))</span>
+<span id="cb28-6"><a href="#cb28-6"></a>  ks_stat <span class="ot">&lt;-</span> <span class="fu">max</span>(differences)</span>
+<span id="cb28-7"><a href="#cb28-7"></a>  first_max_location <span class="ot">&lt;-</span></span>
+<span id="cb28-8"><a href="#cb28-8"></a>    grid_points[<span class="fu">which</span>(differences <span class="sc">==</span> ks_stat)[<span class="dv">1</span>]]</span>
+<span id="cb28-9"><a href="#cb28-9"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb28-10"><a href="#cb28-10"></a>    <span class="at">x =</span> first_max_location,</span>
+<span id="cb28-11"><a href="#cb28-11"></a>    <span class="at">xend =</span> first_max_location,</span>
+<span id="cb28-12"><a href="#cb28-12"></a>    <span class="at">y =</span> <span class="fu">ecdf1</span>(first_max_location),</span>
+<span id="cb28-13"><a href="#cb28-13"></a>    <span class="at">yend =</span> <span class="fu">ecdf2</span>(first_max_location)</span>
+<span id="cb28-14"><a href="#cb28-14"></a>  )</span>
+<span id="cb28-15"><a href="#cb28-15"></a>}</span>
+<span id="cb28-16"><a href="#cb28-16"></a></span>
+<span id="cb28-17"><a href="#cb28-17"></a>ks_stat_2010s <span class="ot">=</span> <span class="fu">get_ks_df</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span>
+<span id="cb28-18"><a href="#cb28-18"></a></span>
+<span id="cb28-19"><a href="#cb28-19"></a><span class="fu">ggplot</span>(<span class="fu">rbind</span>(HRearly2010s, HRlate2010s), <span class="fu">aes</span>(HR, <span class="at">color =</span> <span class="fu">factor</span>(yearID <span class="sc">&lt;</span> <span class="dv">2015</span>))) <span class="sc">+</span></span>
+<span id="cb28-20"><a href="#cb28-20"></a>  <span class="fu">stat_ecdf</span>(<span class="at">geom =</span> <span class="st">"step"</span>) <span class="sc">+</span></span>
+<span id="cb28-21"><a href="#cb28-21"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb28-22"><a href="#cb28-22"></a>    <span class="at">data =</span> ks_stat_2010s,</span>
+<span id="cb28-23"><a href="#cb28-23"></a>    <span class="fu">aes</span>(</span>
+<span id="cb28-24"><a href="#cb28-24"></a>      <span class="at">x =</span> x,</span>
+<span id="cb28-25"><a href="#cb28-25"></a>      <span class="at">y =</span> y,</span>
+<span id="cb28-26"><a href="#cb28-26"></a>      <span class="at">xend =</span> xend,</span>
+<span id="cb28-27"><a href="#cb28-27"></a>      <span class="at">yend =</span> yend</span>
+<span id="cb28-28"><a href="#cb28-28"></a>    ),</span>
+<span id="cb28-29"><a href="#cb28-29"></a>    <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb28-30"><a href="#cb28-30"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span></span>
+<span id="cb28-31"><a href="#cb28-31"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-32"><a href="#cb28-32"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Homeruns per player per year"</span>,</span>
+<span id="cb28-33"><a href="#cb28-33"></a>       <span class="at">y =</span> <span class="st">"Empirical CDF"</span>,</span>
+<span id="cb28-34"><a href="#cb28-34"></a>       <span class="at">title =</span> <span class="st">"Empirical CDFs of player home runs per year in years 2011-2019 "</span>,</span>
+<span id="cb28-35"><a href="#cb28-35"></a>       <span class="at">subtitle =</span> <span class="st">"Dashed line is the Kolmogorov-Smirnov Statistic"</span>) <span class="sc">+</span></span>
+<span id="cb28-36"><a href="#cb28-36"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -945,983 +1291,210 @@ alternative hypothesis: two-sided</code></pre>
 </section>
 <section id="comparing-distributions-2" class="slide level2 smaller">
 <h2>Comparing distributions 2</h2>
+<div class="panel-tabset">
+<ul id="tabset-11" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-11-1">Output</a></li><li><a href="#tabset-11-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-11-1">
 <div class="columns">
-<div class="column" style="width:40%;">
+<div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>HR2005 <span class="ot">&lt;-</span> home_runs <span class="sc">%&gt;%</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2005</span>, G <span class="sc">&gt;</span> <span class="dv">100</span>)</span>
-<span id="cb16-2"><a href="#cb16-2"></a>HR2006 <span class="ot">&lt;-</span> home_runs <span class="sc">%&gt;%</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2006</span>, G <span class="sc">&gt;</span> <span class="dv">100</span>)</span>
-<span id="cb16-3"><a href="#cb16-3"></a></span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="fu">ks.test</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>HR2005 <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2005</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>HR2006 <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2006</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Two-sample Kolmogorov-Smirnov test
 
 data:  HR2005$HR and HR2006$HR
-D = 0.073708, p-value = 0.5076
+D = 0.073827, p-value = 0.503
 alternative hypothesis: two-sided</code></pre>
 </div>
 </div>
-</div><p>2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.</p><div class="column" style="width:2%;">
-
-</div><div class="column" style="width:58%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-47-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="bonus-comparing-distributions-3" class="slide level2">
-<h2>Bonus: Comparing Distributions 3!</h2>
-<h3 id="show-different-multiple-testing">Show different multiple testing</h3>
-<div class="cell" data-hash="slides_cache/revealjs/unnamed-chunk-49_8098c47cdd03ee6a3e87b5bfd04470c8">
-
-</div>
-
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-51-1.png" width="960" class="r-stretch"></section>
-<section id="density-graphs-summary" class="slide level2">
-<h2>Density Graphs Summary</h2>
-<p>Pros:</p>
-<ul>
-<li><strong>Visualize entire distribution</strong></li>
-<li>Mean, median, variance, outliers, support, skewness, normality etc.</li>
-<li><code>plot(density(Batting$HR))</code> is usually the first thing I do when analyzing data</li>
-</ul>
-<p>Cons:</p>
-<ul>
-<li>Sensitive to bandwidth choices</li>
-<li>Harder to communicate to non-statisticians</li>
-<li>Difficult to build yourself (use libraries!)</li>
-</ul>
-<p><em>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</em> ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</p>
-</section>
-<section id="code-animations" class="slide level2" data-auto-animate="true" data-transition="slide">
-<h2 data-id="quarto-animate-title">Code Animations</h2>
-<ul>
-<li>Over 20 syntax highlighting themes available</li>
-<li>Default theme optimized for accessibility</li>
-</ul>
-<div class="sourceCode" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy" data-id="quarto-animate-code"><code class="sourceCode r hljs"><span id="cb18-1" class="hljs-ln-code"><a href="#cb18-1"></a><span class="co"># Define a server for the Shiny app</span></span>
-<span id="cb18-2" class="hljs-ln-code"><a href="#cb18-2"></a><span class="cf">function</span>(input, output) {</span>
-<span id="cb18-3" class="hljs-ln-code"><a href="#cb18-3"></a>  </span>
-<span id="cb18-4" class="hljs-ln-code"><a href="#cb18-4"></a>  <span class="co"># Fill in the spot we created for a plot</span></span>
-<span id="cb18-5" class="hljs-ln-code"><a href="#cb18-5"></a>  output<span class="sc">$</span>phonePlot <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
-<span id="cb18-6" class="hljs-ln-code"><a href="#cb18-6"></a>    <span class="co"># Render a barplot</span></span>
-<span id="cb18-7" class="hljs-ln-code"><a href="#cb18-7"></a>    <span class="fu">barplot</span>(WorldPhones[,input<span class="sc">$</span>region]<span class="sc">*</span><span class="dv">1000</span>, </span>
-<span id="cb18-8" class="hljs-ln-code"><a href="#cb18-8"></a>            <span class="at">main=</span>input<span class="sc">$</span>region,</span>
-<span id="cb18-9" class="hljs-ln-code"><a href="#cb18-9"></a>            <span class="at">ylab=</span><span class="st">"Number of Telephones"</span>,</span>
-<span id="cb18-10" class="hljs-ln-code"><a href="#cb18-10"></a>            <span class="at">xlab=</span><span class="st">"Year"</span>)</span>
-<span id="cb18-11" class="hljs-ln-code"><a href="#cb18-11"></a>  })</span>
-<span id="cb18-12" class="hljs-ln-code"><a href="#cb18-12"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/advanced.html#code-animations">Code Animations</a></p>
-</div>
-</section>
-<section id="line-highlighting" class="slide level2">
-<h2>Line Highlighting</h2>
-<ul>
-<li>Highlight specific lines for emphasis</li>
-<li>Incrementally highlight additional lines</li>
-</ul>
-<div class="sourceCode" id="cb19" data-code-line-numbers="4-5|7|10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb19-3"><a href="#cb19-3"></a></span>
-<span id="cb19-4"><a href="#cb19-4"></a>r <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">2</span>, <span class="fl">0.01</span>)</span>
-<span id="cb19-5"><a href="#cb19-5"></a>theta <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> r</span>
-<span id="cb19-6"><a href="#cb19-6"></a>fig, ax <span class="op">=</span> plt.subplots(subplot_kw<span class="op">=</span>{<span class="st">'projection'</span>: <span class="st">'polar'</span>})</span>
-<span id="cb19-7"><a href="#cb19-7"></a>ax.plot(theta, r)</span>
-<span id="cb19-8"><a href="#cb19-8"></a>ax.set_rticks([<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="fl">1.5</span>, <span class="dv">2</span>])</span>
-<span id="cb19-9"><a href="#cb19-9"></a>ax.grid(<span class="va">True</span>)</span>
-<span id="cb19-10"><a href="#cb19-10"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/#line-highlighting">Line Highlighting</a></p>
-</div>
-</section>
-<section id="executable-code" class="slide level2">
-<h2>Executable Code</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(hp, mpg, <span class="at">color =</span> am)) <span class="sc">+</span></span>
-<span id="cb20-3"><a href="#cb20-3"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="fu">geom_smooth</span>(<span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">method =</span> <span class="st">"loess"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-</div>
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-53-1.png" width="960" class="r-stretch"><div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/#executable-code">Executable Code</a></p>
-</div>
-</section>
-<section id="latex-equations" class="slide level2">
-<h2>LaTeX Equations</h2>
-<p><a href="https://www.mathjax.org/">MathJax</a> rendering of equations to HTML</p>
-<div class="columns">
-<div class="column" style="width:40%;">
-<div class="sourceCode" id="cb21"><pre class="sourceCode numberSource tex number-lines code-with-copy"><code class="sourceCode latex"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">\begin</span>{<span class="ex">gather*</span>}</span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="ss">a_1=b_1+c_1</span><span class="sc">\\</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="ss">a_2=b_2+c_2-d_2+e_2</span></span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="kw">\end</span>{<span class="ex">gather*</span>}</span>
-<span id="cb21-5"><a href="#cb21-5"></a></span>
-<span id="cb21-6"><a href="#cb21-6"></a><span class="kw">\begin</span>{<span class="ex">align</span>}</span>
-<span id="cb21-7"><a href="#cb21-7"></a><span class="ss">a_{11}&amp; =b_{11}&amp;</span></span>
-<span id="cb21-8"><a href="#cb21-8"></a><span class="ss">  a_{12}&amp; =b_{12}</span><span class="sc">\\</span></span>
-<span id="cb21-9"><a href="#cb21-9"></a><span class="ss">a_{21}&amp; =b_{21}&amp;</span></span>
-<span id="cb21-10"><a href="#cb21-10"></a><span class="ss">  a_{22}&amp; =b_{22}+c_{22}</span></span>
-<span id="cb21-11"><a href="#cb21-11"></a><span class="kw">\end</span>{<span class="ex">align</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div><div class="column" style="width:60%;">
-<span class="math display">\[\begin{gather*}
-a_1=b_1+c_1\\
-a_2=b_2+c_2-d_2+e_2
-\end{gather*}\]</span>
-<span class="math display">\[\begin{align}
-a_{11}&amp; =b_{11}&amp;
-  a_{12}&amp; =b_{12}\\
-a_{21}&amp; =b_{21}&amp;
-  a_{22}&amp; =b_{22}+c_{22}
-\end{align}\]</span>
-</div>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/authoring/markdown-basics.html#equations">LaTeX Equations</a></p>
-</div>
-</section>
-<section id="incremental-lists" class="slide level2">
-<h2>Incremental Lists</h2>
-<p>Lists can optionally be displayed incrementally:</p>
-<div>
-<ul>
-<li class="fragment">First item</li>
-<li class="fragment">Second item</li>
-<li class="fragment">Third item</li>
-</ul>
-</div>
-<div class="fragment">
-<p><br> Insert pauses to make other types of content display incrementally.</p>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/#incremental-lists">Incremental Lists</a></p>
-</div>
-</div>
-</section>
-<section id="fragments" class="slide level2">
-<h2>Fragments</h2>
-<p>Incremental text display and animation with fragments:</p>
-<p><br></p>
-<div class="fragment fade-in">
-<p>Fade in</p>
-</div>
-<div class="fragment fade-up">
-<p>Slide up while fading in</p>
-</div>
-<div class="fragment fade-left">
-<p>Slide left while fading in</p>
-</div>
-<div class="fragment fade-in-then-semi-out">
-<p>Fade in then semi out</p>
-</div>
-<div class="fragment">
-<div class="fragment strike">
-<p>Strike</p>
-</div>
-<div class="fragment highlight-red">
-<p>Highlight red</p>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/advanced.html#fragments">Fragments</a></p>
-</div>
-</div>
-</section>
-<section id="slide-backgrounds" class="slide level2" data-background="#43464B">
-<h2>Slide Backgrounds</h2>
-<p>Set the <code>background</code> attribute on a slide to change the background color (all CSS color formats are supported).</p>
-<p>Different background transitions are available via the <code>background-transition</code> option.</p>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/#color-backgrounds">Slide Backgrounds</a></p>
-</div>
-</section>
-<section id="media-backgrounds" class="slide level2" data-background="#43464B" data-background-image="images/milky-way.jpeg">
-<h2>Media Backgrounds</h2>
-<p>You can also use the following as a slide background:</p>
-<ul>
-<li><p>An image: <code>background-image</code></p></li>
-<li><p>A video: <code>background-video</code></p></li>
-<li><p>An iframe: <code>background-iframe</code></p></li>
-</ul>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/#image-backgrounds">Media Backgrounds</a></p>
-</div>
-</section>
-<section id="absolute-position" class="slide level2">
-<h2>Absolute Position</h2>
-<p>Position images or other elements at precise locations</p>
-<p><img data-src="mini/images/kitten-400-350.jpeg" class="absolute" style="top: 170px; left: 30px; width: 400px; height: 400px; "></p>
-<p><img data-src="mini/images/kitten-450-250.jpeg" class="absolute fragment" style="top: 150px; right: 80px; width: 450px; "></p>
-<p><img data-src="mini/images/kitten-300-200.jpeg" class="absolute fragment" style="bottom: 110px; right: 130px; width: 300px; "></p>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/advanced.html#absolute-position">Absolute Position</a></p>
-</div>
-</section>
-<section id="auto-animate" class="slide level2" data-auto-animate="true" data-auto-animate-easing="ease-in-out">
-<h2 data-id="quarto-animate-title">Auto-Animate</h2>
-<p>Automatically animate matching elements across slides with Auto-Animate.</p>
-<div class="r-hstack">
-<div data-id="box1" data-auto-animate-delay="0" style="background: #2780e3; width: 200px; height: 150px; margin: 10px;">
-
-</div>
-<div data-id="box2" data-auto-animate-delay="0.1" style="background: #3fb618; width: 200px; height: 150px; margin: 10px;">
-
-</div>
-<div data-id="box3" data-auto-animate-delay="0.2" style="background: #e83e8c; width: 200px; height: 150px; margin: 10px;">
-
-</div>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/advanced.html#auto-animate">Auto-Animate</a></p>
-</div>
-</section>
-<section id="auto-animate-1" class="slide level2" data-auto-animate="true" data-auto-animate-easing="ease-in-out">
-<h2 data-id="quarto-animate-title">Auto-Animate</h2>
-<p>Automatically animate matching elements across slides with Auto-Animate.</p>
-<div class="r-stack">
-<div data-id="box1" style="background: #2780e3; width: 350px; height: 350px; border-radius: 200px;">
-
-</div>
-<div data-id="box2" style="background: #3fb618; width: 250px; height: 250px; border-radius: 200px;">
-
-</div>
-<div data-id="box3" style="background: #e83e8c; width: 150px; height: 150px; border-radius: 200px;">
-
-</div>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/advanced.html#auto-animate">Auto-Animate</a></p>
-</div>
-</section>
-<section id="slide-transitions" class="slide level2 smaller">
-<h2>Slide Transitions</h2>
-<p>The next few slides will transition using the <code>slide</code> transition</p>
-<table>
-<colgroup>
-<col style="width: 16%">
-<col style="width: 83%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Transition</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>none</code></td>
-<td>No transition (default, switch instantly)</td>
-</tr>
-<tr class="even">
-<td><code>fade</code></td>
-<td>Cross fade</td>
-</tr>
-<tr class="odd">
-<td><code>slide</code></td>
-<td>Slide horizontally</td>
-</tr>
-<tr class="even">
-<td><code>convex</code></td>
-<td>Slide at a convex angle</td>
-</tr>
-<tr class="odd">
-<td><code>concave</code></td>
-<td>Slide at a concave angle</td>
-</tr>
-<tr class="even">
-<td><code>zoom</code></td>
-<td>Scale the incoming slide so it grows in from the center of the screen.</td>
-</tr>
-</tbody>
-</table>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/advanced.html#slide-transitions">Slide Transitions</a></p>
-</div>
-</section>
-<section id="tabsets" class="slide level2 smaller scrollable" data-transition="slide">
-<h2>Tabsets</h2>
-<div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Plot</a></li><li><a href="#tabset-3-2">Data</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-55-1.png" width="960"></p>
-</div>
-</div>
-</div>
-<div id="tabset-3-2">
-<div class="cell">
-<div class="cell-output-display">
-<table style="width:100%;">
-<colgroup>
-<col style="width: 27%">
-<col style="width: 6%">
-<col style="width: 5%">
-<col style="width: 8%">
-<col style="width: 5%">
-<col style="width: 6%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 4%">
-<col style="width: 4%">
-<col style="width: 6%">
-<col style="width: 6%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">mpg</th>
-<th style="text-align: right;">cyl</th>
-<th style="text-align: right;">disp</th>
-<th style="text-align: right;">hp</th>
-<th style="text-align: right;">drat</th>
-<th style="text-align: right;">wt</th>
-<th style="text-align: right;">qsec</th>
-<th style="text-align: right;">vs</th>
-<th style="text-align: right;">am</th>
-<th style="text-align: right;">gear</th>
-<th style="text-align: right;">carb</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">Mazda RX4</td>
-<td style="text-align: right;">21.0</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">160.0</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">3.90</td>
-<td style="text-align: right;">2.620</td>
-<td style="text-align: right;">16.46</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Mazda RX4 Wag</td>
-<td style="text-align: right;">21.0</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">160.0</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">3.90</td>
-<td style="text-align: right;">2.875</td>
-<td style="text-align: right;">17.02</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Datsun 710</td>
-<td style="text-align: right;">22.8</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">108.0</td>
-<td style="text-align: right;">93</td>
-<td style="text-align: right;">3.85</td>
-<td style="text-align: right;">2.320</td>
-<td style="text-align: right;">18.61</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Hornet 4 Drive</td>
-<td style="text-align: right;">21.4</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">258.0</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">3.08</td>
-<td style="text-align: right;">3.215</td>
-<td style="text-align: right;">19.44</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Hornet Sportabout</td>
-<td style="text-align: right;">18.7</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">360.0</td>
-<td style="text-align: right;">175</td>
-<td style="text-align: right;">3.15</td>
-<td style="text-align: right;">3.440</td>
-<td style="text-align: right;">17.02</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Valiant</td>
-<td style="text-align: right;">18.1</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">225.0</td>
-<td style="text-align: right;">105</td>
-<td style="text-align: right;">2.76</td>
-<td style="text-align: right;">3.460</td>
-<td style="text-align: right;">20.22</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Duster 360</td>
-<td style="text-align: right;">14.3</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">360.0</td>
-<td style="text-align: right;">245</td>
-<td style="text-align: right;">3.21</td>
-<td style="text-align: right;">3.570</td>
-<td style="text-align: right;">15.84</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Merc 240D</td>
-<td style="text-align: right;">24.4</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">146.7</td>
-<td style="text-align: right;">62</td>
-<td style="text-align: right;">3.69</td>
-<td style="text-align: right;">3.190</td>
-<td style="text-align: right;">20.00</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Merc 230</td>
-<td style="text-align: right;">22.8</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">140.8</td>
-<td style="text-align: right;">95</td>
-<td style="text-align: right;">3.92</td>
-<td style="text-align: right;">3.150</td>
-<td style="text-align: right;">22.90</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Merc 280</td>
-<td style="text-align: right;">19.2</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">167.6</td>
-<td style="text-align: right;">123</td>
-<td style="text-align: right;">3.92</td>
-<td style="text-align: right;">3.440</td>
-<td style="text-align: right;">18.30</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Merc 280C</td>
-<td style="text-align: right;">17.8</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">167.6</td>
-<td style="text-align: right;">123</td>
-<td style="text-align: right;">3.92</td>
-<td style="text-align: right;">3.440</td>
-<td style="text-align: right;">18.90</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Merc 450SE</td>
-<td style="text-align: right;">16.4</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">275.8</td>
-<td style="text-align: right;">180</td>
-<td style="text-align: right;">3.07</td>
-<td style="text-align: right;">4.070</td>
-<td style="text-align: right;">17.40</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">3</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Merc 450SL</td>
-<td style="text-align: right;">17.3</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">275.8</td>
-<td style="text-align: right;">180</td>
-<td style="text-align: right;">3.07</td>
-<td style="text-align: right;">3.730</td>
-<td style="text-align: right;">17.60</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">3</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Merc 450SLC</td>
-<td style="text-align: right;">15.2</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">275.8</td>
-<td style="text-align: right;">180</td>
-<td style="text-align: right;">3.07</td>
-<td style="text-align: right;">3.780</td>
-<td style="text-align: right;">18.00</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">3</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Cadillac Fleetwood</td>
-<td style="text-align: right;">10.4</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">472.0</td>
-<td style="text-align: right;">205</td>
-<td style="text-align: right;">2.93</td>
-<td style="text-align: right;">5.250</td>
-<td style="text-align: right;">17.98</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Lincoln Continental</td>
-<td style="text-align: right;">10.4</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">460.0</td>
-<td style="text-align: right;">215</td>
-<td style="text-align: right;">3.00</td>
-<td style="text-align: right;">5.424</td>
-<td style="text-align: right;">17.82</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Chrysler Imperial</td>
-<td style="text-align: right;">14.7</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">440.0</td>
-<td style="text-align: right;">230</td>
-<td style="text-align: right;">3.23</td>
-<td style="text-align: right;">5.345</td>
-<td style="text-align: right;">17.42</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Fiat 128</td>
-<td style="text-align: right;">32.4</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">78.7</td>
-<td style="text-align: right;">66</td>
-<td style="text-align: right;">4.08</td>
-<td style="text-align: right;">2.200</td>
-<td style="text-align: right;">19.47</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Honda Civic</td>
-<td style="text-align: right;">30.4</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">75.7</td>
-<td style="text-align: right;">52</td>
-<td style="text-align: right;">4.93</td>
-<td style="text-align: right;">1.615</td>
-<td style="text-align: right;">18.52</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Toyota Corolla</td>
-<td style="text-align: right;">33.9</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">71.1</td>
-<td style="text-align: right;">65</td>
-<td style="text-align: right;">4.22</td>
-<td style="text-align: right;">1.835</td>
-<td style="text-align: right;">19.90</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Toyota Corona</td>
-<td style="text-align: right;">21.5</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">120.1</td>
-<td style="text-align: right;">97</td>
-<td style="text-align: right;">3.70</td>
-<td style="text-align: right;">2.465</td>
-<td style="text-align: right;">20.01</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Dodge Challenger</td>
-<td style="text-align: right;">15.5</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">318.0</td>
-<td style="text-align: right;">150</td>
-<td style="text-align: right;">2.76</td>
-<td style="text-align: right;">3.520</td>
-<td style="text-align: right;">16.87</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">AMC Javelin</td>
-<td style="text-align: right;">15.2</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">304.0</td>
-<td style="text-align: right;">150</td>
-<td style="text-align: right;">3.15</td>
-<td style="text-align: right;">3.435</td>
-<td style="text-align: right;">17.30</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Camaro Z28</td>
-<td style="text-align: right;">13.3</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">350.0</td>
-<td style="text-align: right;">245</td>
-<td style="text-align: right;">3.73</td>
-<td style="text-align: right;">3.840</td>
-<td style="text-align: right;">15.41</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Pontiac Firebird</td>
-<td style="text-align: right;">19.2</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">400.0</td>
-<td style="text-align: right;">175</td>
-<td style="text-align: right;">3.08</td>
-<td style="text-align: right;">3.845</td>
-<td style="text-align: right;">17.05</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Fiat X1-9</td>
-<td style="text-align: right;">27.3</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">79.0</td>
-<td style="text-align: right;">66</td>
-<td style="text-align: right;">4.08</td>
-<td style="text-align: right;">1.935</td>
-<td style="text-align: right;">18.90</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Porsche 914-2</td>
-<td style="text-align: right;">26.0</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">120.3</td>
-<td style="text-align: right;">91</td>
-<td style="text-align: right;">4.43</td>
-<td style="text-align: right;">2.140</td>
-<td style="text-align: right;">16.70</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Lotus Europa</td>
-<td style="text-align: right;">30.4</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">95.1</td>
-<td style="text-align: right;">113</td>
-<td style="text-align: right;">3.77</td>
-<td style="text-align: right;">1.513</td>
-<td style="text-align: right;">16.90</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">2</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Ford Pantera L</td>
-<td style="text-align: right;">15.8</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">351.0</td>
-<td style="text-align: right;">264</td>
-<td style="text-align: right;">4.22</td>
-<td style="text-align: right;">3.170</td>
-<td style="text-align: right;">14.50</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">4</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Ferrari Dino</td>
-<td style="text-align: right;">19.7</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">145.0</td>
-<td style="text-align: right;">175</td>
-<td style="text-align: right;">3.62</td>
-<td style="text-align: right;">2.770</td>
-<td style="text-align: right;">15.50</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">6</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Maserati Bora</td>
-<td style="text-align: right;">15.0</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">301.0</td>
-<td style="text-align: right;">335</td>
-<td style="text-align: right;">3.54</td>
-<td style="text-align: right;">3.570</td>
-<td style="text-align: right;">14.60</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">8</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Volvo 142E</td>
-<td style="text-align: right;">21.4</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">121.0</td>
-<td style="text-align: right;">109</td>
-<td style="text-align: right;">4.11</td>
-<td style="text-align: right;">2.780</td>
-<td style="text-align: right;">18.60</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">2</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/#tabsets">Tabsets</a></p>
-</div>
-</section>
-<section id="interactive-slides" class="slide level2 smaller" data-transition="slide">
-<h2>Interactive Slides</h2>
-<p>Include Jupyter widgets and htmlwidgets in your presentations</p>
-<div class="cell">
-
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/interactive/widgets/jupyter.html">Jupyter widgets</a>, <a href="https://quarto.org/docs/interactive/widgets/htmlwidgets.html">htmlwidgets</a></p>
-</div>
-</section>
-<section id="interactive-slides-1" class="slide level2 smaller" data-transition="slide">
-<h2>Interactive Slides</h2>
-<p>Turn presentations into applications with Observable and Shiny. Use component layout to position inputs and outputs.</p>
-<div class="cell">
-
-</div>
-<div class="layout-sidebar layout-sidebar-left">
-<div class="cell panel-sidebar">
-<div class="sourceCode cell-code hidden" id="cb22" data-startfrom="961" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 960;"><span id="cb22-961"><a href="#cb22-961"></a>viewof talentWeight <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> { <span class="dt">value</span><span class="op">:</span> <span class="fl">0.7</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"talent weight"</span> })</span>
-<span id="cb22-962"><a href="#cb22-962"></a>viewof looksWeight <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> { <span class="dt">value</span><span class="op">:</span> <span class="fl">0.7</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"looks weight"</span> })</span>
-<span id="cb22-963"><a href="#cb22-963"></a>viewof minimum <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="op">-</span><span class="dv">2</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> { <span class="dt">value</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.01</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"min fame"</span> })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div>
-<div id="ojs-cell-5-1" data-nodetype="declaration">
-
-</div>
-</div>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<div id="ojs-cell-5-2" data-nodetype="declaration">
-
-</div>
-</div>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<div id="ojs-cell-5-3" data-nodetype="declaration">
-
-</div>
-</div>
-</div>
-</div>
-<div class="panel-fill">
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/interactive/ojs/">Observable</a>, <a href="https://quarto.org/docs/interactive/shiny/">Shiny</a>, <a href="https://quarto.org/docs/interactive/layout.html">Component Layout</a></p>
-</div>
-</div>
-</div>
-</section>
-<section id="preview-links" class="slide level2">
-<h2>Preview Links</h2>
-<p>Navigate to hyperlinks without disrupting the flow of your presentation.</p>
-<p>Use the <code>preview-links</code> option to open links in an iframe on top of your slides. Try clicking the link below for a demonstration:</p>
-<div style="text-align: center; margin-top: 1em">
-<p><a href="https://matplotlib.org/" data-preview-link="true" style="text-align: center">Matplotlib: Visualization with Python</a></p>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/presenting.html#preview-links">Preview Links</a></p>
-</div>
-</section>
-<section id="themes" class="slide level2">
-<h2>Themes</h2>
-<p>10 Built-in Themes (or <a href="https://quarto.org/docs/presentations/revealjs/themes.html#creating-themes">create your own</a>)</p>
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img data-src="images/moon.png"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img data-src="images/sky.png"></p>
-</div>
-</div>
-</div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/themes.html">Themes</a></p>
-</div>
-</section>
-<section id="easy-navigation" class="slide level2">
-<h2>Easy Navigation</h2>
-<div style="margin-bottom: 0.9em;">
-<p>Quickly jump to other parts of your presentation</p>
-</div>
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-layout-cell" style="flex-basis: 4.8%;justify-content: center;">
-<p><img data-src="images/presentation-menu.png" width="41"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 95.2%;justify-content: center;">
-<p>Toggle the slide menu with the menu button (bottom left of slide) to go to other slides and access presentation tools.</p>
-</div>
-</div>
-</div>
-<p>You can also press <code>m</code> to toggle the menu open and closed.</p>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/presenting.html#navigation-menu">Navigation</a></p>
-</div>
-</section>
-<section id="chalkboard" class="slide level2" data-chalkboard-buttons="true">
-<h2>Chalkboard</h2>
-<div style="margin-bottom: 0.9em;">
-<p>Free form drawing and slide annotations</p>
-</div>
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-layout-cell" style="flex-basis: 4.8%;justify-content: center;">
-<p><img data-src="images/presentation-chalkboard.png" width="41"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 95.2%;justify-content: center;">
-<p>Use the chalkboard button at the bottom left of the slide to toggle the chalkboard.</p>
-</div>
-</div>
-</div>
-<div class="quarto-layout-panel">
-<div class="quarto-layout-row quarto-layout-valign-top">
-<div class="quarto-layout-cell" style="flex-basis: 4.8%;justify-content: center;">
-<p><img data-src="images/presentation-notes-canvas.png" width="41"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 95.2%;justify-content: center;">
-<p>Use the notes canvas button at the bottom left of the slide to toggle drawing on top of the current slide.</p>
-</div>
-</div>
-</div>
-<p>You can also press <code>b</code> to toggle the chalkboard or <code>c</code> to toggle the notes canvas.</p>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/presenting.html#chalkboard">Chalkboard</a></p>
-</div>
-</section>
-<section id="point-of-view" class="slide level2">
-<h2>Point of View</h2>
-<p>Press <code>o</code> to toggle overview mode:</p>
-
-<img data-src="images/overview-mode.png" class="border r-stretch"><p>Hold down the <code>Alt</code> key (or <code>Ctrl</code> in Linux) and click on any element to zoom towards it—try it now on this slide.</p>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/presenting.html#overview-mode">Overview Mode</a>, <a href="https://quarto.org/docs/presentations/revealjs/presenting.html#slide-zoom">Slide Zoom</a></p>
-</div>
-</section>
-<section id="speaker-view" class="slide level2">
-<h2>Speaker View</h2>
-<p>Press <code>s</code> (or use the presentation menu) to open speaker view</p>
-
-<img data-src="images/speaker-view.png" width="780" class="r-stretch quarto-figure-center"><div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/presenting.html#speaker-view">Speaker View</a></p>
-</div>
-</section>
-<section id="authoring-tools" class="slide level2 smaller">
-<h2>Authoring Tools</h2>
-<p>Live side-by-side preview for any notebook or text editor including Jupyter and VS Code</p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><img data-src="images/jupyter-edit.png" class="border border-thick"></p>
 </div><div class="column" style="width:50%;">
-<p><img data-src="images/jupyter-preview.png" class="border border-thick"></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-85-1.png" width="960"></p>
 </div>
 </div>
-<div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/tools/jupyter-lab.html">Jupyter</a>, <a href="https://quarto.org/docs/tools/vscode.html">VS Code</a>, <a href="https://quarto.org/docs/tools/text-editors.html">Text Editors</a></p>
 </div>
-</section>
-<section id="authoring-tools-1" class="slide level2 smaller">
-<h2>Authoring Tools</h2>
-<p>RStudio includes an integrated presentation preview pane</p>
-
-<img data-src="images/rstudio.png" class="border r-stretch" width="900"><div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/tools/rstudio.html">RStudio</a></p>
 </div>
-</section>
-<section id="and-more" class="slide level2">
-<h2>And More…</h2>
 <ul>
-<li><a href="https://quarto.org/docs/presentations/revealjs/advanced.html#touch-navigation">Touch</a> optimized (presentations look great on mobile, swipe to navigate slides)</li>
-<li><a href="https://quarto.org/docs/presentations/revealjs/#footer-logo">Footer &amp; Logo</a> (optionally specify custom footer per-slide)</li>
-<li><a href="https://quarto.org/docs/presentations/revealjs/presenting.html#auto-slide">Auto-Slide</a> (step through slides automatically, without any user input)</li>
-<li><a href="https://quarto.org/docs/presentations/revealjs/presenting.html#multiplex">Multiplex</a> (allows your audience to follow the slides of the presentation you are controlling on their own phone, tablet or laptop).</li>
+<li>2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.</li>
 </ul>
+</div>
+<div id="tabset-11-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>ks_stat_0506 <span class="ot">=</span> <span class="fu">get_ks_df</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span>
+<span id="cb31-2"><a href="#cb31-2"></a></span>
+<span id="cb31-3"><a href="#cb31-3"></a><span class="fu">ggplot</span>(<span class="fu">rbind</span>(HR2005, HR2006), <span class="fu">aes</span>(HR, <span class="at">color =</span> <span class="fu">factor</span>(yearID))) <span class="sc">+</span></span>
+<span id="cb31-4"><a href="#cb31-4"></a>  <span class="fu">stat_ecdf</span>(<span class="at">geom =</span> <span class="st">"step"</span>) <span class="sc">+</span></span>
+<span id="cb31-5"><a href="#cb31-5"></a>  <span class="fu">geom_segment</span>(</span>
+<span id="cb31-6"><a href="#cb31-6"></a>    <span class="at">data =</span> ks_stat_0506,</span>
+<span id="cb31-7"><a href="#cb31-7"></a>    <span class="fu">aes</span>(</span>
+<span id="cb31-8"><a href="#cb31-8"></a>      <span class="at">x =</span> x,</span>
+<span id="cb31-9"><a href="#cb31-9"></a>      <span class="at">y =</span> y,</span>
+<span id="cb31-10"><a href="#cb31-10"></a>      <span class="at">xend =</span> xend,</span>
+<span id="cb31-11"><a href="#cb31-11"></a>      <span class="at">yend =</span> yend</span>
+<span id="cb31-12"><a href="#cb31-12"></a>    ),</span>
+<span id="cb31-13"><a href="#cb31-13"></a>    <span class="at">color =</span> <span class="st">"black"</span>,</span>
+<span id="cb31-14"><a href="#cb31-14"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span></span>
+<span id="cb31-15"><a href="#cb31-15"></a>  ) <span class="sc">+</span></span>
+<span id="cb31-16"><a href="#cb31-16"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Homeruns per player per year"</span>,</span>
+<span id="cb31-17"><a href="#cb31-17"></a>       <span class="at">y =</span> <span class="st">"Empirical CDF"</span>,</span>
+<span id="cb31-18"><a href="#cb31-18"></a>       <span class="at">title =</span> <span class="st">"Empirical CDFs of player home runs per year in years 2005 and 2006 "</span>,</span>
+<span id="cb31-19"><a href="#cb31-19"></a>       <span class="at">subtitle =</span> <span class="st">"Dashed line is the Kolmogorov-Smirnov Statistic"</span>,</span>
+<span id="cb31-20"><a href="#cb31-20"></a>       <span class="at">color =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb31-21"><a href="#cb31-21"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="using-the-kolmogorov-smirnov-statistic-for-visualization" class="slide level2">
+<h2>Using the Kolmogorov-Smirnov statistic for visualization</h2>
+<ul>
+<li>Our earlier motivation was to compare the distribution of homeruns over time to see if rule changes made a difference.</li>
+<li>We can’t use a ridge or violin plot with all 100 years; it would be too cramped.</li>
+<li>What if we used the KS statistic to compare all pairs of years and emulated a correlation matrix?</li>
+</ul>
+</section>
+<section id="building-the-matrix" class="slide level2 smallest">
+<h2>Building the Matrix</h2>
+<div class="cell" data-hash="slides_cache/revealjs/unnamed-chunk-89_acb9ebfb90d742b4732a16c3b6571f7e">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>ks_matrix <span class="ot">&lt;-</span> <span class="fu">tribble</span>(<span class="sc">~</span>year1, <span class="sc">~</span>year2, <span class="sc">~</span>ks_stat, <span class="sc">~</span>p_value)</span>
+<span id="cb32-2"><a href="#cb32-2"></a>all_years <span class="ot">&lt;-</span> <span class="fu">unique</span>(home_runs<span class="sc">$</span>yearID)</span>
+<span id="cb32-3"><a href="#cb32-3"></a></span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="co"># Save some memory</span></span>
+<span id="cb32-5"><a href="#cb32-5"></a>home_runs_to_search <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">select</span>(yearID, HR)</span>
+<span id="cb32-6"><a href="#cb32-6"></a></span>
+<span id="cb32-7"><a href="#cb32-7"></a></span>
+<span id="cb32-8"><a href="#cb32-8"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="sc">-</span><span class="dv">1</span>) <span class="co"># Turn off ks.test warning</span></span>
+<span id="cb32-9"><a href="#cb32-9"></a></span>
+<span id="cb32-10"><a href="#cb32-10"></a><span class="cf">for</span> (year1 <span class="cf">in</span> all_years) {</span>
+<span id="cb32-11"><a href="#cb32-11"></a>  year1HR <span class="ot">&lt;-</span> home_runs_to_search <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> year1)</span>
+<span id="cb32-12"><a href="#cb32-12"></a>  <span class="cf">for</span> (year2 <span class="cf">in</span> all_years) {</span>
+<span id="cb32-13"><a href="#cb32-13"></a>    <span class="cf">if</span> (year1 <span class="sc">==</span> year2) {</span>
+<span id="cb32-14"><a href="#cb32-14"></a>      <span class="cf">next</span> <span class="co"># Trivially 0 </span></span>
+<span id="cb32-15"><a href="#cb32-15"></a>    }</span>
+<span id="cb32-16"><a href="#cb32-16"></a>    year2HR <span class="ot">=</span> home_runs_to_search <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> year2)</span>
+<span id="cb32-17"><a href="#cb32-17"></a>    </span>
+<span id="cb32-18"><a href="#cb32-18"></a>    test <span class="ot">&lt;-</span> <span class="fu">ks.test</span>(year1HR<span class="sc">$</span>HR,</span>
+<span id="cb32-19"><a href="#cb32-19"></a>                    year2HR<span class="sc">$</span>HR)</span>
+<span id="cb32-20"><a href="#cb32-20"></a>    </span>
+<span id="cb32-21"><a href="#cb32-21"></a>    ks_matrix <span class="ot">&lt;-</span> ks_matrix <span class="sc">%&gt;%</span></span>
+<span id="cb32-22"><a href="#cb32-22"></a>      <span class="fu">add_row</span>(<span class="at">year1 =</span> year1, </span>
+<span id="cb32-23"><a href="#cb32-23"></a>              <span class="at">year2 =</span> year2, </span>
+<span id="cb32-24"><a href="#cb32-24"></a>              <span class="at">ks_stat =</span> test<span class="sc">$</span>statistic, </span>
+<span id="cb32-25"><a href="#cb32-25"></a>              <span class="at">p_value =</span> test<span class="sc">$</span>p.value)</span>
+<span id="cb32-26"><a href="#cb32-26"></a>  }</span>
+<span id="cb32-27"><a href="#cb32-27"></a>}</span>
+<span id="cb32-28"><a href="#cb32-28"></a></span>
+<span id="cb32-29"><a href="#cb32-29"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="visualizing-the-matrix" class="slide level2 smallest">
+<h2>Visualizing the Matrix</h2>
+<div class="panel-tabset">
+<ul id="tabset-12" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-12-1">Plot</a></li><li><a href="#tabset-12-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-12-1">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-91-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>There seems to be some patterns in our matrix, but there’s a problem…</li>
+</ul>
+</div>
+<div id="tabset-12-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>ks_matrix <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
+<span id="cb33-3"><a href="#cb33-3"></a>    p_value,</span>
+<span id="cb33-4"><a href="#cb33-4"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">1.001</span>),</span>
+<span id="cb33-5"><a href="#cb33-5"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
+<span id="cb33-6"><a href="#cb33-6"></a>    <span class="at">include.lowest =</span> T,</span>
+<span id="cb33-7"><a href="#cb33-7"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb33-8"><a href="#cb33-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb33-9"><a href="#cb33-9"></a>    <span class="at">x =</span> year1,</span>
+<span id="cb33-10"><a href="#cb33-10"></a>    <span class="at">y =</span> year2,</span>
+<span id="cb33-11"><a href="#cb33-11"></a>    <span class="at">fill =</span> <span class="fu">factor</span>(signif)</span>
+<span id="cb33-12"><a href="#cb33-12"></a>  )) <span class="sc">+</span></span>
+<span id="cb33-13"><a href="#cb33-13"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb33-14"><a href="#cb33-14"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb33-15"><a href="#cb33-15"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb33-16"><a href="#cb33-16"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(colorspace<span class="sc">::</span><span class="fu">heat_hcl</span>(<span class="dv">4</span>), <span class="st">"#AAAAAA"</span>)) <span class="sc">+</span></span>
+<span id="cb33-17"><a href="#cb33-17"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Unadjusted p-values matrix"</span>,</span>
+<span id="cb33-18"><a href="#cb33-18"></a>       <span class="at">fill =</span> <span class="st">"Significance"</span>,</span>
+<span id="cb33-19"><a href="#cb33-19"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb33-20"><a href="#cb33-20"></a>       <span class="at">y =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb33-21"><a href="#cb33-21"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="multiple-testing" class="slide level2 smallest">
+<h2>Multiple Testing</h2>
+<ul>
+<li><p>When performing multiple hypothesis tests, we typically want to control the <em>Family Wise Error Rate</em>: the probability we make at least 1 Type I error (a false rejection).</p></li>
+<li><p>Newer methods focus more on controlling the <em>False Discovery Rate</em>: the probability that any particular rejected null hypothesis is actually a false positive.</p></li>
+<li><p>Both require adjusting p-values which is built in to <code>R</code> (<code>?p.adjust</code>).</p>
+<ul>
+<li><code>holm</code>, <code>hochberg</code> and <code>hommel</code> control for Family Wise Error Rate
+<ul>
+<li><code>bonferroni</code> also controls for this, but is very conservative</li>
+</ul></li>
+<li><code>fdr</code> and <code>BY</code> methods control for False Discovery Rate</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="co"># Let's try all the adjustments and see how they change our visualization</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a>ks_matrix <span class="ot">&lt;-</span> ks_matrix <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb34-4"><a href="#cb34-4"></a>    <span class="at">p_holm =</span> <span class="fu">p.adjust</span>(p_value, <span class="st">"holm"</span>),</span>
+<span id="cb34-5"><a href="#cb34-5"></a>    <span class="at">p_hochberg =</span> <span class="fu">p.adjust</span>(p_value, <span class="st">"hochberg"</span>),</span>
+<span id="cb34-6"><a href="#cb34-6"></a>    <span class="at">p_hommel =</span> <span class="fu">p.adjust</span>(p_value, <span class="st">"hommel"</span>),</span>
+<span id="cb34-7"><a href="#cb34-7"></a>    <span class="at">p_bonferroni =</span> <span class="fu">p.adjust</span>(p_value, <span class="st">"bonferroni"</span>),</span>
+<span id="cb34-8"><a href="#cb34-8"></a>    <span class="at">p_fdr =</span> <span class="fu">p.adjust</span>(p_value, <span class="st">"fdr"</span>),</span>
+<span id="cb34-9"><a href="#cb34-9"></a>    <span class="at">p_BY =</span> <span class="fu">p.adjust</span>(p_value, <span class="st">"BY"</span>)</span>
+<span id="cb34-10"><a href="#cb34-10"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div class="footer">
-<p>Learn more: <a href="https://quarto.org/docs/presentations/revealjs/">Quarto Presentations</a></p>
+<p>To learn more see Chapter 13 of <em>An Introduction to Statistical Learning (2nd Edition)</em> by Hastie et al.&nbsp;It is <a href="https://www.statlearning.com/">free online</a> and Chapter 13 is not too difficult.</p>
+</div>
+</section>
+<section id="visualizing-the-matrix-corrections" class="slide level2 smallest">
+<h2>Visualizing the Matrix (Corrections)</h2>
+<div class="panel-tabset">
+<ul id="tabset-13" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-13-1">Plot</a></li><li><a href="#tabset-13-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-13-1">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-97-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Controlling for the Family Wise Error Rate got rid of a lot of our interesting patterns. We don’t mind some false positives so we choose the <code>BY</code> adjustment as it controls False Discovery Rate but is a bit more conservative than <code>FDR</code>.</li>
+</ul>
+</div>
+<div id="tabset-13-2">
+<div class="cell">
+
+</div>
+</div>
+</div>
 </div>
 <div class="footer footer-default">
 
@@ -2142,7 +1715,7 @@ a_{21}&amp; =b_{21}&amp;
       });
     </script>
     <script type="ojs-module-contents">
-    {"contents":[{"methodName":"interpret","cellName":"ojs-cell-1","inline":false,"source":"\nviewof binWidth = Inputs.range([0.01, 1.5], {value: 0.2, step: 0.001, label: \"Bin Width\"});\nviewof numPoints = Inputs.range([0, 9000], {value: 900, step: 1, label: \"Number of Points\"});\nviewof generate = Inputs.button(\"Regenerate Data\");\n"},{"methodName":"interpret","cellName":"ojs-cell-2","inline":false,"source":"import { plotNewData, regenerateData } from \"./histoSampling.js\";\n\n// Generate does not actually get used just forces a refresh\nplotNewData(regenerateData(numPoints / 3), binWidth, generate);\n\n"},{"methodName":"interpret","cellName":"ojs-cell-3","inline":false,"source":"\nviewof binWidth2 = Inputs.range([0.01, 1.5], {value: 0.2, step: 0.001, label: \"Bin Width\"});\nviewof bandwidth = Inputs.range([0.01, 2], {value: 0.2, step: 0.001, label: \"Bandwidth\"});\nviewof numPoints2 = Inputs.range([0, 9000], {value: 900, step: 1, label: \"Number of Points\"});\nviewof generate2 = Inputs.button(\"Regenerate Data\");\n"},{"methodName":"interpret","cellName":"ojs-cell-4","inline":false,"source":"import { plotNewDataBW } from \"./bandwidthSampling.js\";\n\n// Generate does not actually get used just forces a refresh\nplotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);\n\n"},{"methodName":"interpret","cellName":"ojs-cell-5","inline":false,"source":"viewof talentWeight = Inputs.range([-2, 2], { value: 0.7, step: 0.01, label: \"talent weight\" })\nviewof looksWeight = Inputs.range([-2, 2], { value: 0.7, step: 0.01, label: \"looks weight\" })\nviewof minimum = Inputs.range([-2, 2], { value: 1, step: 0.01, label: \"min fame\" })\n"},{"methodName":"interpretQuiet","source":"shinyInput('binWidth')"},{"methodName":"interpretQuiet","source":"shinyInput('numPoints')"},{"methodName":"interpretQuiet","source":"shinyInput('generate')"},{"methodName":"interpretQuiet","source":"shinyInput('binWidth2')"},{"methodName":"interpretQuiet","source":"shinyInput('bandwidth')"},{"methodName":"interpretQuiet","source":"shinyInput('numPoints2')"},{"methodName":"interpretQuiet","source":"shinyInput('generate2')"},{"methodName":"interpretQuiet","source":"shinyInput('talentWeight')"},{"methodName":"interpretQuiet","source":"shinyInput('looksWeight')"},{"methodName":"interpretQuiet","source":"shinyInput('minimum')"}]}
+    {"contents":[{"methodName":"interpret","cellName":"ojs-cell-1","inline":false,"source":"\nviewof binWidth = Inputs.range([0.01, 1.5], {value: 0.2, step: 0.001, label: \"Bin Width\"});\nviewof numPoints = Inputs.range([0, 9000], {value: 900, step: 1, label: \"Number of Points\"});\nviewof generate = Inputs.button(\"Regenerate Data\");\n"},{"methodName":"interpret","cellName":"ojs-cell-2","inline":false,"source":"import { plotNewData, regenerateData } from \"./histoSampling.js\";\n\n// Generate does not actually get used just forces a refresh\nplotNewData(regenerateData(numPoints / 3), binWidth, generate);\n\n"},{"methodName":"interpret","cellName":"ojs-cell-3","inline":false,"source":"\nviewof binWidth2 = Inputs.range([0.01, 1.5], {value: 0.2, step: 0.001, label: \"Bin Width\"});\nviewof bandwidth = Inputs.range([0.01, 2], {value: 0.2, step: 0.001, label: \"Bandwidth\"});\nviewof numPoints2 = Inputs.range([0, 9000], {value: 900, step: 1, label: \"Number of Points\"});\nviewof generate2 = Inputs.button(\"Regenerate Data\");\n"},{"methodName":"interpret","cellName":"ojs-cell-4","inline":false,"source":"import { plotNewDataBW } from \"./bandwidthSampling.js\";\n\n// Generate does not actually get used just forces a refresh\nplotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);\n\n"},{"methodName":"interpretQuiet","source":"shinyInput('binWidth')"},{"methodName":"interpretQuiet","source":"shinyInput('numPoints')"},{"methodName":"interpretQuiet","source":"shinyInput('generate')"},{"methodName":"interpretQuiet","source":"shinyInput('binWidth2')"},{"methodName":"interpretQuiet","source":"shinyInput('bandwidth')"},{"methodName":"interpretQuiet","source":"shinyInput('numPoints2')"},{"methodName":"interpretQuiet","source":"shinyInput('generate2')"}]}
     </script>
     <script type="module">
     window._ojs.paths.runtimeToDoc = "../../..";
