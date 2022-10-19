@@ -1171,15 +1171,15 @@
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(-1) </td>
-   <td style="text-align:right;"> 0.1747 </td>
+   <td style="text-align:right;"> 0.1640 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(0) </td>
-   <td style="text-align:right;"> 0.3278 </td>
+   <td style="text-align:right;"> 0.3267 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(2) </td>
-   <td style="text-align:right;"> 0.6647 </td>
+   <td style="text-align:right;"> 0.6663 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(5) </td>
@@ -1220,11 +1220,13 @@
 <div class="column" style="width:50%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Closest 4 years</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>HRearly2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2014</span>)</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Years up to COVID season</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>HRlate2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2016</span><span class="sc">:</span><span class="dv">2019</span>) </span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>HRearly2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2014</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Years up to COVID season</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>HRlate2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2016</span><span class="sc">:</span><span class="dv">2019</span>) </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Two-sample Kolmogorov-Smirnov test
@@ -1298,10 +1300,12 @@ alternative hypothesis: two-sided</code></pre>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>HR2005 <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2005</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>HR2006 <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2006</span>)</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>HR2005 <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2005</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>HR2006 <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">==</span> <span class="dv">2006</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Two-sample Kolmogorov-Smirnov test
@@ -1361,7 +1365,7 @@ alternative hypothesis: two-sided</code></pre>
 </section>
 <section id="building-the-matrix" class="slide level2 smallest">
 <h2>Building the Matrix</h2>
-<div class="cell" data-hash="slides_cache/revealjs/unnamed-chunk-89_acb9ebfb90d742b4732a16c3b6571f7e">
+<div class="cell" data-hash="slides_cache/revealjs/unnamed-chunk-89_4ba24e1b2d0589db892f8d1b5c2e89d3">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>ks_matrix <span class="ot">&lt;-</span> <span class="fu">tribble</span>(<span class="sc">~</span>year1, <span class="sc">~</span>year2, <span class="sc">~</span>ks_stat, <span class="sc">~</span>p_value)</span>
 <span id="cb32-2"><a href="#cb32-2"></a>all_years <span class="ot">&lt;-</span> <span class="fu">unique</span>(home_runs<span class="sc">$</span>yearID)</span>
 <span id="cb32-3"><a href="#cb32-3"></a></span>
@@ -1382,7 +1386,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb32-18"><a href="#cb32-18"></a>    test <span class="ot">&lt;-</span> <span class="fu">ks.test</span>(year1HR<span class="sc">$</span>HR,</span>
 <span id="cb32-19"><a href="#cb32-19"></a>                    year2HR<span class="sc">$</span>HR)</span>
 <span id="cb32-20"><a href="#cb32-20"></a>    </span>
-<span id="cb32-21"><a href="#cb32-21"></a>    ks_matrix <span class="ot">&lt;-</span> ks_matrix <span class="sc">%&gt;%</span></span>
+<span id="cb32-21"><a href="#cb32-21"></a>    ks_matrix <span class="ot">&lt;-</span> ks_matrix <span class="sc">|&gt;</span></span>
 <span id="cb32-22"><a href="#cb32-22"></a>      <span class="fu">add_row</span>(<span class="at">year1 =</span> year1, </span>
 <span id="cb32-23"><a href="#cb32-23"></a>              <span class="at">year2 =</span> year2, </span>
 <span id="cb32-24"><a href="#cb32-24"></a>              <span class="at">ks_stat =</span> test<span class="sc">$</span>statistic, </span>
@@ -1393,8 +1397,8 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb32-29"><a href="#cb32-29"></a><span class="fu">options</span>(<span class="at">warn =</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="visualizing-the-matrix" class="slide level2 smallest">
-<h2>Visualizing the Matrix</h2>
+<section id="visualizing-the-matrix-p-values" class="slide level2 smallest">
+<h2>Visualizing the Matrix (p-values)</h2>
 <div class="panel-tabset">
 <ul id="tabset-12" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-12-1">Plot</a></li><li><a href="#tabset-12-2">Code</a></li></ul>
 <div class="tab-content">
@@ -1418,7 +1422,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
 <span id="cb33-3"><a href="#cb33-3"></a>    p_value,</span>
 <span id="cb33-4"><a href="#cb33-4"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">1.001</span>),</span>
-<span id="cb33-5"><a href="#cb33-5"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
+<span id="cb33-5"><a href="#cb33-5"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"&lt;0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
 <span id="cb33-6"><a href="#cb33-6"></a>    <span class="at">include.lowest =</span> T,</span>
 <span id="cb33-7"><a href="#cb33-7"></a>  )) <span class="sc">|&gt;</span></span>
 <span id="cb33-8"><a href="#cb33-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
@@ -1491,11 +1495,258 @@ alternative hypothesis: two-sided</code></pre>
 </div>
 <div id="tabset-13-2">
 <div class="cell">
-
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>ks_matrix <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb35-3"><a href="#cb35-3"></a>    <span class="fu">c</span>(</span>
+<span id="cb35-4"><a href="#cb35-4"></a>      <span class="st">"p_holm"</span>,</span>
+<span id="cb35-5"><a href="#cb35-5"></a>      <span class="st">"p_hochberg"</span>,</span>
+<span id="cb35-6"><a href="#cb35-6"></a>      <span class="st">"p_hommel"</span>,</span>
+<span id="cb35-7"><a href="#cb35-7"></a>      <span class="st">"p_bonferroni"</span>,</span>
+<span id="cb35-8"><a href="#cb35-8"></a>      <span class="st">"p_fdr"</span>,</span>
+<span id="cb35-9"><a href="#cb35-9"></a>      <span class="st">"p_BY"</span></span>
+<span id="cb35-10"><a href="#cb35-10"></a>    ),</span>
+<span id="cb35-11"><a href="#cb35-11"></a>    <span class="at">names_to =</span> <span class="st">"adjustment"</span>,</span>
+<span id="cb35-12"><a href="#cb35-12"></a>    <span class="at">values_to =</span> <span class="st">"adjusted_p"</span></span>
+<span id="cb35-13"><a href="#cb35-13"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb35-14"><a href="#cb35-14"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
+<span id="cb35-15"><a href="#cb35-15"></a>    adjusted_p,</span>
+<span id="cb35-16"><a href="#cb35-16"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">1.001</span>),</span>
+<span id="cb35-17"><a href="#cb35-17"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"&lt;0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
+<span id="cb35-18"><a href="#cb35-18"></a>    <span class="at">include.lowest =</span> T,</span>
+<span id="cb35-19"><a href="#cb35-19"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb35-20"><a href="#cb35-20"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(</span>
+<span id="cb35-21"><a href="#cb35-21"></a>    <span class="at">x =</span> year1,</span>
+<span id="cb35-22"><a href="#cb35-22"></a>    <span class="at">y =</span> year2,</span>
+<span id="cb35-23"><a href="#cb35-23"></a>    <span class="at">fill =</span> <span class="fu">factor</span>(signif)</span>
+<span id="cb35-24"><a href="#cb35-24"></a>  )) <span class="sc">+</span></span>
+<span id="cb35-25"><a href="#cb35-25"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb35-26"><a href="#cb35-26"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb35-27"><a href="#cb35-27"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb35-28"><a href="#cb35-28"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(colorspace<span class="sc">::</span><span class="fu">heat_hcl</span>(<span class="dv">4</span>), <span class="st">"#AAAAAA"</span>)) <span class="sc">+</span></span>
+<span id="cb35-29"><a href="#cb35-29"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb35-30"><a href="#cb35-30"></a>       <span class="at">y =</span> <span class="st">"Year"</span>,</span>
+<span id="cb35-31"><a href="#cb35-31"></a>       <span class="at">fill =</span> <span class="st">"Significance"</span>) <span class="sc">+</span></span>
+<span id="cb35-32"><a href="#cb35-32"></a>  <span class="fu">facet_wrap</span>( <span class="sc">~</span> adjustment) <span class="sc">+</span></span>
+<span id="cb35-33"><a href="#cb35-33"></a>  <span class="fu">coord_fixed</span>() <span class="sc">+</span></span>
+<span id="cb35-34"><a href="#cb35-34"></a>  <span class="fu">theme</span>(</span>
+<span id="cb35-35"><a href="#cb35-35"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb35-36"><a href="#cb35-36"></a>    <span class="at">axis.ticks.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb35-37"><a href="#cb35-37"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb35-38"><a href="#cb35-38"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb35-39"><a href="#cb35-39"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 </div>
+</section>
+<section id="pre-integration" class="slide level2 smallest">
+<h2>Pre-Integration</h2>
+<div class="panel-tabset">
+<ul id="tabset-14" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-14-1">Plot</a></li><li><a href="#tabset-14-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-14-1">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-101-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-14-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="co"># Reuse ggplot object</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a>mat_BY <span class="ot">&lt;-</span></span>
+<span id="cb36-3"><a href="#cb36-3"></a>  ks_matrix <span class="sc">|&gt;</span></span>
+<span id="cb36-4"><a href="#cb36-4"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
+<span id="cb36-5"><a href="#cb36-5"></a>    p_BY,</span>
+<span id="cb36-6"><a href="#cb36-6"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">1.001</span>),</span>
+<span id="cb36-7"><a href="#cb36-7"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"&lt;0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
+<span id="cb36-8"><a href="#cb36-8"></a>    <span class="at">include.lowest =</span> T,</span>
+<span id="cb36-9"><a href="#cb36-9"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb36-10"><a href="#cb36-10"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year1,</span>
+<span id="cb36-11"><a href="#cb36-11"></a>             <span class="at">y =</span> year2)) <span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">factor</span>(signif))) <span class="sc">+</span></span>
+<span id="cb36-13"><a href="#cb36-13"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb36-14"><a href="#cb36-14"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb36-15"><a href="#cb36-15"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(colorspace<span class="sc">::</span><span class="fu">heat_hcl</span>(<span class="dv">4</span>), <span class="st">"#AAAAAA"</span>)) <span class="sc">+</span></span>
+<span id="cb36-16"><a href="#cb36-16"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"BY adjusted p-values matrix"</span>,</span>
+<span id="cb36-17"><a href="#cb36-17"></a>       <span class="at">fill =</span> <span class="st">"Significance"</span>,</span>
+<span id="cb36-18"><a href="#cb36-18"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb36-19"><a href="#cb36-19"></a>       <span class="at">y =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb36-20"><a href="#cb36-20"></a>  <span class="fu">coord_fixed</span>()</span>
+<span id="cb36-21"><a href="#cb36-21"></a></span>
+<span id="cb36-22"><a href="#cb36-22"></a></span>
+<span id="cb36-23"><a href="#cb36-23"></a>description <span class="ot">&lt;-</span></span>
+<span id="cb36-24"><a href="#cb36-24"></a>  <span class="st">"Major League Baseball was segregated by race until </span><span class="sc">\n</span><span class="st"> Jackie Robinson broke the color barrier in 1947.</span><span class="sc">\n</span><span class="st">The talent level of the league changed rapidly,</span><span class="sc">\n</span><span class="st"> including the overall distribution of home runs."</span></span>
+<span id="cb36-25"><a href="#cb36-25"></a>mat_BY <span class="sc">+</span></span>
+<span id="cb36-26"><a href="#cb36-26"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb36-27"><a href="#cb36-27"></a>    <span class="st">"rect"</span>,</span>
+<span id="cb36-28"><a href="#cb36-28"></a>    <span class="at">xmin =</span> <span class="dv">1920</span>,</span>
+<span id="cb36-29"><a href="#cb36-29"></a>    <span class="at">ymin =</span> <span class="dv">1920</span>,</span>
+<span id="cb36-30"><a href="#cb36-30"></a>    <span class="at">xmax =</span> <span class="dv">1947</span>,</span>
+<span id="cb36-31"><a href="#cb36-31"></a>    <span class="at">ymax =</span> <span class="dv">1947</span>,</span>
+<span id="cb36-32"><a href="#cb36-32"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
+<span id="cb36-33"><a href="#cb36-33"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb36-34"><a href="#cb36-34"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-35"><a href="#cb36-35"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb36-36"><a href="#cb36-36"></a>    <span class="st">"label"</span>,</span>
+<span id="cb36-37"><a href="#cb36-37"></a>    <span class="at">x =</span> <span class="dv">1980</span>,</span>
+<span id="cb36-38"><a href="#cb36-38"></a>    <span class="at">y =</span> <span class="dv">1980</span>,</span>
+<span id="cb36-39"><a href="#cb36-39"></a>    <span class="at">label =</span> description,</span>
+<span id="cb36-40"><a href="#cb36-40"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb36-41"><a href="#cb36-41"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb36-42"><a href="#cb36-42"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="world-war-ii" class="slide level2 smallest">
+<h2>World War II</h2>
+<div class="panel-tabset">
+<ul id="tabset-15" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-15-1">Plot</a></li><li><a href="#tabset-15-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-15-1">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-105-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-15-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>description <span class="ot">&lt;-</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>  <span class="st">"During World War II, many baseball players</span><span class="sc">\n</span><span class="st"> fought overseas,making for an atypical number</span><span class="sc">\n</span><span class="st"> of home runs during these years."</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a></span>
+<span id="cb37-4"><a href="#cb37-4"></a>mat_BY <span class="sc">+</span></span>
+<span id="cb37-5"><a href="#cb37-5"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb37-6"><a href="#cb37-6"></a>    <span class="st">"rect"</span>,</span>
+<span id="cb37-7"><a href="#cb37-7"></a>    <span class="at">xmin =</span> <span class="fu">c</span>(<span class="dv">1920</span>, <span class="dv">1941</span>),</span>
+<span id="cb37-8"><a href="#cb37-8"></a>    <span class="at">ymin =</span> <span class="fu">c</span>(<span class="dv">1941</span>, <span class="dv">1920</span>),</span>
+<span id="cb37-9"><a href="#cb37-9"></a>    <span class="at">xmax =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">1945</span>),</span>
+<span id="cb37-10"><a href="#cb37-10"></a>    <span class="at">ymax =</span> <span class="fu">c</span>(<span class="dv">1945</span>, <span class="dv">2022</span>),</span>
+<span id="cb37-11"><a href="#cb37-11"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
+<span id="cb37-12"><a href="#cb37-12"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb37-13"><a href="#cb37-13"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-14"><a href="#cb37-14"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb37-15"><a href="#cb37-15"></a>    <span class="st">"label"</span>,</span>
+<span id="cb37-16"><a href="#cb37-16"></a>    <span class="at">x =</span> <span class="dv">1990</span>,</span>
+<span id="cb37-17"><a href="#cb37-17"></a>    <span class="at">y =</span> <span class="dv">1990</span>,</span>
+<span id="cb37-18"><a href="#cb37-18"></a>    <span class="at">label =</span> description,</span>
+<span id="cb37-19"><a href="#cb37-19"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb37-20"><a href="#cb37-20"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb37-21"><a href="#cb37-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="shortened-seasons" class="slide level2 smallest">
+<h2>Shortened Seasons</h2>
+<div class="panel-tabset">
+<ul id="tabset-16" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-16-1">Plot</a></li><li><a href="#tabset-16-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-16-1">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-109-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-16-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>description <span class="ot">&lt;-</span></span>
+<span id="cb38-2"><a href="#cb38-2"></a>  <span class="st">"In 1994 less homeruns were hit due</span><span class="sc">\n</span><span class="st"> to the strike-shorted season. Similarly,</span><span class="sc">\n</span><span class="st"> COVID in 2020 called for a shorter season."</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a></span>
+<span id="cb38-4"><a href="#cb38-4"></a>mat_BY <span class="sc">+</span></span>
+<span id="cb38-5"><a href="#cb38-5"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb38-6"><a href="#cb38-6"></a>    <span class="st">"rect"</span>,</span>
+<span id="cb38-7"><a href="#cb38-7"></a>    <span class="at">xmin =</span> <span class="fu">c</span>(<span class="dv">1920</span>, <span class="dv">2019</span>, <span class="dv">1920</span>, <span class="dv">1993</span>),</span>
+<span id="cb38-8"><a href="#cb38-8"></a>    <span class="at">ymin =</span> <span class="fu">c</span>(<span class="dv">2019</span>, <span class="dv">1920</span>, <span class="dv">1993</span>, <span class="dv">1920</span>),</span>
+<span id="cb38-9"><a href="#cb38-9"></a>    <span class="at">xmax =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">2021</span>, <span class="dv">2022</span>, <span class="dv">1995</span>),</span>
+<span id="cb38-10"><a href="#cb38-10"></a>    <span class="at">ymax =</span> <span class="fu">c</span>(<span class="dv">2021</span>, <span class="dv">2022</span>, <span class="dv">1995</span>, <span class="dv">2022</span>),</span>
+<span id="cb38-11"><a href="#cb38-11"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
+<span id="cb38-12"><a href="#cb38-12"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb38-13"><a href="#cb38-13"></a>  ) <span class="sc">+</span></span>
+<span id="cb38-14"><a href="#cb38-14"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb38-15"><a href="#cb38-15"></a>    <span class="st">"label"</span>,</span>
+<span id="cb38-16"><a href="#cb38-16"></a>    <span class="at">x =</span> <span class="dv">1950</span>,</span>
+<span id="cb38-17"><a href="#cb38-17"></a>    <span class="at">y =</span> <span class="dv">1950</span>,</span>
+<span id="cb38-18"><a href="#cb38-18"></a>    <span class="at">label =</span> description,</span>
+<span id="cb38-19"><a href="#cb38-19"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb38-20"><a href="#cb38-20"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb38-21"><a href="#cb38-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="year-of-the-pitcher" class="slide level2 smallest">
+<h2>Year of the Pitcher</h2>
+<div class="panel-tabset">
+<ul id="tabset-17" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-17-1">Plot</a></li><li><a href="#tabset-17-2">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-17-1">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-113-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-17-2">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>description <span class="ot">&lt;-</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a>  <span class="st">"1968 is known as the Year of</span><span class="sc">\n</span><span class="st"> the Pitcher, when pitchers</span><span class="sc">\n</span><span class="st"> dominated the league</span><span class="sc">\n</span><span class="st"> causing less homeruns. The</span><span class="sc">\n</span><span class="st"> next year, the pitcher's</span><span class="sc">\n</span><span class="st"> mound was made smaller to give </span><span class="sc">\n</span><span class="st">pitchers a smaller advantage."</span></span>
+<span id="cb39-3"><a href="#cb39-3"></a></span>
+<span id="cb39-4"><a href="#cb39-4"></a>mat_BY <span class="sc">+</span></span>
+<span id="cb39-5"><a href="#cb39-5"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb39-6"><a href="#cb39-6"></a>    <span class="st">"rect"</span>,</span>
+<span id="cb39-7"><a href="#cb39-7"></a>    <span class="at">xmin =</span> <span class="fu">c</span>(<span class="dv">1920</span>, <span class="dv">1967</span>),</span>
+<span id="cb39-8"><a href="#cb39-8"></a>    <span class="at">ymin =</span> <span class="fu">c</span>(<span class="dv">1967</span>, <span class="dv">1920</span>),</span>
+<span id="cb39-9"><a href="#cb39-9"></a>    <span class="at">xmax =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">1969</span>),</span>
+<span id="cb39-10"><a href="#cb39-10"></a>    <span class="at">ymax =</span> <span class="fu">c</span>(<span class="dv">1969</span>, <span class="dv">2022</span>),</span>
+<span id="cb39-11"><a href="#cb39-11"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
+<span id="cb39-12"><a href="#cb39-12"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb39-13"><a href="#cb39-13"></a>  ) <span class="sc">+</span></span>
+<span id="cb39-14"><a href="#cb39-14"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb39-15"><a href="#cb39-15"></a>    <span class="st">"label"</span>,</span>
+<span id="cb39-16"><a href="#cb39-16"></a>    <span class="at">x =</span> <span class="dv">2000</span>,</span>
+<span id="cb39-17"><a href="#cb39-17"></a>    <span class="at">y =</span> <span class="dv">1950</span>,</span>
+<span id="cb39-18"><a href="#cb39-18"></a>    <span class="at">label =</span> description,</span>
+<span id="cb39-19"><a href="#cb39-19"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb39-20"><a href="#cb39-20"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb39-21"><a href="#cb39-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="summary" class="slide level2">
+<h2>Summary</h2>
+<ul>
+<li>The Empirical CDF is a very useful tool in statistics, for both analysis and visualization.</li>
+<li>The Kolmogorov-Smirnov Test is a good way to test if two distributions of values are different.
+<ul>
+<li>However, be careful as it is only an approximate test with discrete values.</li>
+<li>Furthermore, be sure to use multiple testing corrections if testing many different distributions.</li>
+</ul></li>
+<li>Baseball is interesting! (you may disagree on this one)</li>
+</ul>
 <div class="footer footer-default">
 
 </div>

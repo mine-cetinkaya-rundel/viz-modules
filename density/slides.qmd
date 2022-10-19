@@ -590,7 +590,7 @@ ggplot(home_runs, aes(x = HR)) +
     y = "Scaled Density",
     x = "Home runs per player per year",
     title = "Density of Home runs per person per year",
-    subtitle = "Sheather Jones only puts density at integer values"
+    subtitle = "Sheather Jones only puts density at integer values because our data is discrete"
   )
 
 ```
@@ -864,9 +864,11 @@ ggplot(as_df, aes(x = vals)) +
 #| code-line-numbers: false
 
 # Closest 4 years
-HRearly2010s <- home_runs |> filter(yearID %in% 2011:2014)
+HRearly2010s <- home_runs |> 
+  filter(yearID %in% 2011:2014)
 # Years up to COVID season
-HRlate2010s <- home_runs |> filter(yearID %in% 2016:2019) 
+HRlate2010s <- home_runs |> 
+  filter(yearID %in% 2016:2019) 
 
 ks.test(HRearly2010s$HR, HRlate2010s$HR)
 ```
@@ -979,8 +981,10 @@ ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015)))
 #| echo: True
 #| code-line-numbers: false
 
-HR2005 <- home_runs |> filter(yearID == 2005)
-HR2006 <- home_runs |> filter(yearID == 2006)
+HR2005 <- home_runs |>
+  filter(yearID == 2005)
+HR2006 <- home_runs |> 
+  filter(yearID == 2006)
 
 ks.test(HR2005$HR, HR2006$HR)
 ```
@@ -1060,6 +1064,7 @@ ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
 ```{r}
 #| cache: TRUE
 #| echo: TRUE
+#| warning: FALSE
 ks_matrix <- tribble(~year1, ~year2, ~ks_stat, ~p_value)
 all_years <- unique(home_runs$yearID)
 
@@ -1080,7 +1085,7 @@ for (year1 in all_years) {
     test <- ks.test(year1HR$HR,
                     year2HR$HR)
     
-    ks_matrix <- ks_matrix %>%
+    ks_matrix <- ks_matrix |>
       add_row(year1 = year1, 
               year2 = year2, 
               ks_stat = test$statistic, 
@@ -1091,12 +1096,7 @@ for (year1 in all_years) {
 options(warn = 0)
 ```
 
-
-
-
-
-
-## Visualizing the Matrix {.smallest}
+## Visualizing the Matrix (p-values) {.smallest}
 
 ::: panel-tabset
 ### Plot
@@ -1109,7 +1109,7 @@ ks_matrix |>
   mutate(signif = cut(
     p_value,
     breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
     include.lowest = T,
   )) |>
   ggplot(aes(
@@ -1140,7 +1140,7 @@ ks_matrix |>
   mutate(signif = cut(
     p_value,
     breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
     include.lowest = T,
   )) |>
   ggplot(aes(
@@ -1215,7 +1215,7 @@ ks_matrix |>
   mutate(signif = cut(
     adjusted_p,
     breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
     include.lowest = T,
   )) |>
   ggplot(aes(
@@ -1263,7 +1263,7 @@ ks_matrix |>
   mutate(signif = cut(
     adjusted_p,
     breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
     include.lowest = T,
   )) |>
   ggplot(aes(
@@ -1289,15 +1289,23 @@ ks_matrix |>
 ```
 :::
 
-## Annotating the Matrix (Events)
+
+## Pre-Integration {.smallest}
+
+
+::: panel-tabset
+### Plot
 
 ```{r}
-mat_BY <- 
-ks_matrix |>
+#| fig-height: 5.5
+#| fig-align: center
+
+mat_BY <-
+  ks_matrix |>
   mutate(signif = cut(
     p_BY,
     breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
     include.lowest = T,
   )) |>
   ggplot(aes(x = year1,
@@ -1313,33 +1321,265 @@ ks_matrix |>
   coord_fixed()
 
 
+description <-
+  "Major League Baseball was segregated by race until \n Jackie Robinson broke the color barrier in 1947.\nThe talent level of the league changed rapidly,\n including the overall distribution of home runs."
 mat_BY +
-  geom_tile(
-    data = tribble(~ x, ~ y, ~ height, ~ width,
-                   # Covid
-                   2020, (1921 + 2021) / 2, 101, 1,
-                  (1921 + 2021) / 2, 2020, 1, 101,
-                    # YOTP
-                   1968, (1921 + 2021) / 2, 101, 1,
-                   (1921 + 2021) / 2, 1968, 1, 101,
-                  # Strike
-                   1994, (1921 + 2021) / 2, 101, 1,
-                   (1921 + 2021) / 2, 1994, 1, 101,
-                  # US in WW2
-                   (1921 + 2021) / 2, 1943, 3, 101,
-                   1943, (1921 + 2021) / 2, 101, 3
-                    ),
-    mapping = aes(
-      x = x,
-      y = y,
-      height = height,
-      width = width
-    ),
-    alpha = 0,
-    color = "blue",
-    size = 0.75
+  annotate(
+    "rect",
+    xmin = 1920,
+    ymin = 1920,
+    xmax = 1947,
+    ymax = 1947,
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 1980,
+    y = 1980,
+    label = description,
+    alpha = 0.9,
+    size = 3
   )
 ```
 
+### Code
 
+```{r}
+#| eval: False
+#| echo: True
+
+# Reuse ggplot object
+mat_BY <-
+  ks_matrix |>
+  mutate(signif = cut(
+    p_BY,
+    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
+    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
+    include.lowest = T,
+  )) |>
+  ggplot(aes(x = year1,
+             y = year2)) +
+  geom_tile(aes(fill = factor(signif))) +
+  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
+  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+  labs(title = "BY adjusted p-values matrix",
+       fill = "Significance",
+       x = "Year",
+       y = "Year") +
+  coord_fixed()
+
+
+description <-
+  "Major League Baseball was segregated by race until \n Jackie Robinson broke the color barrier in 1947.\nThe talent level of the league changed rapidly,\n including the overall distribution of home runs."
+mat_BY +
+  annotate(
+    "rect",
+    xmin = 1920,
+    ymin = 1920,
+    xmax = 1947,
+    ymax = 1947,
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 1980,
+    y = 1980,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+```
+:::
+
+## World War II {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 5.5
+#| fig-align: center
+
+description <-
+  "During World War II, many baseball players\n fought overseas,making for an atypical number\n of home runs during these years."
+mat_BY +
+  annotate(
+    "rect",
+    xmin = c(1920, 1941),
+    ymin = c(1941, 1920),
+    xmax = c(2022, 1945),
+    ymax = c(1945, 2022),
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 1990,
+    y = 1990,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+```
+
+### Code
+```{r}
+#| eval: False
+#| echo: True
+description <-
+  "During World War II, many baseball players\n fought overseas,making for an atypical number\n of home runs during these years."
+
+mat_BY +
+  annotate(
+    "rect",
+    xmin = c(1920, 1941),
+    ymin = c(1941, 1920),
+    xmax = c(2022, 1945),
+    ymax = c(1945, 2022),
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 1990,
+    y = 1990,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+```
+:::
+
+## Shortened Seasons {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 5.5
+#| fig-align: center
+
+description <-
+  "In 1994 less homeruns were hit due\n to the strike-shorted season. Similarly,\n COVID in 2020 called for a shorter season."
+
+mat_BY +
+  annotate(
+    "rect",
+    xmin = c(1920, 2019, 1920, 1993),
+    ymin = c(2019, 1920, 1993, 1920),
+    xmax = c(2022, 2021, 2022, 1995),
+    ymax = c(2021, 2022, 1995, 2022),
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 1950,
+    y = 1950,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+```
+
+### Code
+```{r}
+#| echo: True
+#| eval: False
+
+description <-
+  "In 1994 less homeruns were hit due\n to the strike-shorted season. Similarly,\n COVID in 2020 called for a shorter season."
+
+mat_BY +
+  annotate(
+    "rect",
+    xmin = c(1920, 2019, 1920, 1993),
+    ymin = c(2019, 1920, 1993, 1920),
+    xmax = c(2022, 2021, 2022, 1995),
+    ymax = c(2021, 2022, 1995, 2022),
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 1950,
+    y = 1950,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+
+```
+:::
+
+## Year of the Pitcher {.smallest}
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| fig-height: 5.5
+#| fig-align: center
+
+description <-
+  "1968 is known as the Year of\n the Pitcher, when pitchers\n dominated the league\n causing less homeruns. The\n next year, the pitcher's\n mound was made smaller to give \npitchers a smaller advantage."
+
+mat_BY +
+  annotate(
+    "rect",
+    xmin = c(1920, 1967),
+    ymin = c(1967, 1920),
+    xmax = c(2022, 1969),
+    ymax = c(1969, 2022),
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 2000,
+    y = 1950,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+```
+
+### Code
+```{r}
+#| echo: True
+#| eval: False
+description <-
+  "1968 is known as the Year of\n the Pitcher, when pitchers\n dominated the league\n causing less homeruns. The\n next year, the pitcher's\n mound was made smaller to give \npitchers a smaller advantage."
+
+mat_BY +
+  annotate(
+    "rect",
+    xmin = c(1920, 1967),
+    ymin = c(1967, 1920),
+    xmax = c(2022, 1969),
+    ymax = c(1969, 2022),
+    color = "#0000FFaa",
+    alpha = 0
+  ) +
+  annotate(
+    "label",
+    x = 2000,
+    y = 1950,
+    label = description,
+    alpha = 0.9,
+    size = 3
+  )
+```
+:::
+
+## Summary
+
+* The Empirical CDF is a very useful tool in statistics, for both analysis and visualization.
+* The Kolmogorov-Smirnov Test is a good way to test if two distributions of values are different.
+  * However, be careful as it is only an approximate test with discrete values.
+  * Furthermore, be sure to use multiple testing corrections if testing many different distributions.
+* Baseball is interesting! (you may disagree on this one)
 
