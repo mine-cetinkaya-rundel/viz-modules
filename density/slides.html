@@ -7,7 +7,7 @@
 <link href="slides_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="slides_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="slides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.1.189">
+  <meta name="generator" content="quarto-1.2.231">
 
   <meta name="author" content="Slides by Sam Rosen">
   <title>Density Graphs</title>
@@ -99,6 +99,7 @@
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="slides_files/libs/revealjs/plugin/code-mover/code-mover.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
   <style type="text/css">
 
@@ -391,12 +392,19 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" class="center">
+<section id="title-slide" class="quarto-title-block center">
   <h1 class="title">Density Graphs</h1>
   <p class="subtitle">Visualizing Full Distributions</p>
-  <p class="author">Slides by Sam Rosen</p>
-</section>
 
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Slides by Sam Rosen 
+</div>
+</div>
+</div>
+
+</section>
 <section id="accompanying-interactive-repo" class="slide level2">
 <h2>Accompanying interactive repo</h2>
 </section>
@@ -445,9 +453,9 @@
 </div>
 <div class="layout-sidebar layout-sidebar-left">
 <div class="cell panel-sidebar">
-<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="88" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 87;"><span id="cb1-88"><a href="#cb1-88"></a>viewof binWidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
-<span id="cb1-89"><a href="#cb1-89"></a>viewof numPoints <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
-<span id="cb1-90"><a href="#cb1-90"></a>viewof generate <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb1" data-startfrom="90" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 89;"><span id="cb1-90"><a href="#cb1-90"></a>viewof binWidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
+<span id="cb1-91"><a href="#cb1-91"></a>viewof numPoints <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
+<span id="cb1-92"><a href="#cb1-92"></a>viewof generate <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-1-1" data-nodetype="declaration">
@@ -471,10 +479,10 @@
 </div>
 </div>
 <div class="cell panel-fill">
-<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="95" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 94;"><span id="cb2-95"><a href="#cb2-95"></a><span class="im">import</span> { plotNewData<span class="op">,</span> regenerateData } <span class="im">from</span> <span class="st">"./histoSampling.js"</span><span class="op">;</span></span>
-<span id="cb2-96"><a href="#cb2-96"></a></span>
-<span id="cb2-97"><a href="#cb2-97"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
-<span id="cb2-98"><a href="#cb2-98"></a><span class="fu">plotNewData</span>(<span class="fu">regenerateData</span>(numPoints <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth<span class="op">,</span> generate)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb2" data-startfrom="97" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 96;"><span id="cb2-97"><a href="#cb2-97"></a><span class="im">import</span> { plotNewData<span class="op">,</span> regenerateData } <span class="im">from</span> <span class="st">"./histoSampling.js"</span><span class="op">;</span></span>
+<span id="cb2-98"><a href="#cb2-98"></a></span>
+<span id="cb2-99"><a href="#cb2-99"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
+<span id="cb2-100"><a href="#cb2-100"></a><span class="fu">plotNewData</span>(<span class="fu">regenerateData</span>(numPoints <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth<span class="op">,</span> generate)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-2-1" data-nodetype="declaration">
@@ -630,8 +638,11 @@
 <div class="panel-tabset">
 <ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Plot</a></li><li><a href="#tabset-1-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-1-1">
+<div id="tabset-1-1" class="move-code">
 <div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">ggplot</span>(home_runs, <span class="fu">aes</span>(HR)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img data-src="slides_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
 </div>
@@ -642,11 +653,7 @@
 </ul>
 </div>
 <div id="tabset-1-2">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">ggplot</span>(home_runs, <span class="fu">aes</span>(HR)) <span class="sc">+</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
-<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+
 </div>
 </div>
 </div>
@@ -656,17 +663,7 @@
 <div class="panel-tabset">
 <ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">Plot</a></li><li><a href="#tabset-2-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-2-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li>If we stratify by decade, we can see the <strong>mode</strong> of the density graphs slowly creep forward, but it is difficult to see the tail of the distribution.</li>
-</ul>
-</div>
-<div id="tabset-2-2">
+<div id="tabset-2-1" class="move-code">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>home_runs <span class="sc">|&gt;</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">cut</span>(</span>
@@ -675,10 +672,19 @@
 <span id="cb10-5"><a href="#cb10-5"></a>    <span class="at">labels =</span> <span class="fu">paste0</span>(<span class="fu">seq</span>(<span class="dv">1920</span>, <span class="dv">2020</span>, <span class="dv">10</span>),</span>
 <span id="cb10-6"><a href="#cb10-6"></a>                    <span class="st">"'s"</span>)</span>
 <span id="cb10-7"><a href="#cb10-7"></a>  )) <span class="sc">|&gt;</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, <span class="at">color =</span> decade)) <span class="sc">+</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, <span class="at">fill =</span> decade)) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a>  <span class="fu">geom_density</span>(<span class="at">position =</span> <span class="st">"stack"</span>) <span class="sc">+</span></span>
 <span id="cb10-10"><a href="#cb10-10"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-23-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>If we stratify by decade, we can see the <strong>mode</strong> of the density graphs slowly creep forward, but it is difficult to see the tail of the distribution.</li>
+</ul>
+</div>
+<div id="tabset-2-2">
+
 </div>
 </div>
 </div>
@@ -688,17 +694,7 @@
 <div class="panel-tabset">
 <ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-3-1">Plot</a></li><li><a href="#tabset-3-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-3-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li>The modes moving forward is a little more apparent now, but the graphs are too coupled to digest easily.</li>
-</ul>
-</div>
-<div id="tabset-3-2">
+<div id="tabset-3-1" class="move-code">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>home_runs <span class="sc">|&gt;</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">cut</span>(</span>
@@ -710,7 +706,16 @@
 <span id="cb11-8"><a href="#cb11-8"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, <span class="at">color =</span> decade)) <span class="sc">+</span></span>
 <span id="cb11-9"><a href="#cb11-9"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
 <span id="cb11-10"><a href="#cb11-10"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-25-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>The modes moving forward is a little more apparent now, but the graphs are too coupled to digest easily.</li>
+</ul>
+</div>
+<div id="tabset-3-2">
+
 </div>
 </div>
 </div>
@@ -720,18 +725,7 @@
 <div class="panel-tabset">
 <ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-4-1">Plot</a></li><li><a href="#tabset-4-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-4-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-33-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li>By using <code>position="fill"</code> and <code>y=after_stat(count)</code> we graph the conditional probability that of a decade given a player has hit a certain number of home runs.</li>
-<li>We see that players would hit about 60 homeruns in the 20’s and 30’s, but that disappears until the 90’s and 2000’s <sup>1</sup> which quickly take up the conditional probability for years with more than 60 home runs. What happened?</li>
-</ul>
-</div>
-<div id="tabset-4-2">
+<div id="tabset-4-1" class="move-code">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>home_runs <span class="sc">|&gt;</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">cut</span>(</span>
@@ -744,7 +738,17 @@
 <span id="cb12-9"><a href="#cb12-9"></a>  <span class="fu">geom_density</span>(<span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span></span>
 <span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">60</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb12-11"><a href="#cb12-11"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-27-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>By using <code>position="fill"</code> and <code>y=after_stat(count)</code> we graph the conditional probability that of a decade given a player has hit a certain number of home runs.</li>
+<li>We see that players would hit about 60 homeruns in the 20’s and 30’s, but that disappears until the 90’s and 2000’s <sup>1</sup> which quickly take up the conditional probability for years with more than 60 home runs. What happened?</li>
+</ul>
+</div>
+<div id="tabset-4-2">
+
 </div>
 </div>
 </div>
@@ -754,17 +758,7 @@
 <div class="panel-tabset">
 <ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-5-1">Plot</a></li><li><a href="#tabset-5-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-5-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-37-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li>Let’s examine the years near the change point, 1985 to 2005. All points shown are players that hit 30 or more homeruns in a given year. It looks like around 1995 players started hitting <strong>a lot</strong> more home runs.</li>
-</ul>
-</div>
-<div id="tabset-5-2">
+<div id="tabset-5-1" class="move-code">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>home_runs <span class="sc">|&gt;</span></span>
 <span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">1985</span><span class="sc">:</span><span class="dv">2005</span>) <span class="sc">|&gt;</span></span>
@@ -777,7 +771,16 @@
 <span id="cb13-9"><a href="#cb13-9"></a>    <span class="at">alpha =</span> <span class="fl">0.5</span></span>
 <span id="cb13-10"><a href="#cb13-10"></a>  ) <span class="sc">+</span></span>
 <span id="cb13-11"><a href="#cb13-11"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-29-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>Let’s examine the years near the change point, 1985 to 2005. All points shown are players that hit 30 or more homeruns in a given year. It looks like around 1995 players started hitting <strong>a lot</strong> more home runs.</li>
+</ul>
+</div>
+<div id="tabset-5-2">
+
 </div>
 </div>
 </div>
@@ -787,19 +790,7 @@
 <div class="panel-tabset">
 <ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-6-1">Plot</a></li><li><a href="#tabset-6-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-6-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-41-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li>The quantiles also have a consistent increase, along with many more players hitting 30 or more home runs!</li>
-<li>In 1998 there was a home run record race between two players; this brought a lot of interest back into baseball.</li>
-<li>1995 to about 2005 is known as the <em>Steroid Era</em> in baseball. During this time, players would take performance enhancing drugs freely as the league did not enforce the ban on them. League-wide testing began in 2003.</li>
-</ul>
-</div>
-<div id="tabset-6-2">
+<div id="tabset-6-1" class="move-code">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="fu">library</span>(ggridges)</span>
 <span id="cb14-2"><a href="#cb14-2"></a></span>
@@ -827,7 +818,18 @@
 <span id="cb14-24"><a href="#cb14-24"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>) <span class="sc">+</span></span>
 <span id="cb14-25"><a href="#cb14-25"></a>  <span class="fu">ylab</span>(<span class="st">"Year"</span>) <span class="sc">+</span></span>
 <span id="cb14-26"><a href="#cb14-26"></a>  <span class="fu">xlim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">73</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-31-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>The quantiles also have a consistent increase, along with many more players hitting 30 or more home runs!</li>
+<li>In 1998 there was a home run record race between two players; this brought a lot of interest back into baseball.</li>
+<li>1995 to about 2005 is known as the <em>Steroid Era</em> in baseball. During this time, players would take performance enhancing drugs freely as the league did not enforce the ban on them. League-wide testing began in 2003.</li>
+</ul>
+</div>
+<div id="tabset-6-2">
+
 </div>
 </div>
 </div>
@@ -839,10 +841,10 @@
 </ul>
 <div class="layout-sidebar layout-sidebar-left">
 <div class="cell panel-sidebar">
-<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="491" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 490;"><span id="cb15-491"><a href="#cb15-491"></a>viewof binWidth2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
-<span id="cb15-492"><a href="#cb15-492"></a>viewof bandwidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bandwidth"</span>})<span class="op">;</span></span>
-<span id="cb15-493"><a href="#cb15-493"></a>viewof numPoints2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
-<span id="cb15-494"><a href="#cb15-494"></a>viewof generate2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb15" data-startfrom="398" data-source-offset="-1"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 397;"><span id="cb15-398"><a href="#cb15-398"></a>viewof binWidth2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="fl">1.5</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bin Width"</span>})<span class="op">;</span></span>
+<span id="cb15-399"><a href="#cb15-399"></a>viewof bandwidth <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="fl">0.01</span><span class="op">,</span> <span class="dv">2</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="fl">0.2</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="fl">0.001</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Bandwidth"</span>})<span class="op">;</span></span>
+<span id="cb15-400"><a href="#cb15-400"></a>viewof numPoints2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">range</span>([<span class="dv">0</span><span class="op">,</span> <span class="dv">9000</span>]<span class="op">,</span> {<span class="dt">value</span><span class="op">:</span> <span class="dv">900</span><span class="op">,</span> <span class="dt">step</span><span class="op">:</span> <span class="dv">1</span><span class="op">,</span> <span class="dt">label</span><span class="op">:</span> <span class="st">"Number of Points"</span>})<span class="op">;</span></span>
+<span id="cb15-401"><a href="#cb15-401"></a>viewof generate2 <span class="op">=</span> Inputs<span class="op">.</span><span class="fu">button</span>(<span class="st">"Regenerate Data"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-3-1" data-nodetype="declaration">
@@ -873,10 +875,10 @@
 </div>
 </div>
 <div class="cell panel-fill">
-<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="499" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 498;"><span id="cb16-499"><a href="#cb16-499"></a><span class="im">import</span> { plotNewDataBW } <span class="im">from</span> <span class="st">"./bandwidthSampling.js"</span><span class="op">;</span></span>
-<span id="cb16-500"><a href="#cb16-500"></a></span>
-<span id="cb16-501"><a href="#cb16-501"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
-<span id="cb16-502"><a href="#cb16-502"></a><span class="fu">plotNewDataBW</span>(<span class="fu">regenerateData</span>(numPoints2 <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth2<span class="op">,</span> bandwidth<span class="op">,</span> generate2)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="406" data-source-offset="-0"><pre class="sourceCode numberSource js number-lines code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 405;"><span id="cb16-406"><a href="#cb16-406"></a><span class="im">import</span> { plotNewDataBW } <span class="im">from</span> <span class="st">"./bandwidthSampling.js"</span><span class="op">;</span></span>
+<span id="cb16-407"><a href="#cb16-407"></a></span>
+<span id="cb16-408"><a href="#cb16-408"></a><span class="co">// Generate does not actually get used just forces a refresh</span></span>
+<span id="cb16-409"><a href="#cb16-409"></a><span class="fu">plotNewDataBW</span>(<span class="fu">regenerateData</span>(numPoints2 <span class="op">/</span> <span class="dv">3</span>)<span class="op">,</span> binWidth2<span class="op">,</span> bandwidth<span class="op">,</span> generate2)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <div id="ojs-cell-4-1" data-nodetype="declaration">
@@ -930,14 +932,14 @@
 <div id="tabset-7-1">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-49-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-37-1.png" width="960"></p>
 </div>
 </div>
 </div>
 <div id="tabset-7-2" class="smallest">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-51-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-39-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -985,7 +987,7 @@
 <span id="cb18-3"><a href="#cb18-3"></a>     <span class="at">main=</span><span class="st">"Density graph of positive numbers with density below 0"</span>) </span>
 <span id="cb18-4"><a href="#cb18-4"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-55-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-43-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:2%;">
@@ -997,7 +999,7 @@
 <span id="cb19-3"><a href="#cb19-3"></a>     <span class="at">main=</span><span class="st">"Density graph of positive numbers with cut density"</span>)</span>
 <span id="cb19-4"><a href="#cb19-4"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-57-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-45-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -1016,7 +1018,7 @@
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">ggplot</span>(longer_tailed_data, <span class="fu">aes</span>(random_values)) <span class="sc">+</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a>  <span class="fu">geom_density</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-61-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-49-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:2%;">
@@ -1027,7 +1029,7 @@
 <span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span></span>
 <span id="cb22-3"><a href="#cb22-3"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">trans=</span><span class="st">"log"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-63-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-51-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -1044,17 +1046,7 @@
 <div class="panel-tabset">
 <ul id="tabset-9" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-9-1">Plot</a></li><li><a href="#tabset-9-2">Code</a></li><li><a href="#tabset-9-3">Scatter plot</a></li></ul>
 <div class="tab-content">
-<div id="tabset-9-1">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-65-1.png" width="960"></p>
-</div>
-</div>
-<ul>
-<li>Players that hit lots of home runs tend to strikeout and walk more.</li>
-</ul>
-</div>
-<div id="tabset-9-2">
+<div id="tabset-9-1" class="move-code">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>home_runs <span class="sc">|&gt;</span></span>
 <span id="cb23-2"><a href="#cb23-2"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(HR, SO <span class="sc">+</span> BB)) <span class="sc">+</span></span>
@@ -1063,7 +1055,16 @@
 <span id="cb23-5"><a href="#cb23-5"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>) <span class="sc">+</span></span>
 <span id="cb23-6"><a href="#cb23-6"></a>  <span class="fu">ylab</span>(<span class="st">"Strike outs and walks per player per year"</span>) <span class="sc">+</span></span>
 <span id="cb23-7"><a href="#cb23-7"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-53-1.png" width="960"></p>
 </div>
+</div>
+<ul>
+<li>Players that hit lots of home runs tend to strikeout and walk more.</li>
+</ul>
+</div>
+<div id="tabset-9-2">
+
 </div>
 <div id="tabset-9-3">
 <div class="cell">
@@ -1074,7 +1075,7 @@
 <span id="cb24-5"><a href="#cb24-5"></a>  <span class="fu">xlab</span>(<span class="st">"Home runs per player per year"</span>) <span class="sc">+</span></span>
 <span id="cb24-6"><a href="#cb24-6"></a>  <span class="fu">ylab</span>(<span class="st">"Strike outs and walks per player per year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-69-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-55-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -1171,15 +1172,15 @@
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(-1) </td>
-   <td style="text-align:right;"> 0.1640 </td>
+   <td style="text-align:right;"> 0.1635 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(0) </td>
-   <td style="text-align:right;"> 0.3267 </td>
+   <td style="text-align:right;"> 0.3310 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(2) </td>
-   <td style="text-align:right;"> 0.6663 </td>
+   <td style="text-align:right;"> 0.6682 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(5) </td>
@@ -1195,7 +1196,7 @@
 </div><div class="column" style="width:45%;">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-75-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-61-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -1236,19 +1237,7 @@ D = 0.16691, p-value = 6.463e-12
 alternative hypothesis: two-sided</code></pre>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-79-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-<ul>
-<li>Major League Baseball was accused of replacing the standard baseballs with “juiced” baseballs (easier to hit home runs) secretly in the middle of 2015. Is there credence to this claim?</li>
-</ul>
-</div>
-<div id="tabset-10-2">
+</div><div class="column move-code" style="width:50%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>get_ks_df <span class="ot">&lt;-</span> <span class="cf">function</span>(dat1, dat2) {</span>
 <span id="cb28-2"><a href="#cb28-2"></a>  ecdf1 <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(dat1)</span>
@@ -1286,13 +1275,24 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb28-34"><a href="#cb28-34"></a>       <span class="at">title =</span> <span class="st">"Empirical CDFs of player home runs per year in years 2011-2019 "</span>,</span>
 <span id="cb28-35"><a href="#cb28-35"></a>       <span class="at">subtitle =</span> <span class="st">"Dashed line is the Kolmogorov-Smirnov Statistic"</span>) <span class="sc">+</span></span>
 <span id="cb28-36"><a href="#cb28-36"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-65-1.png" width="960"></p>
 </div>
+</div>
+</div>
+</div>
+<ul>
+<li>Major League Baseball was accused of replacing the standard baseballs with “juiced” baseballs (easier to hit home runs) secretly in the middle of 2015. Is there credence to this claim?</li>
+</ul>
+</div>
+<div id="tabset-10-2">
+
 </div>
 </div>
 </div>
 </section>
 <section id="comparing-distributions-2" class="slide level2 smaller">
-<h2>Comparing distributions 2</h2>
+<h2>Comparing Distributions 2</h2>
 <div class="panel-tabset">
 <ul id="tabset-11" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-11-1">Output</a></li><li><a href="#tabset-11-2">Code</a></li></ul>
 <div class="tab-content">
@@ -1315,19 +1315,7 @@ D = 0.073827, p-value = 0.503
 alternative hypothesis: two-sided</code></pre>
 </div>
 </div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-85-1.png" width="960"></p>
-</div>
-</div>
-</div>
-</div>
-<ul>
-<li>2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.</li>
-</ul>
-</div>
-<div id="tabset-11-2">
+</div><div class="column move-code" style="width:50%;">
 <div class="cell">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>ks_stat_0506 <span class="ot">=</span> <span class="fu">get_ks_df</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span>
 <span id="cb31-2"><a href="#cb31-2"></a></span>
@@ -1350,7 +1338,18 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb31-19"><a href="#cb31-19"></a>       <span class="at">subtitle =</span> <span class="st">"Dashed line is the Kolmogorov-Smirnov Statistic"</span>,</span>
 <span id="cb31-20"><a href="#cb31-20"></a>       <span class="at">color =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
 <span id="cb31-21"><a href="#cb31-21"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-69-1.png" width="960"></p>
 </div>
+</div>
+</div>
+</div>
+<ul>
+<li>2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.</li>
+</ul>
+</div>
+<div id="tabset-11-2">
+
 </div>
 </div>
 </div>
@@ -1365,7 +1364,7 @@ alternative hypothesis: two-sided</code></pre>
 </section>
 <section id="building-the-matrix" class="slide level2 smallest">
 <h2>Building the Matrix</h2>
-<div class="cell" data-hash="slides_cache/revealjs/unnamed-chunk-89_4ba24e1b2d0589db892f8d1b5c2e89d3">
+<div class="cell" data-hash="slides_cache/revealjs/unnamed-chunk-71_769d85ea8f5f2dccec756c2e1674a1de">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>ks_matrix <span class="ot">&lt;-</span> <span class="fu">tribble</span>(<span class="sc">~</span>year1, <span class="sc">~</span>year2, <span class="sc">~</span>ks_stat, <span class="sc">~</span>p_value)</span>
 <span id="cb32-2"><a href="#cb32-2"></a>all_years <span class="ot">&lt;-</span> <span class="fu">unique</span>(home_runs<span class="sc">$</span>yearID)</span>
 <span id="cb32-3"><a href="#cb32-3"></a></span>
@@ -1402,22 +1401,8 @@ alternative hypothesis: two-sided</code></pre>
 <div class="panel-tabset">
 <ul id="tabset-12" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-12-1">Plot</a></li><li><a href="#tabset-12-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-12-1">
+<div id="tabset-12-1" class="move-code">
 <div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-91-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<ul>
-<li>There seems to be some patterns in our matrix, but there’s a problem…</li>
-</ul>
-</div>
-<div id="tabset-12-2">
-<div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>ks_matrix <span class="sc">|&gt;</span></span>
 <span id="cb33-2"><a href="#cb33-2"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
 <span id="cb33-3"><a href="#cb33-3"></a>    p_value,</span>
@@ -1439,7 +1424,20 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb33-19"><a href="#cb33-19"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
 <span id="cb33-20"><a href="#cb33-20"></a>       <span class="at">y =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
 <span id="cb33-21"><a href="#cb33-21"></a>  <span class="fu">coord_fixed</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-73-1.png" width="960"></p>
+</figure>
 </div>
+</div>
+</div>
+<ul>
+<li>There seems to be some patterns in our matrix, but there’s a problem…</li>
+</ul>
+</div>
+<div id="tabset-12-2">
+
 </div>
 </div>
 </div>
@@ -1479,22 +1477,8 @@ alternative hypothesis: two-sided</code></pre>
 <div class="panel-tabset">
 <ul id="tabset-13" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-13-1">Plot</a></li><li><a href="#tabset-13-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-13-1">
+<div id="tabset-13-1" class="move-code">
 <div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-97-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-<ul>
-<li>Controlling for the Family Wise Error Rate got rid of a lot of our interesting patterns. We don’t mind some false positives so we choose the <code>BY</code> adjustment as it controls False Discovery Rate but is a bit more conservative than <code>FDR</code>.</li>
-</ul>
-</div>
-<div id="tabset-13-2">
-<div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>ks_matrix <span class="sc">|&gt;</span></span>
 <span id="cb35-2"><a href="#cb35-2"></a>  <span class="fu">pivot_longer</span>(</span>
 <span id="cb35-3"><a href="#cb35-3"></a>    <span class="fu">c</span>(</span>
@@ -1534,7 +1518,20 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb35-37"><a href="#cb35-37"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
 <span id="cb35-38"><a href="#cb35-38"></a>    <span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>()</span>
 <span id="cb35-39"><a href="#cb35-39"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-77-1.png" width="960"></p>
+</figure>
 </div>
+</div>
+</div>
+<ul>
+<li>Controlling for the Family Wise Error Rate got rid of a lot of our interesting patterns. We don’t mind some false positives so we choose the <code>BY</code> adjustment as it controls False Discovery Rate but is a bit more conservative than <code>FDR</code>.</li>
+</ul>
+</div>
+<div id="tabset-13-2">
+
 </div>
 </div>
 </div>
@@ -1544,62 +1541,60 @@ alternative hypothesis: two-sided</code></pre>
 <div class="panel-tabset">
 <ul id="tabset-14" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-14-1">Plot</a></li><li><a href="#tabset-14-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-14-1">
+<div id="tabset-14-1" class="move-code">
 <div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>mat_BY <span class="ot">&lt;-</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a>  ks_matrix <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
+<span id="cb36-4"><a href="#cb36-4"></a>    p_BY,</span>
+<span id="cb36-5"><a href="#cb36-5"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">1.001</span>),</span>
+<span id="cb36-6"><a href="#cb36-6"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"&lt;0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
+<span id="cb36-7"><a href="#cb36-7"></a>    <span class="at">include.lowest =</span> T,</span>
+<span id="cb36-8"><a href="#cb36-8"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb36-9"><a href="#cb36-9"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year1,</span>
+<span id="cb36-10"><a href="#cb36-10"></a>             <span class="at">y =</span> year2)) <span class="sc">+</span></span>
+<span id="cb36-11"><a href="#cb36-11"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">factor</span>(signif))) <span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb36-13"><a href="#cb36-13"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
+<span id="cb36-14"><a href="#cb36-14"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(colorspace<span class="sc">::</span><span class="fu">heat_hcl</span>(<span class="dv">4</span>), <span class="st">"#AAAAAA"</span>)) <span class="sc">+</span></span>
+<span id="cb36-15"><a href="#cb36-15"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"BY adjusted p-values matrix"</span>,</span>
+<span id="cb36-16"><a href="#cb36-16"></a>       <span class="at">fill =</span> <span class="st">"Significance"</span>,</span>
+<span id="cb36-17"><a href="#cb36-17"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb36-18"><a href="#cb36-18"></a>       <span class="at">y =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb36-19"><a href="#cb36-19"></a>  <span class="fu">coord_fixed</span>()</span>
+<span id="cb36-20"><a href="#cb36-20"></a></span>
+<span id="cb36-21"><a href="#cb36-21"></a></span>
+<span id="cb36-22"><a href="#cb36-22"></a>description <span class="ot">&lt;-</span></span>
+<span id="cb36-23"><a href="#cb36-23"></a>  <span class="st">"Major League Baseball was segregated by race until </span><span class="sc">\n</span><span class="st"> Jackie Robinson broke the color barrier in 1947.</span><span class="sc">\n</span><span class="st">The talent level of the league changed rapidly,</span><span class="sc">\n</span><span class="st"> including the overall distribution of home runs."</span></span>
+<span id="cb36-24"><a href="#cb36-24"></a>mat_BY <span class="sc">+</span></span>
+<span id="cb36-25"><a href="#cb36-25"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb36-26"><a href="#cb36-26"></a>    <span class="st">"rect"</span>,</span>
+<span id="cb36-27"><a href="#cb36-27"></a>    <span class="at">xmin =</span> <span class="dv">1920</span>,</span>
+<span id="cb36-28"><a href="#cb36-28"></a>    <span class="at">ymin =</span> <span class="dv">1920</span>,</span>
+<span id="cb36-29"><a href="#cb36-29"></a>    <span class="at">xmax =</span> <span class="dv">1947</span>,</span>
+<span id="cb36-30"><a href="#cb36-30"></a>    <span class="at">ymax =</span> <span class="dv">1947</span>,</span>
+<span id="cb36-31"><a href="#cb36-31"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
+<span id="cb36-32"><a href="#cb36-32"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb36-33"><a href="#cb36-33"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-34"><a href="#cb36-34"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb36-35"><a href="#cb36-35"></a>    <span class="st">"label"</span>,</span>
+<span id="cb36-36"><a href="#cb36-36"></a>    <span class="at">x =</span> <span class="dv">1980</span>,</span>
+<span id="cb36-37"><a href="#cb36-37"></a>    <span class="at">y =</span> <span class="dv">1980</span>,</span>
+<span id="cb36-38"><a href="#cb36-38"></a>    <span class="at">label =</span> description,</span>
+<span id="cb36-39"><a href="#cb36-39"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb36-40"><a href="#cb36-40"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb36-41"><a href="#cb36-41"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-101-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-79-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 <div id="tabset-14-2">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="co"># Reuse ggplot object</span></span>
-<span id="cb36-2"><a href="#cb36-2"></a>mat_BY <span class="ot">&lt;-</span></span>
-<span id="cb36-3"><a href="#cb36-3"></a>  ks_matrix <span class="sc">|&gt;</span></span>
-<span id="cb36-4"><a href="#cb36-4"></a>  <span class="fu">mutate</span>(<span class="at">signif =</span> <span class="fu">cut</span>(</span>
-<span id="cb36-5"><a href="#cb36-5"></a>    p_BY,</span>
-<span id="cb36-6"><a href="#cb36-6"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">1.001</span>),</span>
-<span id="cb36-7"><a href="#cb36-7"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"&lt;0.001"</span>, <span class="st">"&lt;0.01"</span>, <span class="st">"&lt;0.05"</span>, <span class="st">"&lt;0.1"</span>, <span class="st">"&lt;1"</span>),</span>
-<span id="cb36-8"><a href="#cb36-8"></a>    <span class="at">include.lowest =</span> T,</span>
-<span id="cb36-9"><a href="#cb36-9"></a>  )) <span class="sc">|&gt;</span></span>
-<span id="cb36-10"><a href="#cb36-10"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year1,</span>
-<span id="cb36-11"><a href="#cb36-11"></a>             <span class="at">y =</span> year2)) <span class="sc">+</span></span>
-<span id="cb36-12"><a href="#cb36-12"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">factor</span>(signif))) <span class="sc">+</span></span>
-<span id="cb36-13"><a href="#cb36-13"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb36-14"><a href="#cb36-14"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1920</span> <span class="sc">+</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>) <span class="sc">+</span></span>
-<span id="cb36-15"><a href="#cb36-15"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(colorspace<span class="sc">::</span><span class="fu">heat_hcl</span>(<span class="dv">4</span>), <span class="st">"#AAAAAA"</span>)) <span class="sc">+</span></span>
-<span id="cb36-16"><a href="#cb36-16"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"BY adjusted p-values matrix"</span>,</span>
-<span id="cb36-17"><a href="#cb36-17"></a>       <span class="at">fill =</span> <span class="st">"Significance"</span>,</span>
-<span id="cb36-18"><a href="#cb36-18"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
-<span id="cb36-19"><a href="#cb36-19"></a>       <span class="at">y =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
-<span id="cb36-20"><a href="#cb36-20"></a>  <span class="fu">coord_fixed</span>()</span>
-<span id="cb36-21"><a href="#cb36-21"></a></span>
-<span id="cb36-22"><a href="#cb36-22"></a></span>
-<span id="cb36-23"><a href="#cb36-23"></a>description <span class="ot">&lt;-</span></span>
-<span id="cb36-24"><a href="#cb36-24"></a>  <span class="st">"Major League Baseball was segregated by race until </span><span class="sc">\n</span><span class="st"> Jackie Robinson broke the color barrier in 1947.</span><span class="sc">\n</span><span class="st">The talent level of the league changed rapidly,</span><span class="sc">\n</span><span class="st"> including the overall distribution of home runs."</span></span>
-<span id="cb36-25"><a href="#cb36-25"></a>mat_BY <span class="sc">+</span></span>
-<span id="cb36-26"><a href="#cb36-26"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb36-27"><a href="#cb36-27"></a>    <span class="st">"rect"</span>,</span>
-<span id="cb36-28"><a href="#cb36-28"></a>    <span class="at">xmin =</span> <span class="dv">1920</span>,</span>
-<span id="cb36-29"><a href="#cb36-29"></a>    <span class="at">ymin =</span> <span class="dv">1920</span>,</span>
-<span id="cb36-30"><a href="#cb36-30"></a>    <span class="at">xmax =</span> <span class="dv">1947</span>,</span>
-<span id="cb36-31"><a href="#cb36-31"></a>    <span class="at">ymax =</span> <span class="dv">1947</span>,</span>
-<span id="cb36-32"><a href="#cb36-32"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
-<span id="cb36-33"><a href="#cb36-33"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
-<span id="cb36-34"><a href="#cb36-34"></a>  ) <span class="sc">+</span></span>
-<span id="cb36-35"><a href="#cb36-35"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb36-36"><a href="#cb36-36"></a>    <span class="st">"label"</span>,</span>
-<span id="cb36-37"><a href="#cb36-37"></a>    <span class="at">x =</span> <span class="dv">1980</span>,</span>
-<span id="cb36-38"><a href="#cb36-38"></a>    <span class="at">y =</span> <span class="dv">1980</span>,</span>
-<span id="cb36-39"><a href="#cb36-39"></a>    <span class="at">label =</span> description,</span>
-<span id="cb36-40"><a href="#cb36-40"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
-<span id="cb36-41"><a href="#cb36-41"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb36-42"><a href="#cb36-42"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+
 </div>
 </div>
 </div>
@@ -1609,41 +1604,39 @@ alternative hypothesis: two-sided</code></pre>
 <div class="panel-tabset">
 <ul id="tabset-15" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-15-1">Plot</a></li><li><a href="#tabset-15-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-15-1">
+<div id="tabset-15-1" class="move-code">
 <div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>description <span class="ot">&lt;-</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>  <span class="st">"During World War II, many baseball players</span><span class="sc">\n</span><span class="st"> fought overseas,making for an atypical number</span><span class="sc">\n</span><span class="st"> of home runs during these years."</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a>mat_BY <span class="sc">+</span></span>
+<span id="cb37-4"><a href="#cb37-4"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb37-5"><a href="#cb37-5"></a>    <span class="st">"rect"</span>,</span>
+<span id="cb37-6"><a href="#cb37-6"></a>    <span class="at">xmin =</span> <span class="fu">c</span>(<span class="dv">1920</span>, <span class="dv">1941</span>),</span>
+<span id="cb37-7"><a href="#cb37-7"></a>    <span class="at">ymin =</span> <span class="fu">c</span>(<span class="dv">1941</span>, <span class="dv">1920</span>),</span>
+<span id="cb37-8"><a href="#cb37-8"></a>    <span class="at">xmax =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">1945</span>),</span>
+<span id="cb37-9"><a href="#cb37-9"></a>    <span class="at">ymax =</span> <span class="fu">c</span>(<span class="dv">1945</span>, <span class="dv">2022</span>),</span>
+<span id="cb37-10"><a href="#cb37-10"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
+<span id="cb37-11"><a href="#cb37-11"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
+<span id="cb37-12"><a href="#cb37-12"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-13"><a href="#cb37-13"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb37-14"><a href="#cb37-14"></a>    <span class="st">"label"</span>,</span>
+<span id="cb37-15"><a href="#cb37-15"></a>    <span class="at">x =</span> <span class="dv">1990</span>,</span>
+<span id="cb37-16"><a href="#cb37-16"></a>    <span class="at">y =</span> <span class="dv">1990</span>,</span>
+<span id="cb37-17"><a href="#cb37-17"></a>    <span class="at">label =</span> description,</span>
+<span id="cb37-18"><a href="#cb37-18"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
+<span id="cb37-19"><a href="#cb37-19"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb37-20"><a href="#cb37-20"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-105-1.png" width="960"></p>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-81-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 <div id="tabset-15-2">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>description <span class="ot">&lt;-</span></span>
-<span id="cb37-2"><a href="#cb37-2"></a>  <span class="st">"During World War II, many baseball players</span><span class="sc">\n</span><span class="st"> fought overseas,making for an atypical number</span><span class="sc">\n</span><span class="st"> of home runs during these years."</span></span>
-<span id="cb37-3"><a href="#cb37-3"></a></span>
-<span id="cb37-4"><a href="#cb37-4"></a>mat_BY <span class="sc">+</span></span>
-<span id="cb37-5"><a href="#cb37-5"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb37-6"><a href="#cb37-6"></a>    <span class="st">"rect"</span>,</span>
-<span id="cb37-7"><a href="#cb37-7"></a>    <span class="at">xmin =</span> <span class="fu">c</span>(<span class="dv">1920</span>, <span class="dv">1941</span>),</span>
-<span id="cb37-8"><a href="#cb37-8"></a>    <span class="at">ymin =</span> <span class="fu">c</span>(<span class="dv">1941</span>, <span class="dv">1920</span>),</span>
-<span id="cb37-9"><a href="#cb37-9"></a>    <span class="at">xmax =</span> <span class="fu">c</span>(<span class="dv">2022</span>, <span class="dv">1945</span>),</span>
-<span id="cb37-10"><a href="#cb37-10"></a>    <span class="at">ymax =</span> <span class="fu">c</span>(<span class="dv">1945</span>, <span class="dv">2022</span>),</span>
-<span id="cb37-11"><a href="#cb37-11"></a>    <span class="at">color =</span> <span class="st">"#0000FFaa"</span>,</span>
-<span id="cb37-12"><a href="#cb37-12"></a>    <span class="at">alpha =</span> <span class="dv">0</span></span>
-<span id="cb37-13"><a href="#cb37-13"></a>  ) <span class="sc">+</span></span>
-<span id="cb37-14"><a href="#cb37-14"></a>  <span class="fu">annotate</span>(</span>
-<span id="cb37-15"><a href="#cb37-15"></a>    <span class="st">"label"</span>,</span>
-<span id="cb37-16"><a href="#cb37-16"></a>    <span class="at">x =</span> <span class="dv">1990</span>,</span>
-<span id="cb37-17"><a href="#cb37-17"></a>    <span class="at">y =</span> <span class="dv">1990</span>,</span>
-<span id="cb37-18"><a href="#cb37-18"></a>    <span class="at">label =</span> description,</span>
-<span id="cb37-19"><a href="#cb37-19"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
-<span id="cb37-20"><a href="#cb37-20"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb37-21"><a href="#cb37-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+
 </div>
 </div>
 </div>
@@ -1653,19 +1646,8 @@ alternative hypothesis: two-sided</code></pre>
 <div class="panel-tabset">
 <ul id="tabset-16" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-16-1">Plot</a></li><li><a href="#tabset-16-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-16-1">
+<div id="tabset-16-1" class="move-code">
 <div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-109-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-16-2">
-<div class="cell">
 <div class="sourceCode cell-code" id="cb38"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>description <span class="ot">&lt;-</span></span>
 <span id="cb38-2"><a href="#cb38-2"></a>  <span class="st">"In 1994 less homeruns were hit due</span><span class="sc">\n</span><span class="st"> to the strike-shorted season. Similarly,</span><span class="sc">\n</span><span class="st"> COVID in 2020 called for a shorter season."</span></span>
 <span id="cb38-3"><a href="#cb38-3"></a></span>
@@ -1687,7 +1669,17 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb38-19"><a href="#cb38-19"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
 <span id="cb38-20"><a href="#cb38-20"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
 <span id="cb38-21"><a href="#cb38-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-83-1.png" width="960"></p>
+</figure>
 </div>
+</div>
+</div>
+</div>
+<div id="tabset-16-2">
+
 </div>
 </div>
 </div>
@@ -1697,19 +1689,8 @@ alternative hypothesis: two-sided</code></pre>
 <div class="panel-tabset">
 <ul id="tabset-17" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-17-1">Plot</a></li><li><a href="#tabset-17-2">Code</a></li></ul>
 <div class="tab-content">
-<div id="tabset-17-1">
+<div id="tabset-17-1" class="move-code">
 <div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-113-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-<div id="tabset-17-2">
-<div class="cell">
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>description <span class="ot">&lt;-</span></span>
 <span id="cb39-2"><a href="#cb39-2"></a>  <span class="st">"1968 is known as the Year of</span><span class="sc">\n</span><span class="st"> the Pitcher, when pitchers</span><span class="sc">\n</span><span class="st"> dominated the league</span><span class="sc">\n</span><span class="st"> causing less homeruns. The</span><span class="sc">\n</span><span class="st"> next year, the pitcher's</span><span class="sc">\n</span><span class="st"> mound was made smaller to give </span><span class="sc">\n</span><span class="st">pitchers a smaller advantage."</span></span>
 <span id="cb39-3"><a href="#cb39-3"></a></span>
@@ -1731,7 +1712,17 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb39-19"><a href="#cb39-19"></a>    <span class="at">alpha =</span> <span class="fl">0.9</span>,</span>
 <span id="cb39-20"><a href="#cb39-20"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
 <span id="cb39-21"><a href="#cb39-21"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="slides_files/figure-revealjs/unnamed-chunk-85-1.png" width="960"></p>
+</figure>
 </div>
+</div>
+</div>
+</div>
+<div id="tabset-17-2">
+
 </div>
 </div>
 </div>
@@ -1763,6 +1754,7 @@ alternative hypothesis: two-sided</code></pre>
   <script src="slides_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
   <script src="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
   <script src="slides_files/libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="slides_files/libs/revealjs/plugin/code-mover/code-mover.js"></script>
   <script src="slides_files/libs/revealjs/plugin/quarto-support/support.js"></script>
   
 
@@ -1956,7 +1948,7 @@ alternative hypothesis: two-sided</code></pre>
         },
 
         // reveal.js plugins
-        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, CodeMover, QuartoSupport,
 
           RevealMath,
           RevealNotes,
@@ -1981,12 +1973,15 @@ alternative hypothesis: two-sided</code></pre>
       // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
       // slide changes (different for each slide format).
       (function () {
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          // dispatch for htmlwidgets
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
           const event = window.document.createEvent("Event");
           event.initEvent("slideenter", true, true);
           window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
 
           // dispatch for shiny
           if (window.jQuery) {
@@ -1997,13 +1992,6 @@ alternative hypothesis: two-sided</code></pre>
               window.jQuery(currentSlide).trigger("shown");
             }
           }
-        }
-
-        // hookup for reveal
-        if (window.Reveal) {
-          window.Reveal.addEventListener("slidechanged", function(event) {
-            fireSlideChanged(event.previousSlide, event.currentSlide);
-          });
         }
 
         // hookup for slidy
@@ -2055,7 +2043,24 @@ alternative hypothesis: two-sided</code></pre>
         button.classList.add('code-copy-button-checked');
         var currentTitle = button.getAttribute("title");
         button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
         setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
           button.setAttribute("title", currentTitle);
           button.classList.remove('code-copy-button-checked');
         }, 1000);
@@ -2093,24 +2098,42 @@ alternative hypothesis: two-sided</code></pre>
           return note.innerHTML;
         });
       }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
       var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
       for (var i=0; i<bibliorefs.length; i++) {
         const ref = bibliorefs[i];
-        const cites = ref.parentNode.getAttribute('data-cites').split(' ');
-        tippyHover(ref, function() {
-          var popup = window.document.createElement('div');
-          cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
-            }
-            popup.appendChild(citeDiv);
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
           });
-          return popup.innerHTML;
-        });
+        }
       }
     });
     </script>

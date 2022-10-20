@@ -11,6 +11,8 @@ format:
     preview-links: auto
     # logo: images/quarto.png
     theme: theme.scss
+revealjs-plugins:
+  - code-mover
 ---
 
 ## Accompanying interactive repo
@@ -209,10 +211,11 @@ home_runs <- Batting |>
 ## Density Graph Example {.smallest}
 
 ::: panel-tabset
-## Plot
+## Plot {.move-code}
 
 ```{r}
 #| fig-height: 4
+#| echo: True
 ggplot(home_runs, aes(HR)) +
   geom_density() + 
   xlab("Home runs per player per year")
@@ -223,24 +226,16 @@ ggplot(home_runs, aes(HR)) +
 
 ## Code
 
-```{r}
-#| eval: False
-#| echo: True
-
-ggplot(home_runs, aes(HR)) +
-  geom_density() + 
-  xlab("Home runs per player per year")
-```
 :::
 
 ## Stacked Density Graph By Decade {.smallest}
 
 ::: panel-tabset
-## Plot
+## Plot {.move-code}
 
 ```{r}
 #| fig-height: 4
-
+#| echo: True
 
 home_runs |>
   mutate(decade = cut(
@@ -258,29 +253,16 @@ home_runs |>
 
 ## Code
 
-```{r}
-#| eval: False
-#| echo: True
-home_runs |>
-  mutate(decade = cut(
-    yearID,
-    breaks = seq(1920, 2030, 10),
-    labels = paste0(seq(1920, 2020, 10),
-                    "'s")
-  )) |>
-  ggplot(aes(HR, color = decade)) +
-  geom_density() +
-  xlab("Home runs per player per year")
-```
 :::
 
 ## Overlapping Density Graphs By Decade {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 4
+#| echo: True
 
 home_runs |>
   mutate(decade = cut(
@@ -298,29 +280,16 @@ home_runs |>
 
 ### Code
 
-```{r}
-#| eval: False
-#| echo: True
-home_runs |>
-  mutate(decade = cut(
-    yearID,
-    breaks = seq(1920, 2030, 10),
-    labels = paste0(seq(1920, 2020, 10),
-                    "'s")
-  )) |>
-  ggplot(aes(HR, color = decade)) +
-  geom_density() +
-  xlab("Home runs per player per year")
-```
 :::
 
 ## Stacked Density Graph with Conditional Probabilities {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 4
+#| echo: True
 
 home_runs |>
   mutate(decade = cut(
@@ -341,22 +310,6 @@ home_runs |>
 
 ### Code
 
-```{r}
-#| echo: True
-#| eval: False
-
-home_runs |>
-  mutate(decade = cut(
-    yearID,
-    breaks = seq(1920, 2030, 10),
-    labels = paste0(seq(1920, 2020, 10),
-                    "'s")
-  )) |>
-  ggplot(aes(x = HR, y = after_stat(count), fill = decade)) +
-  geom_density(position = "fill") +
-  geom_vline(xintercept = 60, linetype = 2) +
-  xlab("Home runs per player per year")
-```
 :::
 
 [^2]: With the exception of 1961, the year Roger Maris hit 61 home runs.
@@ -364,10 +317,11 @@ home_runs |>
 ## Violin Plot {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 4
+#| echo: True
 
 home_runs |>
   filter(yearID %in% 1985:2005) |>
@@ -386,31 +340,16 @@ home_runs |>
 
 ### Code
 
-```{r}
-#| echo: True
-#| eval: False
-home_runs |>
-  filter(yearID %in% 1985:2005) |>
-  ggplot(aes(HR, x = factor(yearID))) +
-  geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
-  geom_jitter(
-    data = ~ filter(.x, HR >= 30),
-    height = 0,
-    width = 0.1,
-    alpha = 0.5
-  ) +
-  xlab("Home runs per player per year")
-
-```
 :::
 
 ## Ridge Plot {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 4
+#| echo: True
 
 library(ggridges)
 
@@ -447,38 +386,6 @@ home_runs |>
 
 ### Code
 
-```{r}
-#| echo: True
-#| eval: False
-
-library(ggridges)
-
-home_runs |>
-  filter(yearID %in% 1985:2010) |>
-  ggplot(aes(x = HR,
-             y = factor(yearID))) +
-  stat_density_ridges(
-    mapping = aes(fill = factor(stat(quantile))),
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE,
-    quantiles = c(.25, .50, .75, .95),
-    quantile_lines = TRUE,
-    scale = 2,
-    rel_min_height = 0.01
-  ) +
-  scale_fill_viridis_d(name = "Quantiles",
-                       labels = c("0", "25th", "50th", "75th", "95th")) +
-  geom_jitter(
-    data = ~ filter(.x, HR >= 30),
-    height = 0.2,
-    width = 0,
-    alpha = 0.3,
-  ) +
-  xlab("Home runs per player per year") +
-  ylab("Year") +
-  xlim(c(0, 73))
-
-```
 :::
 
 ## Bandwidth {.smaller}
@@ -695,10 +602,11 @@ ggplot(longer_tailed_data, aes(random_values)) +
 ## 2D Density {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 5
+#| echo: True
 
 home_runs |>
   ggplot(aes(HR, SO + BB)) +
@@ -714,19 +622,6 @@ home_runs |>
 
 ### Code
 
-```{r}
-#| eval: False
-#| echo: True
-
-home_runs |>
-  ggplot(aes(HR, SO + BB)) +
-  geom_density_2d_filled() +
-  geom_density_2d() +
-  xlab("Home runs per player per year") +
-  ylab("Strike outs and walks per player per year") +
-  guides(fill = "none")
-
-```
 
 ### Scatter plot
 
@@ -874,9 +769,10 @@ ks.test(HRearly2010s$HR, HRlate2010s$HR)
 ```
 :::
 
-::: {.column width="50%"}
+::: {.column .move-code width="50%"}
 ```{r}
 #| fig-height: 5
+#| echo: True
 get_ks_df <- function(dat1, dat2) {
   ecdf1 <- ecdf(dat1)
   ecdf2 <- ecdf(dat2)
@@ -923,53 +819,10 @@ ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015)))
 
 ### Code
 
-```{r}
-#| eval: False
-#| echo: True
-
-get_ks_df <- function(dat1, dat2) {
-  ecdf1 <- ecdf(dat1)
-  ecdf2 <- ecdf(dat2)
-  grid_points <- seq(0, max(c(dat1, dat2)), length.out = 1000)
-  differences <- abs(ecdf1(grid_points) - ecdf2(grid_points))
-  ks_stat <- max(differences)
-  first_max_location <-
-    grid_points[which(differences == ks_stat)[1]]
-  data.frame(
-    x = first_max_location,
-    xend = first_max_location,
-    y = ecdf1(first_max_location),
-    yend = ecdf2(first_max_location)
-  )
-}
-
-ks_stat_2010s = get_ks_df(HRearly2010s$HR, HRlate2010s$HR)
-
-ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015))) +
-  stat_ecdf(geom = "step") +
-  geom_segment(
-    data = ks_stat_2010s,
-    aes(
-      x = x,
-      y = y,
-      xend = xend,
-      yend = yend
-    ),
-    color = "black",
-    linetype = "dashed"
-  ) +
-  labs(x = "Homeruns per player per year",
-       y = "Empirical CDF",
-       title = "Empirical CDFs of player home runs per year in years 2011-2019 ",
-       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic") +
-  theme(legend.position = "bottom")
-
-```
-
 :::
 
 
-## Comparing distributions 2 {.smaller}
+## Comparing Distributions 2 {.smaller}
 
 
 ::: panel-tabset
@@ -990,9 +843,10 @@ ks.test(HR2005$HR, HR2006$HR)
 ```
 :::
 
-::: {.column width="50%"}
+::: {.column .move-code width="50%"}
 ```{r}
 #| fig-height: 5
+#| echo: True
 
 ks_stat_0506 = get_ks_df(HR2005$HR, HR2006$HR)
 
@@ -1024,32 +878,6 @@ ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
 
 
 ### Code
-
-```{r}
-#| eval: False
-#| echo: True
-ks_stat_0506 = get_ks_df(HR2005$HR, HR2006$HR)
-
-ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
-  stat_ecdf(geom = "step") +
-  geom_segment(
-    data = ks_stat_0506,
-    aes(
-      x = x,
-      y = y,
-      xend = xend,
-      yend = yend
-    ),
-    color = "black",
-    linetype = "dashed"
-  ) +
-  labs(x = "Homeruns per player per year",
-       y = "Empirical CDF",
-       title = "Empirical CDFs of player home runs per year in years 2005 and 2006 ",
-       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic",
-       color = "Year") +
-  theme(legend.position = "bottom")
-```
 
 :::
 
@@ -1099,11 +927,12 @@ options(warn = 0)
 ## Visualizing the Matrix (p-values) {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 4.5
 #| fig-align: center
+#| echo: True
 
 ks_matrix |>
   mutate(signif = cut(
@@ -1132,32 +961,6 @@ ks_matrix |>
 
 ### Code
 
-```{r}
-#| eval: False
-#| echo: True
-
-ks_matrix |>
-  mutate(signif = cut(
-    p_value,
-    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
-    include.lowest = T,
-  )) |>
-  ggplot(aes(
-    x = year1,
-    y = year2,
-    fill = factor(signif)
-  )) +
-  geom_tile() +
-  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
-  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
-  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(title = "Unadjusted p-values matrix",
-       fill = "Significance",
-       x = "Year",
-       y = "Year") +
-  coord_fixed()
-```
 :::
 
 
@@ -1194,11 +997,13 @@ To learn more see Chapter 13 of *An Introduction to Statistical Learning (2nd Ed
 ## Visualizing the Matrix (Corrections) {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 4.5
 #| fig-align: center
+#| echo: True
+
 ks_matrix |>
   pivot_longer(
     c(
@@ -1244,49 +1049,6 @@ ks_matrix |>
 
 ### Code
 
-```{r}
-#| eval: False
-#| echo: True
-ks_matrix |>
-  pivot_longer(
-    c(
-      "p_holm",
-      "p_hochberg",
-      "p_hommel",
-      "p_bonferroni",
-      "p_fdr",
-      "p_BY"
-    ),
-    names_to = "adjustment",
-    values_to = "adjusted_p"
-  ) |>
-  mutate(signif = cut(
-    adjusted_p,
-    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
-    include.lowest = T,
-  )) |>
-  ggplot(aes(
-    x = year1,
-    y = year2,
-    fill = factor(signif)
-  )) +
-  geom_tile() +
-  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
-  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
-  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(x = "Year",
-       y = "Year",
-       fill = "Significance") +
-  facet_wrap( ~ adjustment) +
-  coord_fixed() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks.y = element_blank()
-  )
-```
 :::
 
 
@@ -1294,11 +1056,12 @@ ks_matrix |>
 
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 5.5
 #| fig-align: center
+#| echo: True
 
 mat_BY <-
   ks_matrix |>
@@ -1345,63 +1108,17 @@ mat_BY +
 
 ### Code
 
-```{r}
-#| eval: False
-#| echo: True
-
-# Reuse ggplot object
-mat_BY <-
-  ks_matrix |>
-  mutate(signif = cut(
-    p_BY,
-    breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
-    labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
-    include.lowest = T,
-  )) |>
-  ggplot(aes(x = year1,
-             y = year2)) +
-  geom_tile(aes(fill = factor(signif))) +
-  scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
-  scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
-  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(title = "BY adjusted p-values matrix",
-       fill = "Significance",
-       x = "Year",
-       y = "Year") +
-  coord_fixed()
-
-
-description <-
-  "Major League Baseball was segregated by race until \n Jackie Robinson broke the color barrier in 1947.\nThe talent level of the league changed rapidly,\n including the overall distribution of home runs."
-mat_BY +
-  annotate(
-    "rect",
-    xmin = 1920,
-    ymin = 1920,
-    xmax = 1947,
-    ymax = 1947,
-    color = "#0000FFaa",
-    alpha = 0
-  ) +
-  annotate(
-    "label",
-    x = 1980,
-    y = 1980,
-    label = description,
-    alpha = 0.9,
-    size = 3
-  )
-```
 :::
 
 ## World War II {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 5.5
 #| fig-align: center
+#| echo: True
 
 description <-
   "During World War II, many baseball players\n fought overseas,making for an atypical number\n of home runs during these years."
@@ -1426,41 +1143,18 @@ mat_BY +
 ```
 
 ### Code
-```{r}
-#| eval: False
-#| echo: True
-description <-
-  "During World War II, many baseball players\n fought overseas,making for an atypical number\n of home runs during these years."
 
-mat_BY +
-  annotate(
-    "rect",
-    xmin = c(1920, 1941),
-    ymin = c(1941, 1920),
-    xmax = c(2022, 1945),
-    ymax = c(1945, 2022),
-    color = "#0000FFaa",
-    alpha = 0
-  ) +
-  annotate(
-    "label",
-    x = 1990,
-    y = 1990,
-    label = description,
-    alpha = 0.9,
-    size = 3
-  )
-```
 :::
 
 ## Shortened Seasons {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 5.5
 #| fig-align: center
+#| echo: True
 
 description <-
   "In 1994 less homeruns were hit due\n to the strike-shorted season. Similarly,\n COVID in 2020 called for a shorter season."
@@ -1486,43 +1180,18 @@ mat_BY +
 ```
 
 ### Code
-```{r}
-#| echo: True
-#| eval: False
 
-description <-
-  "In 1994 less homeruns were hit due\n to the strike-shorted season. Similarly,\n COVID in 2020 called for a shorter season."
-
-mat_BY +
-  annotate(
-    "rect",
-    xmin = c(1920, 2019, 1920, 1993),
-    ymin = c(2019, 1920, 1993, 1920),
-    xmax = c(2022, 2021, 2022, 1995),
-    ymax = c(2021, 2022, 1995, 2022),
-    color = "#0000FFaa",
-    alpha = 0
-  ) +
-  annotate(
-    "label",
-    x = 1950,
-    y = 1950,
-    label = description,
-    alpha = 0.9,
-    size = 3
-  )
-
-```
 :::
 
 ## Year of the Pitcher {.smallest}
 
 ::: panel-tabset
-### Plot
+### Plot {.move-code}
 
 ```{r}
 #| fig-height: 5.5
 #| fig-align: center
+#| echo: True
 
 description <-
   "1968 is known as the Year of\n the Pitcher, when pitchers\n dominated the league\n causing less homeruns. The\n next year, the pitcher's\n mound was made smaller to give \npitchers a smaller advantage."
@@ -1548,31 +1217,7 @@ mat_BY +
 ```
 
 ### Code
-```{r}
-#| echo: True
-#| eval: False
-description <-
-  "1968 is known as the Year of\n the Pitcher, when pitchers\n dominated the league\n causing less homeruns. The\n next year, the pitcher's\n mound was made smaller to give \npitchers a smaller advantage."
 
-mat_BY +
-  annotate(
-    "rect",
-    xmin = c(1920, 1967),
-    ymin = c(1967, 1920),
-    xmax = c(2022, 1969),
-    ymax = c(1969, 2022),
-    color = "#0000FFaa",
-    alpha = 0
-  ) +
-  annotate(
-    "label",
-    x = 2000,
-    y = 1950,
-    label = description,
-    alpha = 0.9,
-    size = 3
-  )
-```
 :::
 
 ## Summary
