@@ -5,31 +5,556 @@ format:
     theme: default
 ---
 
+## Setup
+
 ```{r}
+library(tidyverse)
+library(janitor)
+
 durham_2020 <- read_csv("./data/durham_2020_cleaner_headers.csv")
+durham_2020 <- durham_2020 %>%
+  clean_names() %>%
+  filter(zip != 27709) # Only 1 entry
 ```
 
 ```{r}
+other_questions <- c("would_you_say_your_total_annual_hous_35", 
+                     "what_is_your_age_29",
+                     "do_you_own_or_rent_your_current_resi_31",
+                     "approximately_how_many_years_have_yo_28",
+                     "ease_of_travel_by_bus_godu_18_03")
 
-first_question <- durham_2020[, c(1:10, 222)] %>% 
-  pivot_longer(2:10, names_to="question")
-
-ggplot(first_question, aes(x=question, y=factor(value), color=zip, group=id)) +
-  facet_wrap(~zip) + 
-  geom_line(alpha = 0.2)
+cleaned_responses <- durham_2020 |>
+  select(id, 
+         zip,
+         block_lon,
+         block_lat,
+         matches("_3_\\d\\d"),
+         matches("_24_\\d\\d"),
+         matches("_12_0\\d"),
+         all_of(other_questions)) |>
+  pivot_longer(c(matches("_3_\\d\\d"), 
+                 matches("_24_\\d\\d"),
+                 matches("_12_0\\d"),
+                 all_of(other_questions)),
+               names_to = "raw_question",
+               values_to = "response") |>
+  mutate(
+    Question = recode(
+      raw_question,
+      overall_quality_of_services_3_01 = "Services (City)",
+      overall_quality_of_services_3_02 = "Services (County)",
+      overall_appearance_of_durham_3_03 = "Appearance",
+      overall_management_of_develo_3_04 = "Management",
+      overall_image_of_durham_3_05 = "Image",
+      overall_quality_of_life_in_d_3_06 = "QOL (Durham)",
+      overall_quality_of_life_in_y_3_07 = "QOL (Neighborhood)",
+      overall_value_you_receive_fo_3_08 = "Value from Taxes",
+      as_a_place_to_live_24_01 = "Living",
+      as_a_place_to_work_24_02 = "Working",
+      as_a_place_to_play_24_03 = "Playing",
+      as_a_place_to_raise_childre_24_04 = "Raise Children",
+      as_a_place_to_educate_child_24_05 = "Educate Children",
+      as_a_place_to_retire_24_06 = "Retire",
+      as_a_place_to_visit_24_07 = "Visit",
+      as_a_place_to_start_a_busin_24_08 = "Start Business",
+      as_a_community_that_is_movi_24_09 = "Future Direction",
+      do_your_monthly_housing_cost_12_01 = "High Rent",
+      are_you_able_to_find_housing_12_02 = "Find Affordable Housing",
+      do_you_have_major_home_repai_12_03 = "Cannot Repair Home",
+      ease_of_travel_by_bus_godu_18_03 = "Ease of Bus",
+      would_you_say_your_total_annual_hous_35 = "Income",
+      what_is_your_age_29 = "Age",
+      do_you_own_or_rent_your_current_resi_31 = "Rent or Own",
+      approximately_how_many_years_have_yo_28 = "Years in Durham"
+    ),
+    response = factor(response, ordered = T)
+  ) |>
+  pivot_wider(id_cols = c(id, zip, block_lat, block_lon),
+              names_from = Question,
+              values_from = response) |>
+  mutate(
+    `Rent or Own` = recode(`Rent or Own`, `1`="Own", `2`="Rent", `9`="Unknown"),
+    `Income` = recode(`Income`, `1`="<30k", `2`="30-59k", `3`="60k-99k", `4`="100k+", `9`="Unknown"),
+    `Income` = factor(Income, levels = c("<30k", "30-59k", "60k-99k", "100k+", "Unknown")),
+    `High Rent` = recode(`High Rent`, `1`="Yes", `2`="No", `9`="Unknown"),
+    `Find Affordable Housing` = recode(`Find Affordable Housing`, `1`="Yes", `2`="No", `9`="Unknown"),
+    `Cannot Repair Home` = recode(`Cannot Repair Home`, `1`="Yes", `2`="No", `9`="Unknown"),
+    zip = factor(zip)
+  )
 
 ```
+
+## Find question with largest mode
+
+```{r}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+modes = durham_2020 |> select_if(is.numeric) |>
+  pivot_longer(everything()) %>%
+  group_by(name) %>%
+  summarise(percent_mode = mean(value == getmode(value), na.rm = TRUE),
+            mode = getmode(value),
+            num_modes = sum(value == getmode(value), na.rm = TRUE))
+
+```
+
+
+## Single Question
+
+### Pie Chart
 
 ```{r}
 
-covid_question <- durham_2020[, c(1, 41, 37:40, 222)] %>% 
-  pivot_longer(2:6, names_to="question")
+languages <- durham_2020 %>% mutate(
+  primary_language = recode(
+    what_is_the_primary_language_used_in_34,
+    `1` = "English",
+    `2` = "Spanish",
+    `3` = "Other",
+    .default = "Unknown")
+  )
 
-ggplot(covid_question, aes(x=question, y=factor(value), color=zip, group=id)) +
-  facet_wrap(~zip) + 
-  geom_line(alpha = 0.2)
+# Basic piechart, https://r-graph-gallery.com/piechart-ggplot2.html
+languages |>
+  group_by(primary_language) |>
+  summarise(value = n()) |>
+ggplot(aes(x="", y=value, fill=primary_language)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+  theme_void()
+```
+
+### Waffle Chart
+
+
+```{r}
+# https://github.com/liamgilbey/ggwaffle
+devtools::install_github("liamgilbey/ggwaffle")
+library(ggwaffle)
+
+waffle_data <- waffle_iron(languages, aes_d(group = primary_language), rows = 30)
+ggplot(waffle_data, aes(x, y, fill = group)) +
+  geom_waffle(size = 0.35) +
+  coord_equal() +
+  labs(x = element_blank(), 
+       y = element_blank(), 
+       title = "Primary Languages of respondents",
+       fill = "Language") +
+  theme_waffle()
+  
+```
+
+
+
+## Multiple Questions
+
+### Stacked Bar Chart
+
+```{r}
+library(scales)
+
+QOL_questions = c("Services (City)", 
+                  "Services (County)", 
+                  "Appearance", 
+                  "Management", 
+                  "Image", 
+                  "QOL (Durham)", 
+                  "QOL (Neighborhood)", 
+                  "Value from Taxes")
+
+rating_questions <- c("Living",
+                      "Working",
+                      "Playing",
+                      "Raise Children",
+                      "Educate Children",
+                      "Retire",
+                      "Visit",
+                      "Start Business",
+                      "Future Direction")
+
+cleaned_responses |>
+  select(QOL_questions) |>
+  pivot_longer(QOL_questions, names_to = "Question", values_to = "response") |>
+  ggplot(aes(Question)) +
+  geom_bar(aes(fill = forcats::fct_rev(response))) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_fill_manual(values = c("#999999", scales::viridis_pal()(5)),
+                    labels = c("Missing", 5:1)) +
+  labs(fill = "Response", y="Number of Reponses") +
+  ggtitle("Responses related to quality")
+
+cleaned_responses |>
+  select(QOL_questions, zip) |>
+  pivot_longer(QOL_questions, names_to = "Question", values_to = "response") |>
+  ggplot(aes(Question)) +
+  geom_bar(aes(fill = forcats::fct_rev(response))) +
+  scale_fill_manual(values = c("#999999", viridis_pal()(5)),
+                    labels = c("Missing", 5:1)) +
+  labs(fill = "Response", y="Number of Reponses") +
+  ggtitle("Responses related to quality by Zip Code") +
+  facet_wrap(~zip, scales = "free_x", nrow = 4) +
+  coord_flip() +
+  theme_minimal()
 
 ```
+
+What do you notice about the typical response for QOL in Neighborhood vs. Durham?
+
+
+### Heatmap/Bubble Chart
+```{r}
+
+rating_questions_children <- cleaned_responses |>
+  select(c(
+    `Raise Children`,
+    `Educate Children`
+  )) |>
+  filter(`Raise Children` != 9) |>
+  filter(`Educate Children` != 9) |>
+  group_by(`Raise Children`,
+           `Educate Children`) |>
+  summarise(num_respondents = n()) |>
+  ungroup()
+
+
+for (raise in unique(rating_questions_children$`Raise Children`)) {
+  for (educate in unique(rating_questions_children$`Educate Children`)) {
+    if (nrow(
+      rating_questions_children |> filter(`Raise Children` == raise,
+                                          `Educate Children` == educate)
+    ) == 0) {
+      # Add 0 respondents if combo does not exist
+      rating_questions_children <- rating_questions_children |>
+        add_row(
+          tibble_row(
+            `Raise Children` = raise,
+            `Educate Children` = educate,
+            num_respondents = 0
+          )
+        )
+    }
+  }
+}
+
+ggplot(rating_questions_children,
+       aes(x = `Raise Children`, y = `Educate Children`, fill = num_respondents)) +
+  geom_tile()
+
+ggplot(rating_questions_children,
+       aes(x = `Raise Children`, y = `Educate Children`, fill = num_respondents)) +
+  geom_tile() +
+  geom_label(aes(label = num_respondents), color = "white", fill = "black") +
+  scale_fill_viridis_c(trans = "sqrt")
+
+# Bad
+ggplot(rating_questions_children,
+       aes(x = `Raise Children`, y = `Educate Children`)) +
+  geom_point(aes(size=num_respondents, color=num_respondents)) +
+  scale_color_viridis_c() +
+  scale_size_area()
+
+```
+
+Are there more respondents above or below the diagnonal? What does this tell you?
+
+
+### Mosaic to illustrate marginals
+
+```{r}
+library(ggmosaic)
+
+# Fill is broken
+ggplot(data = rating_questions_children) +
+  ggmosaic::geom_mosaic(aes(x = ggmosaic::product(`Raise Children`, `Educate Children`),
+                            weight = num_respondents))
+
+```
+
+### Tree Map
+
+```{r}
+# library(treemap)
+# rating_questions_children |>
+#   mutate(Raise = paste("Raise:", Raise),
+#          Educate = paste("Educate:", Educate)) |>
+#   treemap(
+#     index = c("Raise", "Educate"),
+#     vSize = "num_respondents",
+#     align.labels = list(c("top", "left"),
+#                         c("right", "bottom")),
+#     position.legend = "right"
+#   )
+```
+
+## Fancier
+
+### Rader/Spider Chart (superimpose?)
+
+Probably going to skip because annoying to make and not of much value.
+
+```{r}
+cleaned_responses |>
+  select(zip, rating_questions) |>
+  pivot_longer(rating_questions, names_to = "Question", values_to = "response") |>
+  filter(response < 9) |>
+  ggplot(aes(x = Question, y = as.numeric(response))) +
+    geom_bar(stat = "summary", fun = "median") +
+    coord_polar() +
+    facet_wrap( ~ zip)
+
+```
+
+### ggtern
+
+```{r}
+library(ggtern)
+
+cleaned_responses |>
+  mutate(`Income` = as.numeric(`Income`)) |>
+  ggtern(aes(`Years in Durham`, `Age`, `Income`)) +
+  geom_point()
+
+```
+
+
+### Lollipop
+
+
+```{r}
+
+income_info <- cleaned_responses |>
+  select(Income,
+         `Rent or Own`,
+         `High Rent`,
+         all_of(rating_questions),
+         all_of(QOL_questions)) |>
+  pivot_longer(all_of(c(rating_questions, QOL_questions)),
+               names_to = "Question",
+               values_to = "Response") |>
+  filter(Response != 9, `High Rent` != "Unknown", Income != "Unknown") |>
+  group_by(Income, Question) |>
+  summarise(
+    mean_response_high_rent = mean(as.numeric(Response[which(`High Rent` == "Yes")])),
+    mean_response_low_rent = mean(as.numeric(Response[which(`High Rent` == "No")])),
+    percent_positive_high_rent = mean(Response[which(`High Rent` == "Yes")] > 3),
+    percent_positive_low_rent = mean(Response[which(`High Rent` == "No")] > 3)
+  ) |>
+  ungroup() |>
+  arrange(desc(Question))
+  
+  
+income_info |>
+  ggplot(aes(y = Question, color = `High Rent`)) +
+  geom_segment(
+    aes(
+      x = percent_positive_low_rent,
+      xend = percent_positive_high_rent,
+      yend = Question
+    ),
+    color = "Grey"
+  ) +
+  geom_point(aes(x = percent_positive_low_rent, 
+                 color = "Red")) +
+  geom_point(aes(x = percent_positive_high_rent,
+                 color = "Blue")) +
+  labs(x = "Percent of Positive Responses") +
+  scale_color_manual(name = ">30% Income to Housing", 
+                     values = c("Red", "Blue"),
+                     labels = c("Yes", "No")) +
+  facet_wrap( ~ Income)
+
+
+
+```
+
+
+```{r}
+income_info |>
+  ggplot(aes(y = interaction(Income, Question), color = `High Rent`)) +
+  geom_segment(
+    aes(
+      x = percent_positive_low_rent,
+      xend = percent_positive_high_rent,
+      yend = interaction(Income, Question)
+    ),
+    color = "Grey"
+  ) +
+  geom_point(aes(x = percent_positive_low_rent, 
+                 color = "Red",
+                 shape = Income)) +
+  geom_point(aes(x = percent_positive_high_rent,
+                 color = "Blue",
+                 shape = Income)) +
+  labs(x = "Percent of Positive Responses") +
+  scale_color_manual(name = ">30% Income to Housing", 
+                     values = c("Red", "Blue"),
+                     labels = c("Yes", "No")) +
+  scale_y_discrete(breaks = paste("100k+", unique(income_info$Question), sep="."), 
+                   labels = unique(income_info$Question))
+```
+
+
+
+### Parallel Coordinates
+
+#### Questions on x-axis
+
+Visualizing the three monetary related variables was hard enough, but what if we want to visualize with some questions in mind?
+
+```{r}
+cleaned_responses |>
+  filter(`High Rent` != "Unknown", `Rent or Own` != "Unknown") |>
+  select(id, `High Rent`, `Rent or Own`, QOL_questions) |>
+  pivot_longer(QOL_questions, names_to = "Question", values_to = "Response") |>
+  ggplot(aes(x = Question, Response, color = `Rent or Own`, linetype = `High Rent`, group = id)) +
+  geom_line(alpha = 0.3, position = position_jitter(w=0, h=0.25)) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+
+
+```
+
+
+### Alluvial
+
+That's not very good (although parallel coordinate plots can be very useful), but we can measure the "flow" from question to question better with Alluvial plots.
+
+
+```{r}
+library(ggalluvial)
+# 
+# cleaned_responses |>
+#   ggplot(aes(x = `Income`, stratum = `Rent or Own`, alluvium = `High Rent`, fill = `zip`)) +
+#   geom_flow() +
+#   geom_stratum()
+# 
+# data(vaccinations)
+# vaccinations <- transform(vaccinations,
+#                           response = factor(response, rev(levels(response))))
+# ggplot(vaccinations,
+#        aes(x = survey, stratum = response, alluvium = subject,
+#            y = freq,
+#            fill = response, label = response)) +
+#   scale_x_discrete(expand = c(.1, .1)) +
+#   geom_flow() +
+#   geom_stratum(alpha = .5) +
+#   geom_text(stat = "stratum", size = 3) +
+#   theme(legend.position = "none") +
+#   ggtitle("vaccination survey responses at three points in time")
+```
+
+
+## Missing Data
+
+```{r}
+cleaned_responses |>
+  select(`Ease of Bus`, zip) |>
+  ggplot(aes(zip)) +
+  geom_bar(aes(fill = forcats::fct_rev(factor(`Ease of Bus`))), position="fill") +
+  scale_fill_manual("Response",
+                    values = c("#999999", scales::viridis_pal()(5)),
+                    labels = c("Missing", 5:1))
+
+cleaned_responses |>
+  select(`Ease of Bus`, `Income`) |>
+  ggplot(aes(Income)) +
+  geom_bar(aes(fill = forcats::fct_rev(factor(`Ease of Bus`))), position="fill") +
+  scale_fill_manual("Response",
+                    values = c("#999999", scales::viridis_pal()(5)),
+                    labels = c("Missing", 5:1))
+
+durham_2020 |>
+  select(ease_of_travel_by_bus_godu_18_03, zip, would_you_say_your_total_annual_hous_35) |>
+  ggplot(aes(factor(would_you_say_your_total_annual_hous_35))) +
+  geom_bar(aes(fill = factor(ease_of_travel_by_bus_godu_18_03)), position="fill")
+
+
+```
+
+## Location Data
+
+
+### Density and point map
+
+```{r}
+library(zipcodeR)
+library(tigris)
+
+zip_locs <- reverse_zipcode(unique(durham_2020$zip))
+
+geo <- zctas(cb = TRUE, starts_with = unique(durham_2020$zip))
+ggplot(geo) +
+  geom_sf() +
+  geom_point(
+    data = cleaned_responses,
+    aes(
+      x = block_lon / 1e6,
+      y = block_lat / 1e6,
+      color = Income
+    ),
+    alpha = 0.3
+  ) +
+  theme_void()
+
+ggplot(geo) +
+  geom_sf() +
+  geom_point(
+    data = cleaned_responses,
+    aes(
+      x = block_lon / 1e6,
+      y = block_lat / 1e6,
+      color = Income
+    ),
+    alpha = 0.3
+  ) +
+  geom_density_2d(data = cleaned_responses,
+                  aes(
+                    x = block_lon / 1e6,
+                    y = block_lat / 1e6,
+                    color = Income
+                  )) +
+  facet_wrap( ~ `Income`) +
+  theme_void()
+```
+
+
+### Chloropleth
+
+```{r}
+
+percent_does_not_use_bus <- cleaned_responses |>
+  group_by(zip) |>
+  summarise(bus_usage = sum(`Ease of Bus` %in% 2:5) / n())
+
+joined_data <- full_join(geo, percent_does_not_use_bus, by = c("ZCTA5CE20" = "zip"))
+ggplot(joined_data) +
+  geom_sf(aes(fill = bus_usage)) +
+  theme_void()
+```
+
+### Chloropleth of percent or facet by bin
+
+## Rent/Own Difference
+
+https://www.data-to-viz.com/caveat/spider.html
+
+
+
+https://cran.r-project.org/web/packages/ggalluvial/vignettes/ggalluvial.html
+
+https://r-charts.com/flow/sankey-diagram-ggplot2/
+
+## Resources
+
+https://will-ball.github.io/ordinalplots/
+
+https://haleyjeppson.github.io/ggmosaic/reference/geom_mosaic.html#:~:text=geom_mosaic.Rd,%2C%20offset%20%3D%200.01%2C%20show.
+
+
+## Survey methodology changing data
 
 
 
