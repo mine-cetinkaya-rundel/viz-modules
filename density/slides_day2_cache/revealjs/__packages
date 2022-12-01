@@ -1,4 +1,3 @@
-base
 tidyverse
 ggplot2
 tibble
@@ -9,3 +8,4 @@ dplyr
 stringr
 forcats
 Lahman
+countdown

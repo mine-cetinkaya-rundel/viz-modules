@@ -7,7 +7,7 @@
 <link href="slides_day2_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="slides_day2_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="slides_day2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.2.231">
+  <meta name="generator" content="quarto-1.2.258">
 
   <meta name="author" content="Slides by Sam Rosen">
   <title>Density Graphs 2</title>
@@ -385,6 +385,8 @@
       margin-right: 0; 
     }
   </style>
+  <link href="slides_day2_files/libs/countdown-0.4.0/countdown.css" rel="stylesheet">
+  <script src="slides_day2_files/libs/countdown-0.4.0/countdown.js"></script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -428,7 +430,7 @@ Slides by Sam Rosen
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-2-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:2%;">
@@ -454,11 +456,13 @@ Slides by Sam Rosen
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(Lahman)</span>
 <span id="cb1-2"><a href="#cb1-2"></a>home_runs <span class="ot">&lt;-</span> Batting <span class="sc">|&gt;</span> </span>
-<span id="cb1-3"><a href="#cb1-3"></a>  <span class="fu">filter</span>(G <span class="sc">&gt;=</span> <span class="dv">100</span> <span class="sc">|</span> <span class="co"># We want to see how many home runs players that played most of the season hit</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>           (G <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|</span> <span class="co"># COVID-shortened season</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a>           (G <span class="sc">&gt;=</span> <span class="dv">70</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">1994</span>), <span class="co"># Strike-shortened season</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>         yearID <span class="sc">&gt;</span> <span class="dv">1920</span>, <span class="co"># Beginning of live-ball era</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>         lgID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AL"</span>, <span class="st">"NL"</span>)) <span class="co"># Most common leagues</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3"></a>  <span class="fu">filter</span>(</span>
+<span id="cb1-4"><a href="#cb1-4"></a>    G <span class="sc">&gt;=</span> <span class="dv">100</span> <span class="sc">|</span> <span class="co"># We want to see how many home runs players that played most of the season hit</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>    (G <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|</span> <span class="co"># COVID-shortened season</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>    (G <span class="sc">&gt;=</span> <span class="dv">70</span> <span class="sc">&amp;</span> yearID <span class="sc">==</span> <span class="dv">1994</span>), <span class="co"># Strike-shortened season</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>    yearID <span class="sc">&gt;</span> <span class="dv">1920</span>, <span class="co"># Beginning of live-ball era</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>    lgID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"AL"</span>, <span class="st">"NL"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  ) <span class="co"># Most common leagues</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Our dataset comes from the R package <code>Lahman</code>. Each row in the data frame is the hitting stats of a player for a given year. Today we will use the following columns:</p>
 <table>
@@ -499,7 +503,7 @@ Slides by Sam Rosen
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-4-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:2%;">
@@ -510,7 +514,7 @@ Slides by Sam Rosen
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-5-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -586,15 +590,15 @@ Slides by Sam Rosen
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(-1) </td>
-   <td style="text-align:right;"> 0.1713 </td>
+   <td style="text-align:right;"> 0.1650 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(0) </td>
-   <td style="text-align:right;"> 0.3278 </td>
+   <td style="text-align:right;"> 0.3283 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(2) </td>
-   <td style="text-align:right;"> 0.6638 </td>
+   <td style="text-align:right;"> 0.6728 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mix_ecdf(5) </td>
@@ -610,7 +614,7 @@ Slides by Sam Rosen
 </div><div class="column" style="width:45%;">
 <div class="cell">
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-8-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -629,6 +633,21 @@ Slides by Sam Rosen
 </ul></li>
 </ul>
 </section>
+<section id="application-exercise" class="slide level2">
+<h2>Application exercise</h2>
+<ul>
+<li>Go to [ADD REPO NAME]</li>
+<li>Work on exercise [ADD EXERCISE NUMBER OF TITLE]</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="countdown" id="timer_a8458ed0" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+</div>
+</div>
+</section>
 <section id="comparing-distributions-1" class="slide level2 smaller">
 <h2>Comparing Distributions 1</h2>
 <div class="panel-tabset">
@@ -641,14 +660,15 @@ Slides by Sam Rosen
 <div class="sourceCode cell-code" id="cb3" data-code-line-numbers="false"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Closest 4 years</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>HRearly2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2011</span><span class="sc">:</span><span class="dv">2014</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Years up to COVID season</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>HRlate2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2016</span><span class="sc">:</span><span class="dv">2019</span>) </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Years up to COVID season</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>HRlate2010s <span class="ot">&lt;-</span> home_runs <span class="sc">|&gt;</span> </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(yearID <span class="sc">%in%</span> <span class="dv">2016</span><span class="sc">:</span><span class="dv">2019</span>) </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HRearly2010s<span class="sc">$</span>HR, HRlate2010s<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-    Two-sample Kolmogorov-Smirnov test
+    Asymptotic two-sample Kolmogorov-Smirnov test
 
 data:  HRearly2010s$HR and HRlate2010s$HR
 D = 0.16691, p-value = 6.463e-12
@@ -657,7 +677,7 @@ alternative hypothesis: two-sided</code></pre>
 </div>
 </div><div class="column move-code" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>get_ks_df <span class="ot">&lt;-</span> <span class="cf">function</span>(dat1, dat2) {</span>
+<div class="sourceCode cell-code" id="cb5" data-code-line-numbers="|3-4|5:10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>get_ks_df <span class="ot">&lt;-</span> <span class="cf">function</span>(dat1, dat2) {</span>
 <span id="cb5-2"><a href="#cb5-2"></a>  <span class="co"># Make ECDF of each set of data</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a>  ecdf1 <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(dat1)</span>
 <span id="cb5-4"><a href="#cb5-4"></a>  ecdf2 <span class="ot">&lt;-</span> <span class="fu">ecdf</span>(dat2)</span>
@@ -697,7 +717,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb5-38"><a href="#cb5-38"></a>       <span class="at">subtitle =</span> <span class="st">"Dashed line is the Kolmogorov-Smirnov Statistic"</span>) <span class="sc">+</span></span>
 <span id="cb5-39"><a href="#cb5-39"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -729,7 +749,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HR2005<span class="sc">$</span>HR, HR2006<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-    Two-sample Kolmogorov-Smirnov test
+    Asymptotic two-sample Kolmogorov-Smirnov test
 
 data:  HR2005$HR and HR2006$HR
 D = 0.073827, p-value = 0.503
@@ -760,7 +780,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb8-20"><a href="#cb8-20"></a>       <span class="at">color =</span> <span class="st">"Year"</span>) <span class="sc">+</span></span>
 <span id="cb8-21"><a href="#cb8-21"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-13-1.png" width="960"></p>
 </div>
 </div>
 </div>
@@ -785,7 +805,7 @@ alternative hypothesis: two-sided</code></pre>
 </section>
 <section id="building-the-matrix" class="slide level2 smallest">
 <h2>Building the Matrix</h2>
-<div class="cell" data-hash="slides_day2_cache/revealjs/unnamed-chunk-26_6402ec3fbdf758fde1e2871d95266fef">
+<div class="cell" data-hash="slides_day2_cache/revealjs/unnamed-chunk-14_370207c52b2c92668399a43c17783a17">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>ks_matrix <span class="ot">&lt;-</span> <span class="fu">tribble</span>(<span class="sc">~</span>year1, <span class="sc">~</span>year2, <span class="sc">~</span>ks_stat, <span class="sc">~</span>p_value)</span>
 <span id="cb9-2"><a href="#cb9-2"></a>all_years <span class="ot">&lt;-</span> <span class="fu">unique</span>(home_runs<span class="sc">$</span>yearID)</span>
 <span id="cb9-3"><a href="#cb9-3"></a></span>
@@ -867,7 +887,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb10-30"><a href="#cb10-30"></a>    <span class="at">size=</span><span class="fl">0.5</span></span>
 <span id="cb10-31"><a href="#cb10-31"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-28-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-15-1.png" width="960"></p>
 </div>
 </div>
 </div><div class="column" style="width:2%;">
@@ -880,7 +900,7 @@ alternative hypothesis: two-sided</code></pre>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(HR2005<span class="sc">$</span>HR, HR2016<span class="sc">$</span>HR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-    Two-sample Kolmogorov-Smirnov test
+    Asymptotic two-sample Kolmogorov-Smirnov test
 
 data:  HR2005$HR and HR2016$HR
 D = 0.14405, p-value = 0.01089
@@ -987,7 +1007,7 @@ alternative hypothesis: two-sided</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-18-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1053,7 +1073,7 @@ alternative hypothesis: two-sided</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-36-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1097,7 +1117,7 @@ alternative hypothesis: two-sided</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-38-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1141,7 +1161,7 @@ alternative hypothesis: two-sided</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-40-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1185,7 +1205,7 @@ alternative hypothesis: two-sided</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-42-1.png" width="960"></p>
+<p><img data-src="slides_day2_files/figure-revealjs/unnamed-chunk-22-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -1193,6 +1213,21 @@ alternative hypothesis: two-sided</code></pre>
 </div>
 <div id="tabset-8-2">
 
+</div>
+</div>
+</div>
+</section>
+<section id="application-exercise-1" class="slide level2">
+<h2>Application exercise</h2>
+<ul>
+<li>Go to [ADD REPO NAME]</li>
+<li>Work on exercise [ADD EXERCISE NUMBER OF TITLE]</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="countdown" id="timer_62414170" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls"><button class="countdown-bump-down">−</button><button class="countdown-bump-up">+</button></div>
+<code class="countdown-time"><span class="countdown-digits minutes">10</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 </div>
 </div>

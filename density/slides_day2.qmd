@@ -16,9 +16,11 @@ revealjs-plugins:
 ---
 
 ```{r}
+#| message: false
+
 library(tidyverse)
 theme_set(theme_minimal())
-
+library(countdown)
 ```
 
 ## Distributions and Motivating Example {.smallest}
@@ -43,11 +45,10 @@ Ultimately when analyzing data, the distribution is important to know how to pro
 example_data <- data.frame(random_values=c(rnorm(200, -1, 0.5), rnorm(n=400, 2, 0.75)))
 
 ggplot(example_data, aes(random_values)) +
-  geom_histogram(aes(y = ..density..), binwidth = 0.1, alpha=0.25) +
+  geom_histogram(aes(y = after_stat(density)), binwidth = 0.1, alpha=0.25) +
   geom_density(fill=4, alpha=0.50) +
   ggtitle("Density plot of two random normal variables") +
   xlim(-2.5, 5)
-
 ```
 
 :::
@@ -76,11 +77,13 @@ ggplot(example_data, aes(random_values)) +
 #| echo: TRUE
 library(Lahman)
 home_runs <- Batting |> 
-  filter(G >= 100 | # We want to see how many home runs players that played most of the season hit
-           (G >= 40 & yearID == 2020) | # COVID-shortened season
-           (G >= 70 & yearID == 1994), # Strike-shortened season
-         yearID > 1920, # Beginning of live-ball era
-         lgID %in% c("AL", "NL")) # Most common leagues
+  filter(
+    G >= 100 | # We want to see how many home runs players that played most of the season hit
+    (G >= 40 & yearID == 2020) | # COVID-shortened season
+    (G >= 70 & yearID == 1994), # Strike-shortened season
+    yearID > 1920, # Beginning of live-ball era
+    lgID %in% c("AL", "NL")
+  ) # Most common leagues
 ```
 
 Our dataset comes from the R package `Lahman`. Each row in the data frame is the hitting stats of a player for a given year. Today we will use the following columns:
@@ -110,10 +113,10 @@ true_density <-
   true_density |> mutate(y = 0.5 * dnorm(x, 0, 1) + 0.5 * dnorm(x, 20, 1),
                          y_scaled = y / max(y))
 ggplot(example_data, aes(x = vals)) +
-  stat_density(aes(y = ..scaled.., color = "black"),
+  stat_density(aes(y = after_stat(scaled), color = "black"),
                geom = "line",
                bw = "SJ") +
-  stat_density(aes(y = ..scaled.., color = "red"), geom = "line") +
+  stat_density(aes(y = after_stat(scaled), color = "red"), geom = "line") +
   geom_line(
     data = true_density,
     mapping = aes(x = x,
@@ -233,14 +236,12 @@ knitr::kable(
 as_df <- data.frame(vals = new_example_data, empirical_cdf = mix_ecdf(new_example_data))
 
 ggplot(as_df, aes(x = vals)) +
-  stat_density(aes(x = vals, y = ..scaled..), geom = "line", color = "green") +
-  stat_ecdf(geom = "step", color = "red") +
+  stat_density(aes(x = vals, y = after_stat(scaled)), geom = "line", color = "blue", linewidth = 1.5) +
+  stat_ecdf(geom = "step", color = "red", linewidth = 1.5) +
   labs(x = "Data Value",
        y = "Density / Area Under Curve",
        title = "Comparison of Density and ECDF",
        subtitle = "The cumulative area under the density curve is the ECDF")
-
-
 ```
 :::
 :::
@@ -254,9 +255,16 @@ ggplot(as_df, aes(x = vals)) +
     * Values must be i.i.d. within their respective distributions
     * The two distributions being tested must be independent
 
+## Application exercise
+
+- Go to [ADD REPO NAME]
+- Work on exercise [ADD EXERCISE NUMBER OF TITLE]
+
+```{r}
+countdown(minutes = 10)
+```
 
 ## Comparing Distributions 1 {.smaller}
-
 
 ::: panel-tabset
 ### Output
@@ -270,6 +278,7 @@ ggplot(as_df, aes(x = vals)) +
 # Closest 4 years
 HRearly2010s <- home_runs |> 
   filter(yearID %in% 2011:2014)
+
 # Years up to COVID season
 HRlate2010s <- home_runs |> 
   filter(yearID %in% 2016:2019) 
@@ -282,7 +291,9 @@ ks.test(HRearly2010s$HR, HRlate2010s$HR)
 ```{r}
 #| fig-height: 5
 #| echo: True
+
 get_ks_df <- function(dat1, dat2) {
+  
   # Make ECDF of each set of data
   ecdf1 <- ecdf(dat1)
   ecdf2 <- ecdf(dat2)
@@ -789,6 +800,15 @@ mat_BY +
 
 :::
 
+## Application exercise
+
+- Go to [ADD REPO NAME]
+- Work on exercise [ADD EXERCISE NUMBER OF TITLE]
+
+```{r}
+countdown(minutes = 10)
+```
+
 ## Summary
 
 * The Empirical CDF is a very useful tool in statistics, for both analysis and visualization.
@@ -796,4 +816,3 @@ mat_BY +
   * However, be careful as it is only an approximate test with discrete values.
   * Furthermore, be sure to use multiple testing corrections if testing many different distributions.
 * Baseball is interesting! (you may disagree on this one)
-

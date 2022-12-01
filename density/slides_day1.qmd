@@ -561,6 +561,7 @@ countdown(minutes = 5)
 ```{r}
 #| echo: true
 #| code-line-numbers: false
+
 long_tailed_data <- data.frame(random_values = rlnorm(1000, -3, 1))
 ```
 
@@ -568,6 +569,7 @@ long_tailed_data <- data.frame(random_values = rlnorm(1000, -3, 1))
 ::: {.column width="49%"}
 ```{r}
 #| echo: true
+
 # Base R plotting
 plot(
   density(long_tailed_data$random_values, bw = "SJ"), 
@@ -585,7 +587,7 @@ abline(v = 0, col="red", lty = 2)
 #| echo: true
 plot(
   density(long_tailed_data$random_values, bw = "SJ", from = 0),
-  main="Density graph of positive numbers with cut density"
+  main = "Density graph of positive numbers with cut density"
 )
 abline(v = 0, col="red", lty = 2)
 ```
