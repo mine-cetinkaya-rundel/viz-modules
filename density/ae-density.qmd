@@ -9,8 +9,11 @@ execute:
 ## Packages
 
 ```{r}
-library(tidyverse)
+#| label: load-libraries
+#| message: FALSE
+
 library(Lahman)
+library(tidyverse)
 
 theme_set(theme_minimal())
 ```
@@ -18,31 +21,37 @@ theme_set(theme_minimal())
 ## Data
 
 ```{r}
-home_runs <- Batting |> 
-  filter(G >= 100 | 
-           (G >= 40 & yearID == 2020) | 
-           (G >= 70 & yearID == 1994),
-         yearID > 1920,
-         lgID %in% c("AL", "NL"))
+#| label: filter-data
+
+home_runs <- Batting |>
+  filter(
+    G >= 100 |
+    (G >= 40 & yearID == 2020) |
+    (G >= 70 & yearID == 1994),
+    yearID > 1920,
+    lgID %in% c("AL", "NL")
+  )
 
 ```
 
-## Simple Example
+## Exercise 1
+
+### Simple Example
 
 A player gets a "hit" when they successfully hit the ball and get on base. Plot the density of the hits per player per year. Does this data look normal? Why or why not?
 
 
 ```{r}
 ggplot(home_runs, aes(H)) +
-  geom_density() + 
+  geom_density() +
   xlab("Hits per player per year")
 
 ```
 
 
-## Overlapping Example
+### Overlapping Example
 
-Which league seems to hit more homeruns? Is there a clear way to tell? More on this later.
+Plot the density of the number of home runs per player per year for each `lgID` (league). Which league seems to hit more homeruns? Is there a clear way to tell? More on this later.
 
 ```{r}
 home_runs |>
@@ -52,9 +61,9 @@ home_runs |>
 ```
 
 
-## Homeruns by each team in a given year
+### Homeruns by each team in a given year
 
-Make a violin plot for the year 2019, with a violin for each team. What's wrong with the plot?
+*a.* Make a violin plot for the home runs in year 2019, with a violin for each team. What's wrong with the plot?
 
 ```{r}
 home_runs |>
@@ -71,7 +80,7 @@ home_runs |>
 
 ```
 
-Improve the plot with a ridge plot. Set the bandwidth to 2.
+*b.* Improve the plot with a ridge plot. Set the bandwidth to 2.
 
 ```{r}
 library(ggridges)
@@ -81,7 +90,7 @@ home_runs |>
   ggplot(aes(x = HR,
              y = teamID)) +
   stat_density_ridges(
-    mapping = aes(fill = factor(stat(quantile))),
+    mapping = aes(fill = factor(after_stat(quantile))),
     geom = "density_ridges_gradient",
     calc_ecdf = TRUE,
     quantiles = c(.25, .50, .75, .95),
@@ -103,7 +112,9 @@ home_runs |>
 ```
 
 
-## Bandwidth Illustration
+## Exercise 2
+
+### Bandwidth Illustration
 
 Use `bw.nrd0` to calculate a bandwidth for the example data. Make a single density plot with a density line for:
 
@@ -128,8 +139,7 @@ ggplot(example_data, aes(val)) +
   geom_point(aes(x = val, y=0.1, color = id), alpha = 0.5)
 ```
 
-## Bandwidth Selection and Kernels
-
+### Bandwidth Selection and Kernels
 
 Repeat the steps above with the same data but use the Sheather-Jones estimate and a different Kernel. Do either of these changes improve the issue from above?
 
@@ -139,7 +149,7 @@ bwsj = bw.SJ(example_data$val)
 ggplot(example_data, aes(val)) +
   geom_density(kernel = "triangular") +
   geom_density(aes(color = id), bw = "SJ", kernel = "triangular") +
-  geom_density(aes(color = id), linetype = "dashed", bw=bwsj, kernel = "triangular") +
+  geom_density(aes(color = id), linetype = "dashed", bw = bwsj, kernel = "triangular") +
   geom_point(aes(x = val, y=0.1, color = id), alpha = 0.5)
 
 ```

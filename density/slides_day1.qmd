@@ -15,10 +15,6 @@ revealjs-plugins:
   - code-mover
 ---
 
-```{r}
-library(countdown)
-```
-
 ## Distributions {.smaller}
 
 There are many properties of a distribution of values
@@ -42,6 +38,8 @@ So let's visualize them!
 
 ```{r}
 #| label: load-packages
+
+library(countdown)
 library(tidyverse)
 
 theme_set(theme_minimal())
@@ -50,6 +48,7 @@ theme_set(theme_minimal())
 Histogram of 1000 random numbers generated from a $\textsf{Normal}(\mu=-1, \sigma=0.5)$ and 2000 generated from a $\textsf{Normal}(\mu=2, \sigma=0.75)$:
 
 ```{r}
+#| label: histogram-example
 #| fig-width: 10
 #| fig-height: 4.5
 #| fig-align: center
@@ -65,11 +64,11 @@ ggplot(example_data, aes(random_values)) +
 ## Density Plots {.smaller}
 
 **What's the difference?**
-
--   Histograms are *counts* of bins of *observed* data.
--   Density plots are *estimates* of the *unknown* distribution.
+Histograms are *counts* of bins of *observed* data.
+Density plots are *estimates* of the *unknown* distribution.
 
 ```{r}
+#| label: density-example
 #| fig-width: 10
 #| fig-height: 4.5
 #| fig-align: center
@@ -90,6 +89,8 @@ ggplot(example_data, aes(random_values)) +
 
 -   Density graphs are estimates for what a very fine histogram with lots of data would show
 :::
+
+. . .
 
 ```{ojs}
 //| panel: sidebar
@@ -121,6 +122,8 @@ Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mi
 </iframe>
 :::
 
+. . .
+
 -   Home runs are exciting! Baseball currently has a marketing problem, but throughout history Major League Baseball (MLB, the organization running the highest level of professional baseball) has tried to change the rules to increase home runs to help the game be more entertaining.
 
     -   In short terms, **Home runs = Money**, but if everyone hits the same number of home runs they become less exciting.
@@ -131,6 +134,7 @@ Based on [example](https://observablehq.com/@d3/kernel-density-estimation) by Mi
 <div>
 
 ```{r}
+#| label: load-data
 #| echo: TRUE
 
 library(Lahman)
@@ -154,6 +158,7 @@ Our dataset comes from the R package `Lahman`. Each row in the data frame is the
 ## Data we will use {auto-animate="true"}
 
 ```{r}
+#| label: context-0
 #| echo: true
 #| eval: false
 
@@ -162,11 +167,12 @@ home_runs <- Batting
 
 We are interested in the distribution of the number of home runs individual players have hit per year. [^1]
 
-[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The baseball was sold for **\$517,000**!
+[^1]: The record for number of home runs in one year is 73, by Barry Bonds in 2001. The 73rd home run baseball was sold for **\$517,000**!
 
 ## Context 1 {auto-animate="true"}
 
 ```{r}
+#| label: context-1
 #| echo: true
 #| eval: false
 
@@ -189,13 +195,14 @@ home_runs <- Batting |>
 ## Context 2 {auto-animate="true"}
 
 ```{r}
+#| label: context-2
 #| echo: true
 #| eval: false
 
-home_runs <- Batting |> 
+home_runs <- Batting |>
   filter(
-    G >= 100 | 
-    (G >= 40 & yearID == 2020) | 
+    G >= 100 |
+    (G >= 40 & yearID == 2020) |
     (G >= 70 & yearID == 1994),
     yearID > 1920
   )
@@ -207,13 +214,14 @@ home_runs <- Batting |>
 ## Context 3 {auto-animate="true"}
 
 ```{r}
+#| label: context-3
 #| echo: true
 #| eval: true
 
-home_runs <- Batting |> 
+home_runs <- Batting |>
   filter(
-    G >= 100 | 
-    (G >= 40 & yearID == 2020) | 
+    G >= 100 |
+    (G >= 40 & yearID == 2020) |
     (G >= 70 & yearID == 1994),
     yearID > 1920,
     lgID %in% c("AL", "NL")
@@ -228,6 +236,7 @@ home_runs <- Batting |>
 ### Plot {.move-code}
 
 ```{r}
+#| label: basic-geom-density
 #| fig-height: 4
 #| echo: true
 
@@ -248,15 +257,18 @@ ggplot(home_runs, aes(HR)) +
 ### Plot {.move-code}
 
 ```{r}
+#| label: stacked-geom-density
 #| fig-height: 4
 #| echo: true
 
 home_runs |>
   mutate(
     decade = cut(
-      yearID, breaks = seq(1920, 2030, 10), labels = paste0(seq(1920, 2020, 10), "'s")
-      )
-    ) |>
+      yearID,
+      breaks = seq(1920, 2030, 10),
+      labels = paste0(seq(1920, 2020, 10), "'s")
+    )
+  ) |>
   ggplot(aes(HR, fill = decade)) +
   geom_density(position = "stack") +
   labs(x = "Home runs per player per year")
@@ -273,15 +285,18 @@ home_runs |>
 ### Plot {.move-code}
 
 ```{r}
+#| label: overlapping-geom-density
 #| fig-height: 4
 #| echo: true
 
 home_runs |>
   mutate(
     decade = cut(
-      yearID, breaks = seq(1920, 2030, 10), labels = paste0(seq(1920, 2020, 10), "'s")
-      )
-    ) |>
+      yearID,
+      breaks = seq(1920, 2030, 10),
+      labels = paste0(seq(1920, 2020, 10), "'s")
+    )
+  ) |>
   ggplot(aes(HR, color = decade)) +
   geom_density() +
   labs(x = "Home runs per player per year")
@@ -298,23 +313,26 @@ home_runs |>
 ### Plot {.move-code}
 
 ```{r}
+#| label: conditional-geom-density
 #| fig-height: 4
 #| echo: true
 
 home_runs |>
   mutate(
     decade = cut(
-      yearID, breaks = seq(1920, 2030, 10), labels = paste0(seq(1920, 2020, 10), "'s")
-      )
-    ) |>
+      yearID,
+      breaks = seq(1920, 2030, 10),
+      labels = paste0(seq(1920, 2020, 10), "'s")
+    )
+  ) |>
   ggplot(aes(x = HR, y = after_stat(count), fill = decade)) +
   geom_density(position = "fill") +
-  geom_vline(xintercept = 60, linetype = 2) +
+  geom_vline(xintercept = 60, linetype = "dashed") +
   labs(x = "Home runs per player per year")
 
 ```
 
--   By using `position="fill"` and `y=after_stat(count)` we graph the conditional probability that of a decade given a player has hit a certain number of home runs.
+-   By using `position = "fill"` and `y = after_stat(count)` we graph the conditional probability of a decade given that a player has hit a certain number of home runs.
 -   We see that players would hit about 60 homeruns in the 20's and 30's, but that disappears until the 90's and 2000's [^2] which quickly take up the conditional probability for years with more than 60 home runs. What happened?
 
 ### Code
@@ -328,6 +346,7 @@ home_runs |>
 ### Plot {.move-code}
 
 ```{r}
+#| label: violin-plot
 #| fig-height: 4
 #| echo: true
 
@@ -344,7 +363,7 @@ home_runs |>
   xlab("Home runs per player per year")
 ```
 
--   Let's examine the years near the change point, 1985 to 2005. All points shown are players that hit 30 or more homeruns in a given year. It looks like around 1995 players started hitting **a lot** more home runs.
+-   Let's examine the years near the change point, 1985 to 2005. All points shown are players that hit 30 or more home runs in a given year. It looks like around 1995 players started hitting **a lot** more home runs.
 
 ### Code
 :::
@@ -355,6 +374,7 @@ home_runs |>
 ### Plot {.move-code}
 
 ```{r}
+#| label: ridge-plot
 #| fig-height: 4
 #| echo: true
 
@@ -365,7 +385,7 @@ home_runs |>
   ggplot(aes(x = HR,
              y = factor(yearID))) +
   stat_density_ridges(
-    mapping = aes(fill = factor(stat(quantile))),
+    mapping = aes(fill = factor(after_stat(quantile))),
     geom = "density_ridges_gradient",
     calc_ecdf = TRUE,
     quantiles = c(.25, .50, .75, .95),
@@ -393,13 +413,15 @@ home_runs |>
 ### Code
 :::
 
-## Application exercise
+## Application Exercise: More Examples
 
 - Go to [ADD REPO NAME]
-- Work on exercise [ADD EXERCISE NUMBER OF TITLE]
+- Work on exercise 1
 
 ```{r}
-countdown(minutes = 10)
+#| label: ae-1
+
+countdown(minutes = 12)
 ```
 
 ## Bandwidth {.smaller}
@@ -464,16 +486,18 @@ plotNewDataBW(regenerateData(numPoints2 / 3), binWidth2, bandwidth, generate2);
 ### Useful
 
 ```{r}
+#| label: sj-use-case
+
 example_data <- data.frame(vals = c(rnorm(1000, 0, 1), rnorm(1000, 20, 1)))
 true_density <- data.frame(x = c(seq(-4, 24, length.out = 10000)))
 true_density <-
   true_density |> mutate(y = 0.5 * dnorm(x, 0, 1) + 0.5 * dnorm(x, 20, 1),
                          y_scaled = y / max(y))
 ggplot(example_data, aes(x = vals)) +
-  stat_density(aes(y = ..scaled.., color = "black"),
+  stat_density(aes(y = after_stat(scaled), color = "black"),
                geom = "line",
-               bw = "SJ") +
-  stat_density(aes(y = ..scaled.., color = "red"), geom = "line") +
+               bw   = "SJ") +
+  stat_density(aes(y = after_stat(scaled), color = "red"), geom = "line") +
   geom_line(
     data = true_density,
     mapping = aes(x = x,
@@ -482,21 +506,22 @@ ggplot(example_data, aes(x = vals)) +
     linetype = "dashed"
   ) +
   scale_color_identity(
-    name = "Bandwidth Estimator",
+    name   = "Bandwidth Estimator",
     breaks = c("black", "red", "blue"),
     labels = c("SJ", "Silverman's", "True Density"),
-    guide = "legend"
+    guide  = "legend"
   ) +
-  labs(x = "Random Values", 
-       y = "Scaled Density", 
-       title = "Density of mixture of two random normals",
+  labs(x        = "Random Values", 
+       y        = "Scaled Density", 
+       title    = "Density of mixture of two random normals",
        subtitle = "Silverman's can over smooth even if generated from a Normal")
 
 ```
 
-### Not useful? {.smallest}
+### Not useful?
 
 ```{r}
+#| label: sj-potentially-not-useful
 
 ggplot(home_runs, aes(x = HR)) +
   stat_density(aes(y = ..scaled.., color = "black"),
@@ -544,12 +569,14 @@ $$
 To learn more, see [Chapter 2](https://bookdown.org/egarpor/NP-UC3M/kde-i-kde.html) of *Nonparametric Statistics* by Eduardo García-Portugués.
 :::
 
-## Application exercise
+## Application Exercise: Bandwidth
 
 - Go to [ADD REPO NAME]
-- Work on exercise [ADD EXERCISE NUMBER OF TITLE]
+- Work on exercise 2
 
 ```{r}
+#| label: ae-2
+
 countdown(minutes = 5)
 ```
 
@@ -559,6 +586,7 @@ countdown(minutes = 5)
 ### Density Below 0
 
 ```{r}
+#| label: long-tailed-data
 #| echo: true
 #| code-line-numbers: false
 
@@ -568,6 +596,7 @@ long_tailed_data <- data.frame(random_values = rlnorm(1000, -3, 1))
 ::: columns
 ::: {.column width="49%"}
 ```{r}
+#| label: plot-long-tailed-data
 #| echo: true
 
 # Base R plotting
@@ -584,7 +613,9 @@ abline(v = 0, col="red", lty = 2)
 
 ::: {.column width="49%"}
 ```{r}
+#| label: better-plot-long-tailed-data
 #| echo: true
+
 plot(
   density(long_tailed_data$random_values, bw = "SJ", from = 0),
   main = "Density graph of positive numbers with cut density"
@@ -599,6 +630,7 @@ abline(v = 0, col="red", lty = 2)
 ### Long Tailed Data
 
 ```{r}
+#| label: longer-tailed-data
 #| echo: true
 #| code-line-numbers: false
 
@@ -608,6 +640,7 @@ longer_tailed_data <- tibble(random_values = rlnorm(1000, -6, 5))
 ::: columns
 ::: {.column width="49%"}
 ```{r}
+#| label: plot-longer-tailed-data
 #| echo: true
 
 ggplot(longer_tailed_data, aes(x = random_values)) +
@@ -620,7 +653,9 @@ ggplot(longer_tailed_data, aes(x = random_values)) +
 
 ::: {.column width="49%"}
 ```{r}
+#| label: plot-logged-longer-tailed-data
 #| echo: true
+
 ggplot(longer_tailed_data, aes(x = random_values)) +
   geom_density() +
   scale_x_continuous(trans = "log")
@@ -637,6 +672,7 @@ ggplot(longer_tailed_data, aes(x = random_values)) +
 ### Plot {.move-code}
 
 ```{r}
+#| label: plot-2d-density
 #| fig-height: 5
 #| echo: true
 
@@ -657,6 +693,7 @@ home_runs |>
 ### Scatter plot
 
 ```{r}
+#| label: plot-2d-density-scatter
 #| echo: true
 
 home_runs |>
@@ -677,6 +714,8 @@ Pros:
 -   **Visualize entire distribution**
 -   Mean, median, variance, outliers, support, skewness, normality etc.
 -   `plot(density(Batting$HR))` is usually the first thing I do when analyzing data
+
+. . .
 
 Cons:
 
