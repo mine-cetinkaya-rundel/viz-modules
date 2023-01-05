@@ -525,20 +525,20 @@ ggplot(example_data, aes(x = vals)) +
 
 ggplot(home_runs, aes(x = HR)) +
   stat_density(aes(y = ..scaled.., color = "black"),
-               geom = "line",
-               bw = "SJ",
+    geom = "line",
+    bw = "SJ",
   ) +
   stat_density(aes(y = ..scaled.., color = "red"), geom = "line") +
   scale_color_identity(
-    name = "Bandwidth Estimator",
+    name   = "Bandwidth Estimator",
     breaks = c("black", "red"),
     labels = c("SJ", "Silverman's"),
-    guide = "legend"
+    guide  = "legend"
   ) +
   labs(
-    y = "Scaled Density",
-    x = "Home runs per player per year",
-    title = "Density of Home runs per person per year",
+    y        = "Scaled Density",
+    x        = "Home runs per player per year",
+    title    = "Density of Home runs per person per year",
     subtitle = "Sheather Jones only puts density at integer values because our data is discrete"
   )
 

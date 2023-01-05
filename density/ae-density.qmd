@@ -72,8 +72,8 @@ home_runs |>
   geom_violin(draw_quantiles = c(0.25, 0.5, 0.75)) +
   geom_jitter(
     height = 0,
-    width = 0.1,
-    alpha = 0.5
+    width  = 0.1,
+    alpha  = 0.5
   ) +
   xlab("Home runs per player per team") +
   scale_x_discrete(guide = guide_axis(n.dodge = 2))
@@ -87,26 +87,30 @@ library(ggridges)
 
 home_runs |>
   filter(yearID == 2019) |>
-  ggplot(aes(x = HR,
-             y = teamID)) +
+  ggplot(aes(
+    x = HR,
+    y = teamID
+  )) +
   stat_density_ridges(
-    mapping = aes(fill = factor(after_stat(quantile))),
-    geom = "density_ridges_gradient",
-    calc_ecdf = TRUE,
-    quantiles = c(.25, .50, .75, .95),
+    mapping        = aes(fill = factor(after_stat(quantile))),
+    geom           = "density_ridges_gradient",
+    calc_ecdf      = TRUE,
+    quantiles      = c(.25, .50, .75, .95),
     quantile_lines = TRUE,
-    scale = 2,
+    scale          = 2,
     rel_min_height = 0.01,
-    bandwidth = 2
+    bandwidth      = 2
   ) +
-  scale_fill_viridis_d(name = "Quantiles",
-                       labels = c("0", "25th", "50th", "75th", "95th")) +
+  scale_fill_viridis_d(
+    name   = "Quantiles",
+    labels = c("0", "25th", "50th", "75th", "95th")
+  ) +
   geom_jitter(
     height = 0.2,
-    width = 0,
-    alpha = 0.3,
+    width  = 0,
+    alpha  = 0.3,
   ) +
-  scale_x_continuous(name = "Home runs per player per team", limits = c(0,60)) +
+  scale_x_continuous(name = "Home runs per player per team", limits = c(0, 60)) +
   ylab("Year")
 
 ```
@@ -127,16 +131,20 @@ In addition, add a geom_point at each observed value with y=0.1.
 What do you notice about the different curves? Which id has a higher standard deviation?
 
 ```{r}
-example_data = data.frame(val = c(rnorm(25, mean = 3, sd = 0.5), 
-                                  rnorm(15, mean = -1, sd = 2)), 
-                          id = c(rep("A", 25), rep("B", 15)))
+example_data <- data.frame(
+  val = c(
+    rnorm(25, mean = 3, sd = 0.5),
+    rnorm(15, mean = -1, sd = 2)
+  ),
+  id  = c(rep("A", 25), rep("B", 15))
+)
 
-bw = bw.nrd0(example_data$val)
+bw <- bw.nrd0(example_data$val)
 ggplot(example_data, aes(val)) +
   geom_density() +
   geom_density(aes(color = id)) +
-  geom_density(aes(color = id), linetype = "dashed", bw=bw) +
-  geom_point(aes(x = val, y=0.1, color = id), alpha = 0.5)
+  geom_density(aes(color = id), linetype = "dashed", bw = bw) +
+  geom_point(aes(x = val, y = 0.1, color = id), alpha = 0.5)
 ```
 
 ### Bandwidth Selection and Kernels
@@ -158,7 +166,9 @@ ggplot(example_data, aes(val)) +
 # Day 2
 
 
-## ECDF
+## Exercise 1
+
+### ECDF
 
 What is the value of ECDF of the homeruns per player per year at each multiple of 10? Using the value of the ECDF at 70, calculate how many times a player has hit more than 70 homeruns in a year.
 
@@ -171,7 +181,7 @@ hr_ecdf(0:8 * 10)
 ```
 
 
-## KS-Test
+### KS-Test
 
 Using the given function, plot the KS statistic and ECDFs of two sets of random values (you pick the random values). Carry out the test and interpret.
 
@@ -188,9 +198,9 @@ get_ks_df <- function(dat1, dat2) {
   first_max_location <- grid_points[which.max(differences)]
   # Return DF to help with plotting
   data.frame(
-    x = first_max_location,
+    x    = first_max_location,
     xend = first_max_location,
-    y = ecdf1(first_max_location),
+    y    = ecdf1(first_max_location),
     yend = ecdf2(first_max_location)
   )
 }
@@ -200,19 +210,22 @@ num_points = 100
 val_1 = rlnorm(num_points)
 val_2 = abs(rnorm(num_points))
 
-my_data <- data.frame(vals= c(val_1, val_2), id=c(rep("A", num_points), rep("B", num_points)))
+my_data <- data.frame(
+  vals = c(val_1, val_2), 
+  id   = c(rep("A", num_points), rep("B", num_points))
+)
 
 ggplot(my_data, aes(vals, color = id)) +
   stat_ecdf(geom = "step") +
   geom_segment(
     data = get_ks_df(val_1, val_2),
     aes(
-      x = x,
-      y = y,
+      x    = x,
+      y    = y,
       xend = xend,
       yend = yend
     ),
-    color = "black",
+    color    = "black",
     linetype = "dashed"
   )
 
@@ -220,7 +233,9 @@ ks.test(val_1, val_2)
 
 ```
 
-## Working through the example
+## Exercise 2
+
+### Working through the example
 
 Run the code below to do a similar example to the one on the slides:
 
@@ -237,18 +252,22 @@ for (year1 in all_years) {
   year1HR <- home_runs_to_search |> filter(yearID == year1)
   for (year2 in min(all_years):year1) { # Only do half since the test is symmetric
     if (year1 == year2) {
-      next 
+      next
     }
-    year2HR = home_runs_to_search |> filter(yearID == year2)
-    
-    test <- ks.test(year1HR$HR,
-                    year2HR$HR)
-    
+    year2HR <- home_runs_to_search |> filter(yearID == year2)
+
+    test <- ks.test(
+      year1HR$HR,
+      year2HR$HR
+    )
+
     ks_matrix <- ks_matrix |>
-      add_row(year1 = year1, 
-              year2 = year2, 
-              ks_stat = test$statistic, 
-              p_value = test$p.value)
+      add_row(
+        year1   = year1,
+        year2   = year2,
+        ks_stat = test$statistic,
+        p_value = test$p.value
+      )
   }
 }
 
@@ -261,25 +280,27 @@ What is each column in the dataframe?
 head(ks_matrix)
 ```
 
-## Adjustments
+### Adjustments
 
 Why did we copy half the matrix? What does the head of the new data look like?
 
 ```{r}
 half_matrix <- ks_matrix |>
   mutate(
-    p_holm = p.adjust(p_value, "holm"),
-    p_hochberg = p.adjust(p_value, "hochberg"),
-    p_hommel = p.adjust(p_value, "hommel"),
+    p_holm       = p.adjust(p_value, "holm"),
+    p_hochberg   = p.adjust(p_value, "hochberg"),
+    p_hommel     = p.adjust(p_value, "hommel"),
     p_bonferroni = p.adjust(p_value, "bonferroni"),
-    p_fdr = p.adjust(p_value, "fdr"),
-    p_BY = p.adjust(p_value, "BY")
+    p_fdr        = p.adjust(p_value, "fdr"),
+    p_BY         = p.adjust(p_value, "BY")
   )
 
 other_half <- half_matrix |>
-  mutate(tmp_year1 = year1,
-         year1 = year2,
-         year2 = tmp_year1) |> 
+  mutate(
+    tmp_year1 = year1,
+    year1     = year2,
+    year2     = tmp_year1
+  ) |>
   select(-tmp_year1)
 
 ks_matrix <- bind_rows(half_matrix, other_half)
@@ -288,7 +309,7 @@ head(ks_matrix)
 ```
 
 
-## Pivot longer by adjustment
+### Pivot longer by adjustment
 
 Show the result of matrix after we pivot by adjustment and cut by significance.
 
@@ -311,41 +332,43 @@ for_plotting <- ks_matrix |>
     breaks = c(0, 0.001, 0.01, 0.05, 0.1, 1.001),
     labels = c("<0.001", "<0.01", "<0.05", "<0.1", "<1"),
     include.lowest = T,
-  )) 
+  ))
 
 head(for_plotting)
 
 ```
 
-## Visualize the corrections
+### Visualize the corrections
 
 Which adjustment would you pick?
 
 ```{r}
 ggplot(for_plotting, aes(
-    x = year1,
-    y = year2,
-    fill = factor(signif)
-  )) +
+  x    = year1,
+  y    = year2,
+  fill = factor(signif)
+)) +
   geom_tile() +
   scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
   scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
   scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(x = "Year",
-       y = "Year",
-       fill = "Significance") +
-  facet_wrap( ~ adjustment) +
+  labs(
+    x    = "Year",
+    y    = "Year",
+    fill = "Significance"
+  ) +
+  facet_wrap(~adjustment) +
   coord_fixed() +
   theme(
-    axis.text.x = element_blank(),
+    axis.text.x  = element_blank(),
     axis.ticks.x = element_blank(),
-    axis.text.y = element_blank(),
+    axis.text.y  = element_blank(),
     axis.ticks.y = element_blank()
   )
 
 ```
 
-## Annotations
+### Annotations
 
 Pick an adjustment and graph it. Add an annotation for at least one pair of years and add what a statistician might conclude from the p-value.
 
@@ -353,41 +376,45 @@ Pick an adjustment and graph it. Add an annotation for at least one pair of year
 ```{r}
 mat_BY <-
   for_plotting |>
-  filter(adjustment == "p_BY") |>
-  ggplot(aes(x = year1,
-             y = year2)) +
-  geom_tile(aes(fill = factor(signif))) +
-  scale_x_continuous(breaks = 1990 + seq(0, 30, 2)) +
-  scale_y_continuous(breaks = 1990 + seq(0, 30, 2)) +
-  scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(title = "BY adjusted p-values matrix",
-       fill = "Significance",
-       x = "Year",
-       y = "Year") +
-  coord_fixed()
+    filter(adjustment == "p_BY") |>
+    ggplot(aes(
+      x = year1,
+      y = year2
+    )) +
+    geom_tile(aes(fill = factor(signif))) +
+    scale_x_continuous(breaks = 1990 + seq(0, 30, 2)) +
+    scale_y_continuous(breaks = 1990 + seq(0, 30, 2)) +
+    scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
+    labs(
+      title = "BY adjusted p-values matrix",
+      fill  = "Significance",
+      x     = "Year",
+      y     = "Year"
+    ) +
+    coord_fixed()
 
-description <-
-  "The years 2005 and 2017 had significantly different distributions of homeruns per player." |>
-  str_wrap(width = 40)
+  description <-
+    "The years 2005 and 2017 had significantly different distributions of homeruns per player." |>
+    str_wrap(width = 40)
 
-mat_BY +
-  annotate(
-    "rect",
-    xmin = c(2004.5, 2016.5),
-    ymin = c(2016.5, 2004.5),
-    xmax = c(2005.5, 2017.5),
-    ymax = c(2017.5, 2005.5),
-    color = "#0000FFaa",
-    alpha = 0,
-    size = 1.5
-  ) +
-  annotate(
-    "label",
-    x = 2000,
-    y = 2010,
-    label = description,
-    alpha = 0.9,
-    size = 3
-  )
+  mat_BY +
+    annotate(
+      "rect",
+      xmin  = c(2004.5, 2016.5),
+      ymin  = c(2016.5, 2004.5),
+      xmax  = c(2005.5, 2017.5),
+      ymax  = c(2017.5, 2005.5),
+      color = "#0000FFaa",
+      alpha = 0,
+      size  = 1.5
+    ) +
+    annotate(
+      "label",
+      x     = 2000,
+      y     = 2010,
+      label = description,
+      alpha = 0.9,
+      size  = 3
+    )
 
 ```

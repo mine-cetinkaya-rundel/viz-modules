@@ -15,15 +15,18 @@ revealjs-plugins:
   - code-mover
 ---
 
-```{r}
-#| message: false
-
-library(tidyverse)
-theme_set(theme_minimal())
-library(countdown)
-```
 
 ## Distributions and Motivating Example {.smallest}
+
+```{r}
+#| label: load-packages
+#| message: false
+
+library(countdown)
+library(tidyverse)
+
+theme_set(theme_minimal())
+```
 
 ::: columns
 ::: {.column width="49%"}
@@ -42,6 +45,8 @@ Ultimately when analyzing data, the distribution is important to know how to pro
 -   Outliers
 
 ```{r}
+#| label: density-example
+
 example_data <- data.frame(random_values=c(rnorm(200, -1, 0.5), rnorm(n=400, 2, 0.75)))
 
 ggplot(example_data, aes(random_values)) +
@@ -74,8 +79,11 @@ ggplot(example_data, aes(random_values)) +
 <div>
 
 ```{r}
+#| label: load-data
 #| echo: TRUE
+
 library(Lahman)
+
 home_runs <- Batting |> 
   filter(
     G >= 100 | # We want to see how many home runs players that played most of the season hit
@@ -104,24 +112,31 @@ In particular we are interested in the distribution of home runs per year!
 ::: columns
 ::: {.column width="49%"}
 
-- Although density graphs are very useful and can display lots of information, they can be sensitive to bandwidth.
+Although density graphs are very useful and can display lots of information, they can be sensitive to bandwidth.
 
 ```{r}
+#| label: bandwidth-sensitivity
+
 example_data <- data.frame(vals = c(rnorm(1000, 0, 1), rnorm(1000, 20, 1)))
 true_density <- data.frame(x = c(seq(-4, 24, length.out = 10000)))
 true_density <-
-  true_density |> mutate(y = 0.5 * dnorm(x, 0, 1) + 0.5 * dnorm(x, 20, 1),
-                         y_scaled = y / max(y))
+  true_density |> mutate(
+    y = 0.5 * dnorm(x, 0, 1) + 0.5 * dnorm(x, 20, 1),
+    y_scaled = y / max(y)
+  )
 ggplot(example_data, aes(x = vals)) +
   stat_density(aes(y = after_stat(scaled), color = "black"),
-               geom = "line",
-               bw = "SJ") +
+    geom = "line",
+    bw = "SJ"
+  ) +
   stat_density(aes(y = after_stat(scaled), color = "red"), geom = "line") +
   geom_line(
     data = true_density,
-    mapping = aes(x = x,
-                  y = y_scaled,
-                  color = "blue",),
+    mapping = aes(
+      x = x,
+      y = y_scaled,
+      color = "blue",
+    ),
     linetype = "dashed"
   ) +
   scale_color_identity(
@@ -130,10 +145,12 @@ ggplot(example_data, aes(x = vals)) +
     labels = c("SJ", "Silverman's", "True Density"),
     guide = "legend"
   ) +
-  labs(x = "Random Values", 
-       y = "Scaled Density", 
-       title = "Density of mixture of two random normals",
-       subtitle = "Silverman's can over smooth even if generated from a Normal")
+  labs(
+    x = "Random Values",
+    y = "Scaled Density",
+    title = "Density of mixture of two random normals",
+    subtitle = "Silverman's can over smooth even if generated from a Normal"
+  )
 ```
 
 :::
@@ -142,15 +159,20 @@ ggplot(example_data, aes(x = vals)) +
 :::
 
 ::: {.column width="49%"}
--   It was not clear how to properly determine if two distributions were significantly different.
+
+It was not clear how to properly determine if two distributions were significantly different.
 
 ```{r}
+#| label: similar-distributions
+
 home_runs |>
   mutate(decade = cut(
     yearID,
     breaks = seq(1920, 2030, 10),
-    labels = paste0(seq(1920, 2020, 10),
-                    "'s")
+    labels = paste0(
+      seq(1920, 2020, 10),
+      "'s"
+    )
   )) |>
   ggplot(aes(HR, color = decade)) +
   geom_density() +
@@ -204,16 +226,21 @@ $$
 ## Empirical CDFs in R {.smaller}
 
 ```{r}
+#| label: example-ecdf
 #| echo: True
 
-new_example_data <- c(rnorm(n = 2000, mean = -1, sd = 0.5), 
-                      rnorm(n = 4000, mean = 2, sd = 0.75))
+new_example_data <- c(
+  rnorm(n = 200, mean = -1, sd = 0.5),
+  rnorm(n = 400, mean = 2, sd = 0.75)
+)
 mix_ecdf <- ecdf(new_example_data)
 ```
 
 ::: columns
 ::: {.column width="45%"}
 ```{r}
+#| label: ecdf-table
+
 knitr::kable(
   data.frame(
     func_call = paste0("mix_ecdf(", c(-3,-1, 0, 2, 5), ")"),
@@ -233,15 +260,19 @@ knitr::kable(
 
 ::: {.column width="45%"}
 ```{r}
+#| label: ecdf-plot
+
 as_df <- data.frame(vals = new_example_data, empirical_cdf = mix_ecdf(new_example_data))
 
 ggplot(as_df, aes(x = vals)) +
   stat_density(aes(x = vals, y = after_stat(scaled)), geom = "line", color = "blue", linewidth = 1.5) +
   stat_ecdf(geom = "step", color = "red", linewidth = 1.5) +
-  labs(x = "Data Value",
-       y = "Density / Area Under Curve",
-       title = "Comparison of Density and ECDF",
-       subtitle = "The cumulative area under the density curve is the ECDF")
+  labs(
+    x = "Data Value",
+    y = "Density / Area Under Curve",
+    title = "Comparison of Density and ECDF",
+    subtitle = "The cumulative area under the density curve is the ECDF"
+  )
 ```
 :::
 :::
@@ -255,15 +286,6 @@ ggplot(as_df, aes(x = vals)) +
     * Values must be i.i.d. within their respective distributions
     * The two distributions being tested must be independent
 
-## Application exercise
-
-- Go to [ADD REPO NAME]
-- Work on exercise [ADD EXERCISE NUMBER OF TITLE]
-
-```{r}
-countdown(minutes = 10)
-```
-
 ## Comparing Distributions 1 {.smaller}
 
 ::: panel-tabset
@@ -272,6 +294,7 @@ countdown(minutes = 10)
 ::: columns
 ::: {.column width="50%"}
 ```{r}
+#| label: compare-dists-1-1
 #| echo: True
 #| code-line-numbers: false
 
@@ -289,11 +312,11 @@ ks.test(HRearly2010s$HR, HRlate2010s$HR)
 
 ::: {.column .move-code width="50%"}
 ```{r}
+#| label: compare-dists-1-2
 #| fig-height: 5
 #| echo: True
 
 get_ks_df <- function(dat1, dat2) {
-  
   # Make ECDF of each set of data
   ecdf1 <- ecdf(dat1)
   ecdf2 <- ecdf(dat2)
@@ -354,6 +377,7 @@ ggplot(rbind(HRearly2010s, HRlate2010s), aes(HR, color = factor(yearID < 2015)))
 ::: columns
 ::: {.column width="50%"}
 ```{r}
+#| label: compare-dists-2-1
 #| echo: True
 #| code-line-numbers: false
 
@@ -368,6 +392,7 @@ ks.test(HR2005$HR, HR2006$HR)
 
 ::: {.column .move-code width="50%"}
 ```{r}
+#| label: compare-dists-2-2
 #| fig-height: 5
 #| echo: True
 
@@ -386,23 +411,37 @@ ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
     color = "black",
     linetype = "dashed"
   ) +
-  labs(x = "Homeruns per player per year",
-       y = "Empirical CDF",
-       title = "Empirical CDFs of player home runs per year in years 2005 and 2006 ",
-       subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic",
-       color = "Year") +
+  labs(
+    x = "Homeruns per player per year",
+    y = "Empirical CDF",
+    title = "Empirical CDFs of player home runs per year in years 2005 and 2006 ",
+    subtitle = "Dashed line is the Kolmogorov-Smirnov Statistic",
+    color = "Year"
+  ) +
   theme(legend.position = "bottom")
 
 ```
 :::
 :::
 
-- 2005 and 2006 are similar years in terms of home runs, so the Kolmorgov-Smirnov test does not reject.
+- 2005 and 2006 are similar years in terms of home runs, so the Kolmogorov-Smirnov test does not reject.
 
 
 ### Code
 
 :::
+
+## Application Exercise: Comparing Distributions
+
+- Go to [ADD REPO NAME]
+- Work on exercise 1 under day 2
+
+```{r}
+#| label: ae-2
+
+countdown(minutes = 12)
+```
+
 
 ## Using the Kolmogorov-Smirnov statistic for visualization
 
@@ -413,6 +452,7 @@ ggplot(rbind(HR2005, HR2006), aes(HR, color = factor(yearID))) +
 ## Building the Matrix {.smallest}
 
 ```{r}
+#| label: build-ks-matrix
 #| cache: TRUE
 #| echo: TRUE
 #| warning: FALSE
@@ -429,18 +469,22 @@ for (year1 in all_years) {
   year1HR <- home_runs_to_search |> filter(yearID == year1)
   for (year2 in min(all_years):year1) { # Only do half since the test is symmetric
     if (year1 == year2) {
-      next 
+      next
     }
-    year2HR = home_runs_to_search |> filter(yearID == year2)
-    
-    test <- ks.test(year1HR$HR,
-                    year2HR$HR)
-    
+    year2HR <- home_runs_to_search |> filter(yearID == year2)
+
+    test <- ks.test(
+      year1HR$HR,
+      year2HR$HR
+    )
+
     ks_matrix <- ks_matrix |>
-      add_row(year1 = year1, 
-              year2 = year2, 
-              ks_stat = test$statistic, 
-              p_value = test$p.value)
+      add_row(
+        year1 = year1,
+        year2 = year2,
+        ks_stat = test$statistic,
+        p_value = test$p.value
+      )
   }
 }
 
@@ -452,7 +496,7 @@ ks_matrix <- bind_rows(
     year2 = tmp_year1
   ) |> select(-tmp_year1)
 )
-  
+
 options(warn = 0)
 ```
 
@@ -465,6 +509,7 @@ options(warn = 0)
 ::: {.column width="59%"}
 
 ```{r}
+#| label: visualize-ks-matrix
 #| fig-height: 8.5
 #| echo: True
 
@@ -484,10 +529,12 @@ ks_matrix |>
   scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
   scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
   scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(title = "Unadjusted p-values matrix",
-       fill = "Significance",
-       x = "Year",
-       y = "Year") +
+  labs(
+    title = "Unadjusted p-values matrix",
+    fill = "Significance",
+    x = "Year",
+    y = "Year"
+  ) +
   coord_fixed() +
   annotate(
     "rect",
@@ -497,7 +544,7 @@ ks_matrix |>
     ymax = c(2016.5, 2005.5),
     color = "#0000FFaa",
     alpha = 0,
-    size=0.5
+    size = 1
   )
 ```
 
@@ -509,6 +556,7 @@ ks_matrix |>
 ::: {.column width="39%"}
 
 ```{r}
+#| label: cell-from-ks-matrix
 #| echo: True
 #| code-line-numbers: false
 
@@ -544,7 +592,9 @@ ks.test(HR2005$HR, HR2016$HR)
   - `fdr` and `BY` methods control for False Discovery Rate
 
 ```{r}
+#| label: ks-adjustments
 #| echo: True
+
 # Let's try all the adjustments and see how they change our visualization
 half_matrix <- ks_matrix |>
   filter(year1 < year2) |>
@@ -558,9 +608,11 @@ half_matrix <- ks_matrix |>
   )
 
 other_half <- half_matrix |>
-  mutate(tmp_year1 = year1,
-         year1 = year2,
-         year2 = tmp_year1) |> 
+  mutate(
+    tmp_year1 = year1,
+    year1 = year2,
+    year2 = tmp_year1
+  ) |>
   select(-tmp_year1)
 
 ks_matrix <- bind_rows(half_matrix, other_half)
@@ -576,6 +628,7 @@ To learn more see Chapter 13 of *An Introduction to Statistical Learning (2nd Ed
 ### Plot {.move-code}
 
 ```{r}
+#| label: plot-adjustments
 #| fig-height: 4.5
 #| fig-align: center
 #| echo: True
@@ -608,10 +661,12 @@ ks_matrix |>
   scale_x_continuous(breaks = 1920 + seq(0, 10) * 10) +
   scale_y_continuous(breaks = 1920 + seq(0, 10) * 10) +
   scale_fill_manual(values = c(colorspace::heat_hcl(4), "#AAAAAA")) +
-  labs(x = "Year",
-       y = "Year",
-       fill = "Significance") +
-  facet_wrap( ~ adjustment) +
+  labs(
+    x = "Year",
+    y = "Year",
+    fill = "Significance"
+  ) +
+  facet_wrap(~adjustment) +
   coord_fixed() +
   theme(
     axis.text.x = element_blank(),
@@ -635,6 +690,7 @@ ks_matrix |>
 ### Plot {.move-code}
 
 ```{r}
+#| label: by-adjustment
 #| fig-height: 5.5
 #| fig-align: center
 #| echo: True
@@ -692,6 +748,7 @@ mat_BY +
 ### Plot {.move-code}
 
 ```{r}
+#| label: ww2-annotate
 #| fig-height: 5.5
 #| fig-align: center
 #| echo: True
@@ -730,6 +787,7 @@ mat_BY +
 ### Plot {.move-code}
 
 ```{r}
+#| label: shorter-season-annotate
 #| fig-height: 5.5
 #| fig-align: center
 #| echo: True
@@ -768,6 +826,7 @@ mat_BY +
 ### Plot {.move-code}
 
 ```{r}
+#| label: yotp-annotate
 #| fig-height: 5.5
 #| fig-align: center
 #| echo: True
@@ -800,13 +859,14 @@ mat_BY +
 
 :::
 
-## Application exercise
+## Application exercise: Follow the example
 
 - Go to [ADD REPO NAME]
-- Work on exercise [ADD EXERCISE NUMBER OF TITLE]
+- Work on exercise 2 under day 2
 
 ```{r}
-countdown(minutes = 10)
+#| label: ae-3
+countdown(minutes = 12)
 ```
 
 ## Summary
