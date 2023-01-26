@@ -584,7 +584,7 @@ ks.test(HR2005$HR, HR2016$HR)
 
 - When performing multiple hypothesis tests, we typically want to control the *Family Wise Error Rate*: the probability we make at least 1 Type I error (a false rejection).
 
-- Newer methods focus more on controlling the *False Discovery Rate*: the probability that any particular rejected null hypothesis is actually a false positive. 
+- Newer methods focus more on controlling the *False Discovery Rate*: the expected percentage of rejected null hypothesis that are actually false positives.
 
 - Both require adjusting p-values which is built in to `R` (`?p.adjust`).
   - `holm`, `hochberg` and `hommel` control for Family Wise Error Rate
